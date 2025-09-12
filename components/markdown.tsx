@@ -40,7 +40,7 @@ const Markdown: React.FC<MarkdownProps> = ({ content }) => {
               </div>
             ) : (
               <code
-                className="bg-[#f0f0f0] dark:bg-[#ba7fa2] px-1.5 py-0.5 rounded text-sm font-mono"
+                className="bg-[#000] dark:bg-[#9BA3D6] px-1.5 py-0.5 rounded text-sm font-mono"
                 {...props}
               >
                 {children}
@@ -70,52 +70,52 @@ const Markdown: React.FC<MarkdownProps> = ({ content }) => {
           },
           p({ children }) {
             return (
-              <p className="mb-6 font-mono text-black leading-relaxed">
+              <p className="mb-6 font-mono text-foreground leading-relaxed">
                 {children}
               </p>
             );
           },
           h1({ children }) {
             return (
-              <h1 className="text-2xl font-bold mb-6 mt-2 font-mono text-black pb-2 border-b border-[#472a3f]/30">
+              <h1 className="text-2xl font-bold mb-6 mt-2 font-mono text-foreground pb-2 border-b border-[#472a3f]/30">
                 {children}
               </h1>
             );
           },
           h2({ children }) {
             return (
-              <h2 className="text-xl font-bold mb-4 mt-2 font-mono text-black pb-1 border-b border-[#472a3f]/20">
+              <h2 className="text-xl font-bold mb-4 mt-2 font-mono text-foreground pb-1 border-b border-[#472a3f]/20">
                 {children}
               </h2>
             );
           },
           h3({ children }) {
             return (
-              <h3 className="text-lg font-bold mb-3 mt-6 font-mono text-black">
+              <h3 className="text-lg font-bold mb-3 mt-6 font-mono text-foreground">
                 {children}
               </h3>
             );
           },
           ul({ children }) {
             return (
-              <ul className="list-disc pl-6 mb-6 font-mono text-black space-y-2">
+              <ul className="list-disc pl-6 mb-6 font-mono text-foreground space-y-2">
                 {children}
               </ul>
             );
           },
           ol({ children }) {
             return (
-              <ol className="list-decimal pl-6 mb-6 font-mono text-black space-y-2">
+              <ol className="list-decimal pl-6 mb-6 font-mono text-foreground space-y-2">
                 {children}
               </ol>
             );
           },
           li({ children }) {
-            return <li className="font-mono text-black">{children}</li>;
+            return <li className="font-mono text-foreground">{children}</li>;
           },
           blockquote({ children }) {
             return (
-              <blockquote className="border-l-4 border-[#9BA3D6] pl-4 py-1 my-6 bg-white/20 rounded-r-lg font-mono text-black italic">
+              <blockquote className="border-l-4 border-accent pl-4 py-1 my-6 bg-muted/50 rounded-r-lg font-mono text-foreground italic">
                 {children}
               </blockquote>
             );
@@ -126,7 +126,7 @@ const Markdown: React.FC<MarkdownProps> = ({ content }) => {
           table({ children }) {
             return (
               <div className="overflow-x-auto my-6 rounded-lg border border-[#9BA3D6] shadow-md">
-                <table className="min-w-full bg-white/30 font-mono text-black">
+                <table className="min-w-full bg-muted/30 font-mono text-foreground">
                   {children}
                 </table>
               </div>
@@ -134,35 +134,35 @@ const Markdown: React.FC<MarkdownProps> = ({ content }) => {
           },
           thead({ children }) {
             return (
-              <thead className="bg-[#f0f0f0] dark:bg-[#ba7fa2] font-mono text-black">
+              <thead className="bg-muted font-mono text-foreground">
                 {children}
               </thead>
             );
           },
           tbody({ children }) {
             return (
-              <tbody className="divide-y divide-[#9BA3D6]/30 font-mono text-black">
+              <tbody className="divide-y divide-[#9BA3D6]/30 font-mono text-foreground">
                 {children}
               </tbody>
             );
           },
           tr({ children }) {
             return (
-              <tr className="hover:bg-white/10 transition-colors duration-150 font-mono text-black">
+              <tr className="hover:bg-muted/20 transition-colors duration-150 font-mono text-foreground">
                 {children}
               </tr>
             );
           },
           th({ children }) {
             return (
-              <th className="px-4 py-3 text-left font-mono text-black">
+              <th className="px-4 py-3 text-left font-mono text-foreground">
                 {children}
               </th>
             );
           },
           td({ children }) {
             return (
-              <td className="px-4 py-3 font-mono text-black">{children}</td>
+              <td className="px-4 py-3 font-mono text-foreground">{children}</td>
             );
           },
         }}

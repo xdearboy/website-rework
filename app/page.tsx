@@ -111,11 +111,11 @@ export default function TerminalPortfolio() {
               main
             </a>
             <span className="">/</span>
-            <a href="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/blog" className="text-muted-foreground hover:text-[#9BA3D6] transition-colors">
               blog
             </a>
             <span className="">/</span>
-            <a href="/donate" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/donate" className="text-muted-foreground hover:text-[#9BA3D6] transition-colors">
               donate
             </a>
           </div>

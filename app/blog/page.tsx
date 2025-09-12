@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getAllPosts } from "@/app/lib/blog";
@@ -13,20 +11,16 @@ export default function BlogPage() {
       <div className="max-w-4xl mx-auto relative z-10">
         <nav className="flex justify-between items-center mb-8 text-sm">
           <div className="flex space-x-6">
-            <a href="#main" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
               main
             </a>
             <span className="">/</span>
-            <a href="https://dev0.cfg/blog" className="text-accent transition-colors">
+            <a href="/blog" className="text-accent transition-colors">
               blog
             </a>
             <span className="">/</span>
-            <a href="https://dev0.cfg/donate" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/donate" className="text-muted-foreground hover:text-foreground transition-colors">
               donate
-            </a>
-            <span className="">/</span>
-            <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
-              contact
             </a>
           </div>
         </nav>
@@ -36,7 +30,7 @@ export default function BlogPage() {
             <div className="flex items-center mb-6">
               <Link
                 href="/"
-                className="flex items-center text-foreground hover:text-accent transition-colors"
+                className="flex items-center text-foreground hover:text-[#9BA3D6] transition-colors"
               >
                 <ArrowLeft size={16} className="mr-2" />
                 <span className="font-medium">blog</span>
@@ -75,19 +69,6 @@ export default function BlogPage() {
           </CardContent>
         </Card>
       </div>
-
-      <style jsx global>{`
-        .emoji {
-          font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'EmojiSymbols', 'Twemoji Mozilla', 'Segoe UI Symbol', 'Symbola', 'Android Emoji', sans-serif !important;
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-        }
-      `}</style>
-      <style jsx>{`
-        .hover\\:glow:hover {
-          text-shadow: 0 0 10px currentColor;
-        }
-      `}</style>
     </div>
   );
 }
