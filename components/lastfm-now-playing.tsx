@@ -30,6 +30,8 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isChanging, setIsChanging] = useState(false)
+  const [userAvatar, setUserAvatar] = useState<string | null>(null)
+  const [avatarError, setAvatarError] = useState(false)
 
   const fetchNowPlaying = useCallback(async () => {
     try {
@@ -37,6 +39,37 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
         setError("Укажите API ключ и имя пользователя")
         setIsLoading(false)
         return
+      }
+
+      const userResponse = await fetch(
+        `https://ws.audioscrobbler.com/2.0/?method=user.getInfo&user=${username}&api_key=${apiKey}&format=json`
+      )
+      
+      if (!userResponse.ok) {
+        throw new Error("Failed to fetch user info")
+      }
+      
+      const userData = await userResponse.json()
+      console.log("Last.fm user data:", userData)
+      console.log("User object:", userData.user)
+      
+      if (userData.user?.image) {
+        console.log("Available user images:")
+        userData.user.image.forEach((img: any, index: number) => {
+          console.log(`[${index}] size: "${img.size}", url: "${img["#text"]}"`)
+        })
+        
+        const avatarUrl = userData.user.image[3]?.["#text"] || 
+                         userData.user.image[2]?.["#text"] || 
+                         userData.user.image[1]?.["#text"] || 
+                         userData.user.image[0]?.["#text"]   
+        
+        console.log("Selected avatar URL:", avatarUrl)
+        console.log("Avatar URL type:", typeof avatarUrl)
+        setUserAvatar(avatarUrl)
+      } else {
+        console.log("No user images found in response")
+        console.log("Full user object:", userData.user)
       }
 
       const response = await fetch(
@@ -52,7 +85,7 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
       const tracks = data.recenttracks.track
       if (tracks && tracks.length > 0) {
         const currentTrack = tracks[0]
-      
+        
         if (currentTrack["@attr"]?.nowplaying === "true") {
           if (!prevTrack || currentTrack.name !== prevTrack.name || currentTrack.artist["#text"] !== prevTrack.artist["#text"]) {
             setIsChanging(true)
@@ -144,7 +177,7 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
   }
 
   return (
-    <Card className={`bg-card/50 backdrop-blur-sm border border-border/50 transition-all duration-300 ${isChanging ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
+    <Card className={`bg-card/50 backdrop-blur-sm border border-border/50 transition-all duration-300 py-6 ${isChanging ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
       <CardHeader className="pb-2">
         <CardTitle className="text-primary text-base flex items-center space-x-2">
           <span>now playing</span>
@@ -155,14 +188,34 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
         <div className="space-y-3">
           <div className="flex items-start space-x-3">
             <div className="relative">
-              <img 
-                src={getAlbumImage() || "/placeholder.jpg"} 
-                alt={nowPlaying.album["#text"]} 
-                className={`w-12 h-12 rounded-lg object-cover flex-shrink-0 transition-transform duration-300 ${isChanging ? 'scale-90' : 'scale-100'}`}
-                onError={(e) => {
-                  e.currentTarget.src = "/placeholder.jpg"
-                }}
-              />
+              {userAvatar && !avatarError ? (
+                <img
+                  src={userAvatar}
+                  alt={`${username} avatar`}
+                  className={`w-12 h-12 rounded-full object-cover flex-shrink-0 transition-transform duration-300 ${isChanging ? 'scale-90' : 'scale-100'}`}
+                  onError={(e) => {
+                    console.log("Avatar load error, falling back to album art")
+                    setAvatarError(true)
+                    e.currentTarget.src = "/placeholder.jpg"
+                  }}
+                />
+              ) : (
+                <div className="relative">
+                  <img
+                    src={getAlbumImage() || "/placeholder.jpg"}
+                    alt={nowPlaying.album["#text"]}
+                    className={`w-12 h-12 rounded-lg object-cover flex-shrink-0 transition-transform duration-300 ${isChanging ? 'scale-90' : 'scale-100'}`}
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.jpg"
+                    }}
+                  />
+                  {!avatarError && userAvatar === null && (
+                    <div className="absolute inset-0 bg-muted/50 rounded-lg flex items-center justify-center">
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse"></div>
+                    </div>
+                  )}
+                </div>
+              )}
               {isChanging && (
                 <div className="absolute inset-0 bg-background/80 rounded-lg flex items-center justify-center">
                   <div className="w-2 h-2 bg-primary rounded-full animate-ping"></div>
@@ -189,7 +242,7 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
             className="w-full text-xs h-8"
             disabled={!nowPlaying.url}
           >
-            Listen on Last.fm
+            🎵 Listen on Last.fm
           </Button>
         </div>
       </CardContent>
