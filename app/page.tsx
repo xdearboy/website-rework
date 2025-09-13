@@ -255,7 +255,7 @@ export default function TerminalPortfolio() {
                     <span>github</span>
                   </a>
                   <a
-                    href="https://t.me/xdearboy"
+                    href="https://t.me/contactfiuimwix_bot"
                     className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
                   >
                     <span className="text-muted-foreground">○</span>
