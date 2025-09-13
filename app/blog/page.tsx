@@ -26,16 +26,7 @@ export default function BlogPage() {
         </nav>
 
         <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
-          <CardContent className="p-6">
-            <div className="flex items-center mb-6">
-              <Link
-                href="/"
-                className="flex items-center text-foreground hover:text-[#9BA3D6] transition-colors"
-              >
-                <ArrowLeft size={16} className="mr-2" />
-                <span className="font-medium">blog</span>
-              </Link>
-            </div>
+          <CardContent className="py-4">
 
             {posts.length === 0 ? (
               <p className="text-muted-foreground">Пока нет записей в блоге.</p>
@@ -47,12 +38,12 @@ export default function BlogPage() {
                     href={`/blog/${post.slug}`}
                     className="block"
                   >
-                    <Card className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-card/80 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
-                      <CardContent className="p-4">
-                        <h2 className="font-medium text-foreground mb-2">
+                    <Card className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-card/80 transition-all duration-200 hover:scale-[1.01] hover:shadow-lg cursor-pointer">
+                      <CardContent className="p-3">
+                        <h2 className="font-medium text-foreground mb-1">
                           {post.title}
                         </h2>
-                        <p className="text-xs text-muted-foreground mb-2">
+                        <p className="text-xs text-muted-foreground mb-1">
                           {post.date}
                         </p>
                         {post.excerpt && (

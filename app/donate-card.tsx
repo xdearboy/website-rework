@@ -94,7 +94,7 @@ export default function DonateCard() {
           </div>
         </div>
 
-        <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+        <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-primary text-base">donate me :3</CardTitle>
           </CardHeader>

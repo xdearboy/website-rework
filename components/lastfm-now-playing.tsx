@@ -52,10 +52,8 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
       const tracks = data.recenttracks.track
       if (tracks && tracks.length > 0) {
         const currentTrack = tracks[0]
-        
-        // Проверяем, играет ли сейчас трек (атрибут nowplaying)
+      
         if (currentTrack["@attr"]?.nowplaying === "true") {
-          // Проверяем сменился ли трек
           if (!prevTrack || currentTrack.name !== prevTrack.name || currentTrack.artist["#text"] !== prevTrack.artist["#text"]) {
             setIsChanging(true)
             setPrevTrack(nowPlaying)
@@ -98,7 +96,7 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
 
   if (isLoading) {
     return (
-      <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+      <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
         <CardHeader className="pb-2">
           <CardTitle className="text-primary text-base">now playing</CardTitle>
         </CardHeader>
@@ -119,7 +117,7 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
 
   if (error) {
     return (
-      <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+      <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
         <CardHeader className="pb-2">
           <CardTitle className="text-primary text-base">now playing</CardTitle>
         </CardHeader>
@@ -132,7 +130,7 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
 
   if (!nowPlaying) {
     return (
-      <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+      <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
         <CardHeader className="pb-2">
           <CardTitle className="text-primary text-base">now playing</CardTitle>
         </CardHeader>
@@ -191,7 +189,7 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
             className="w-full text-xs h-8"
             disabled={!nowPlaying.url}
           >
-            🎵 Listen on Last.fm
+            Listen on Last.fm
           </Button>
         </div>
       </CardContent>

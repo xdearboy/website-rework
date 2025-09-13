@@ -34,9 +34,7 @@ export default function TerminalPortfolio() {
           throw new Error('Failed to fetch projects')
         }
         const data = await response.json()
-        // Фильтруем только открытые проекты (не форки и не архивированные)
         const openProjects = data.filter((repo: any) => !repo.fork && !repo.archived)
-        // Сортируем на стороне клиента по количеству звезд (от большего к меньшему)
         const sortedProjects = openProjects.sort((a: any, b: any) => b.stargazers_count - a.stargazers_count)
         setProjects(sortedProjects)
         setError(null)
@@ -154,7 +152,7 @@ export default function TerminalPortfolio() {
 
 
         <div className="grid md:grid-cols-2 gap-8 mb-3">
-          <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+          <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
             <CardHeader className="pb-1">
               <CardTitle className="text-primary text-base">my programming languages</CardTitle>
             </CardHeader>
@@ -197,7 +195,7 @@ export default function TerminalPortfolio() {
           </Card>
 
           <div className="space-y-6">
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+            <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
               <CardHeader className="pb-1">
                 <CardTitle className="text-primary text-base">projects</CardTitle>
               </CardHeader>
@@ -237,7 +235,7 @@ export default function TerminalPortfolio() {
               </CardContent>
             </Card>
 
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+            <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
               <CardHeader className="pb-1">
                 <CardTitle className="text-primary text-base">links</CardTitle>
               </CardHeader>
@@ -299,7 +297,7 @@ export default function TerminalPortfolio() {
                 username="xdearboy"
               />
               
-              <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+              <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
                 <CardHeader className="pb-1">
                   <CardTitle className="text-primary text-base">activity</CardTitle>
                 </CardHeader>
@@ -320,18 +318,6 @@ export default function TerminalPortfolio() {
           </div>
         </div>
       </div>
-      <style jsx global>{`
-        .emoji {
-          font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'EmojiSymbols', 'Twemoji Mozilla', 'Segoe UI Symbol', 'Symbola', 'Android Emoji', sans-serif !important;
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-        }
-      `}</style>
-      <style jsx>{`
-        .hover\\:glow:hover {
-          text-shadow: 0 0 10px currentColor;
-        }
-      `}</style>
     </div>
   )
 }
