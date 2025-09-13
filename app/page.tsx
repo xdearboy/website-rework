@@ -207,7 +207,13 @@ export default function TerminalPortfolio() {
                   ) : error ? (
                     <div className="text-muted-foreground text-xs">{error}</div>
                   ) : (
-                    <div className="max-h-64 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-muted-foreground scrollbar-track-transparent">
+                    <div
+                      className="max-h-64 overflow-y-auto overflow-x-hidden space-y-4 invisible-scrollbar"
+                      style={{
+                        scrollbarWidth: 'thin',
+                        scrollbarColor: 'transparent transparent',
+                      }}
+                    >
                       {projects.map((project, index) => (
                         <div key={project.id || index}>
                           <a

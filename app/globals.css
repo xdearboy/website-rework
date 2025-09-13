@@ -113,6 +113,26 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* Полностью прозрачный скроллер */
+@layer utilities {
+  .invisible-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .invisible-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .invisible-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+  
+  .invisible-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+}
+
 @layer base {
   * {
     @apply border-border/50 outline-ring/50;
