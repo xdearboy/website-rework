@@ -113,7 +113,6 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* Полностью прозрачный скроллер */
 @layer utilities {
   .invisible-scrollbar::-webkit-scrollbar {
     width: 8px;
