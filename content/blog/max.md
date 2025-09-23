@@ -72,9 +72,9 @@ max сделали в vk, продвигается как суперапп. с 1
 ## про моды и вырезанную телеметрию  
 > **внимание.** ссылка на моды всегда риск. авторы говорят, что вырезали аналитику и трекинг, но кто знает, что там реально. apk может содержать бэкдор или банально не обновляться. ставь только на свой страх и риск.  
 
-полезная инфа о максе ещё есть на 4pda: [тык](https://4pda.to/forum/index.php?showtopic=1104314);
-мод на 4pda: [тык](https://4pda.to/forum/index.php?showtopic=1104314&st=2160#entry139227792);
-другой мод на github "reMax" [тык](https://github.com/remax-mod/remax);
+- полезная инфа о максе ещё есть на 4pda: [тык](https://4pda.to/forum/index.php?showtopic=1104314);
+- мод на 4pda: [тык](https://4pda.to/forum/index.php?showtopic=1104314&st=2160#entry139227792);
+- другой мод на github "reMax" [тык](https://github.com/remax-mod/remax);
 
 ---
 
