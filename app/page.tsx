@@ -144,7 +144,7 @@ export default function TerminalPortfolio() {
               <span className="text-muted-foreground">timezone:</span> utc+3
             </div>
             <div>
-              <span className="text-muted-foreground">langs:</span> 🇷🇺 native, 🇬🇧 B2, 🇨🇳 learning
+              <span className="text-muted-foreground">langs:</span> 🇷🇺 native, 🇬🇧 C1, 🇨🇳 learning
             </div>
           </div>
         </div>
