@@ -13,32 +13,35 @@ export default function DonateCard() {
       value: "pay.cloudtips.ru/p/fdaea5a6",
       isLink: true,
     },
-    {
-      title: "Crypto-bot",
-      value: "t.me/send?start=IVTISEyPdXCn",
-      isLink: true,
-    },
-    {
-      title: "BTC",
-      value: "bc1q0jp4772me2hxhqvf7vx286slzpm4z0m9n4mljk",
-    },
-    {
-      title: "USDT - ERC20",
-      value: "0xa22865D447cEdCf46bD61c5026DCacfBd25804D6",
-    },
-    {
-      title: "TON",
-      value: "UQCErKzWZGFTKO_oyRvpDn_5452RmMmQh9s-GWz9-9ygjxiy",
-    },
-    {
-      title: (
-        <span className="flex items-center gap-2">
-          <span>TRON</span>
-          <span className="text-muted-foreground text-xs">мин. сумма - 10 TRX</span>
-        </span>
-      ),
-      value: "TUFk7BZJWUNCQQtSLparZxyBeGei461sfP",
-    },
+    // ----
+    // ! Я был заблокирован в Crypto-Bot, поэтому половина путей для доната была убрана.
+    // ----
+    // {
+    //   title: "Crypto-bot",
+    //   value: "t.me/send?start=IVTISEyPdXCn",
+    //   isLink: true,
+    // },
+    // {
+    //   title: "BTC",
+    //   value: "bc1q0jp4772me2hxhqvf7vx286slzpm4z0m9n4mljk",
+    // },
+    // {
+    //   title: "USDT - ERC20",
+    //   value: "0xa22865D447cEdCf46bD61c5026DCacfBd25804D6",
+    // },
+    // {
+    //   title: "TON",
+    //   value: "UQCErKzWZGFTKO_oyRvpDn_5452RmMmQh9s-GWz9",
+    // },
+    // {
+    //   title: (
+    //     <span className="flex items-center gap-2">
+    //       <span>TRON</span>
+    //       <span className="text-muted-foreground text-xs">мин. сумма - 10 TRX</span>
+    //     </span>
+    //   ),
+    //   value: "TUFk7BZJWUNCQQtSLparZxyBeGei461sfP",
+    // },
   ]
 
   const copyToClipboard = async (text: string) => {
