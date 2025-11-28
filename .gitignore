@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# bun
+bun.lock
+
 # next.js
 /.next/
 /out/
