@@ -36,7 +36,7 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
   const fetchNowPlaying = useCallback(async () => {
     try {
       if (!apiKey || !username) {
-        setError("Укажите API ключ и имя пользователя")
+        setError("API key pls vstav hayu")
         setIsLoading(false)
         return
       }
@@ -46,15 +46,12 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
       )
       
       if (!userResponse.ok) {
-        throw new Error("Failed to fetch user info")
+        throw new Error("error")
       }
       
       const userData = await userResponse.json()
-      console.log("Last.fm user data:", userData)
-      console.log("User object:", userData.user)
       
       if (userData.user?.image) {
-        console.log("Available user images:")
         userData.user.image.forEach((img: any, index: number) => {
           console.log(`[${index}] size: "${img.size}", url: "${img["#text"]}"`)
         })
@@ -64,13 +61,8 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
                          userData.user.image[1]?.["#text"] || 
                          userData.user.image[0]?.["#text"]   
         
-        console.log("Selected avatar URL:", avatarUrl)
-        console.log("Avatar URL type:", typeof avatarUrl)
         setUserAvatar(avatarUrl)
-      } else {
-        console.log("No user images found in response")
-        console.log("Full user object:", userData.user)
-      }
+      } else { }
 
       const response = await fetch(
         `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${username}&api_key=${apiKey}&format=json&limit=1`
@@ -102,7 +94,7 @@ export default function LastFMNowPlaying({ apiKey, username }: LastFMNowPlayingP
         }
       }
     } catch (err) {
-      setError("Ошибка загрузки данных с Last.fm")
+      setError("error")
       console.error("Last.fm error:", err)
     } finally {
       setIsLoading(false)
