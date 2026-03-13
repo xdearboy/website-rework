@@ -85,7 +85,10 @@ export default function TerminalPortfolio() {
       "terraform",
       "kubernetes",
       "proxmox",
-      "nginx / h2o / haproxy"
+      "nginx / h2o / haproxy",
+      "nomad",
+      "opentofu",
+      "ELK Stack"
     ],
     databases: [
       "postgresql",
