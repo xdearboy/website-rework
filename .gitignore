@@ -1,0 +1,43 @@
+# dependencies
+node_modules/
+
+# vite build output
+dist/
+dist-ssr/
+
+# vite stats
+dist/stats.html
+
+# generated at build time — don't commit, plugin regenerates on build
+public/blog/
+public/blog-manifest.json
+
+# env files
+.env
+.env.*
+!.env.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# typescript
+*.tsbuildinfo
+
+# docker buildx cache
+/tmp/.buildx-cache
+
+# editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# os
+.DS_Store
+Thumbs.db
+
+# kiro
+.kiro
