@@ -6,6 +6,7 @@ import type { Post } from '@/lib/blog-client'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
 import PostSkeleton from '@/components/PostSkeleton'
 import { Card, CardContent } from '@/components/ui/card'
+import { usePageTransition } from '@/hooks/usePageTransition'
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -21,6 +22,8 @@ export default function BlogPostPage() {
       .finally(() => setLoading(false))
   }, [slug])
 
+  const transition = usePageTransition()
+
   if (loading) return <PostSkeleton />
 
   if (!post) {
@@ -33,15 +36,15 @@ export default function BlogPostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark">
+    <div className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}>
       <div className="max-w-4xl mx-auto relative z-10">
         <nav className="flex justify-between items-center mb-8 text-sm">
           <div className="flex space-x-6">
-            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">main</a>
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">main</Link>
             <span className="">/</span>
-            <a href="/blog" className="text-accent transition-colors">blog</a>
+            <Link to="/blog" className="text-accent transition-colors">blog</Link>
             <span className="">/</span>
-            <a href="/donate" className="text-muted-foreground hover:text-foreground transition-colors">donate</a>
+            <Link to="/donate" className="text-muted-foreground hover:text-foreground transition-colors">donate</Link>
           </div>
         </nav>
 
