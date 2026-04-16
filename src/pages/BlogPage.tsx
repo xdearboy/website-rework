@@ -4,11 +4,13 @@ import { fetchManifest } from '@/lib/blog-client'
 import type { PostMeta } from '@/lib/blog-client'
 import PostSkeleton from '@/components/PostSkeleton'
 import { Card, CardContent } from '@/components/ui/card'
+import { usePageTransition } from '@/hooks/usePageTransition'
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<PostMeta[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const transition = usePageTransition()
 
   const load = () => {
     setLoading(true)
@@ -21,18 +23,24 @@ export default function BlogPage() {
 
   useEffect(() => { load() }, [])
 
-  if (loading) return <PostSkeleton />
+  if (loading) {
+    return (
+      <div className={`transition-all duration-300 ${transition}`}>
+        <PostSkeleton />
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark">
+    <div className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}>
       <div className="max-w-4xl mx-auto relative z-10">
         <nav className="flex justify-between items-center mb-8 text-sm">
           <div className="flex space-x-6">
-            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">main</a>
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">main</Link>
             <span className="">/</span>
-            <a href="/blog" className="text-accent transition-colors">blog</a>
+            <Link to="/blog" className="text-accent transition-colors">blog</Link>
             <span className="">/</span>
-            <a href="/donate" className="text-muted-foreground hover:text-foreground transition-colors">donate</a>
+            <Link to="/donate" className="text-muted-foreground hover:text-foreground transition-colors">donate</Link>
           </div>
         </nav>
 
@@ -52,9 +60,7 @@ export default function BlogPage() {
                     <Card className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-card/80 transition-all duration-200 hover:scale-[1.01] hover:shadow-lg cursor-pointer">
                       <CardContent className="p-3">
                         <h2 className="font-medium text-foreground mb-1">{post.title}</h2>
-                        <p className="text-xs text-muted-foreground mb-1">
-                          {post.date}
-                        </p>
+                        <p className="text-xs text-muted-foreground mb-1">{post.date}</p>
                         {post.excerpt && (
                           <p className="text-sm text-muted-foreground line-clamp-3">{post.excerpt}</p>
                         )}

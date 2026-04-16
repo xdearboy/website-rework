@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import LastFMWidget from '@/components/LastFMWidget'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePageTransition } from '@/hooks/usePageTransition'
 
 export default function HomePage() {
+  const transition = usePageTransition()
   const [typedText, setTypedText] = useState('')
   const [projects, setProjects] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -70,7 +72,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark">
+    <div className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}>
       <div className="max-w-4xl mx-auto relative z-10">
         <nav className="flex justify-between items-center mb-8 text-sm">
           <div className="flex space-x-6">

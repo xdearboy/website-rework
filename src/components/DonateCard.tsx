@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { usePageTransition } from "@/hooks/usePageTransition"
 
 export default function DonateCard() {
+  const transition = usePageTransition()
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
   const [showNotification, setShowNotification] = useState(false)
 
@@ -36,21 +39,21 @@ export default function DonateCard() {
   }, [showNotification])
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark">
+    <div className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}>
       <div className="max-w-4xl mx-auto relative z-10">
         <nav className="flex justify-between items-center mb-8 text-sm">
           <div className="flex space-x-6">
-            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
               main
-            </a>
+            </Link>
             <span className="">/</span>
-            <a href="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
               blog
-            </a>
+            </Link>
             <span className="">/</span>
-            <a href="/donate" className="text-accent transition-colors">
+            <Link to="/donate" className="text-accent transition-colors">
               donate
-            </a>
+            </Link>
           </div>
         </nav>
 
