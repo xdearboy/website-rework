@@ -1,5 +1,5 @@
-import DonateCard from '@/components/DonateCard'
+import DonateCard from '@/components/shared/DonateCard';
 
 export default function DonatePage() {
-  return <DonateCard />
+  return <DonateCard />;
 }

@@ -1,7 +1,7 @@
-import type React from "react";
-import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import type React from 'react';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface MarkdownProps {
   content: string;
@@ -13,7 +13,7 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({ content }) => {
       <ReactMarkdown
         components={{
           code({ node, inline, className, children, ...props }: any) {
-            const match = /language-(\w+)/.exec(className || "");
+            const match = /language-(\w+)/.exec(className || '');
             return !inline && match ? (
               <div className="my-8 overflow-hidden rounded-lg border border-[#9BA3D6] shadow-md">
                 <div className="bg-[#1E1E1E] px-4 py-2 text-xs text-white/70 font-mono border-b border-[#9BA3D6]/30">
@@ -28,12 +28,12 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({ content }) => {
                   wrapLines={true}
                   customStyle={{
                     margin: 0,
-                    padding: "1.25rem",
-                    background: "#1E1E1E",
+                    padding: '1.25rem',
+                    background: '#1E1E1E',
                   }}
                   {...props}
                 >
-                  {String(children).replace(/\n$/, "")}
+                  {String(children).replace(/\n$/, '')}
                 </SyntaxHighlighter>
               </div>
             ) : (
@@ -48,8 +48,8 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({ content }) => {
           img({ src, alt }: any) {
             return (
               <img
-                src={src || ""}
-                alt={alt || ""}
+                src={src || ''}
+                alt={alt || ''}
                 className="rounded-md max-w-full h-auto my-6 border border-[#9BA3D6] shadow-md"
               />
             );
@@ -67,11 +67,7 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({ content }) => {
             );
           },
           p({ children }: any) {
-            return (
-              <p className="mb-6 font-mono text-foreground leading-relaxed">
-                {children}
-              </p>
-            );
+            return <p className="mb-6 font-mono text-foreground leading-relaxed">{children}</p>;
           },
           h1({ children }: any) {
             return (
@@ -89,9 +85,7 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({ content }) => {
           },
           h3({ children }: any) {
             return (
-              <h3 className="text-lg font-bold mb-3 mt-6 font-mono text-foreground">
-                {children}
-              </h3>
+              <h3 className="text-lg font-bold mb-3 mt-6 font-mono text-foreground">{children}</h3>
             );
           },
           ul({ children }: any) {
@@ -131,11 +125,7 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({ content }) => {
             );
           },
           thead({ children }: any) {
-            return (
-              <thead className="bg-muted font-mono text-foreground">
-                {children}
-              </thead>
-            );
+            return <thead className="bg-muted font-mono text-foreground">{children}</thead>;
           },
           tbody({ children }: any) {
             return (
@@ -152,16 +142,10 @@ const MarkdownRenderer: React.FC<MarkdownProps> = ({ content }) => {
             );
           },
           th({ children }: any) {
-            return (
-              <th className="px-4 py-3 text-left font-mono text-foreground">
-                {children}
-              </th>
-            );
+            return <th className="px-4 py-3 text-left font-mono text-foreground">{children}</th>;
           },
           td({ children }: any) {
-            return (
-              <td className="px-4 py-3 font-mono text-foreground">{children}</td>
-            );
+            return <td className="px-4 py-3 font-mono text-foreground">{children}</td>;
           },
         }}
       >

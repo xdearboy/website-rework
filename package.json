@@ -5,7 +5,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "lint": "eslint ."
+    "lint": "biome lint src plugins",
+    "format": "biome format --write src plugins",
+    "check": "biome check --write src plugins"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -29,6 +31,7 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@tailwindcss/postcss": "^4.1.9",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",

@@ -1,12 +1,12 @@
-import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import PageSkeleton from './components/PageSkeleton'
-import NotFoundPage from './pages/NotFoundPage'
+import { Suspense, lazy } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import PageSkeleton from './components/shared/PageSkeleton';
+import NotFoundPage from './pages/NotFoundPage';
 
-const HomePage = lazy(() => import('./pages/HomePage'))
-const BlogPage = lazy(() => import('./pages/BlogPage'))
-const BlogPostPage = lazy(() => import('./pages/BlogPostPage'))
-const DonatePage = lazy(() => import('./pages/DonatePage'))
+const HomePage = lazy(() => import('./pages/HomePage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
+const DonatePage = lazy(() => import('./pages/DonatePage'));
 
 export default function App() {
   return (
@@ -19,5 +19,5 @@ export default function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
-  )
+  );
 }
