@@ -1,51 +1,53 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import LastFMWidget from '@/components/LastFMWidget'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { usePageTransition } from '@/hooks/usePageTransition'
+import LastFMWidget from '@/components/shared/LastFMWidget';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePageTransition } from '@/hooks/usePageTransition';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function HomePage() {
-  const transition = usePageTransition()
-  const [typedText, setTypedText] = useState('')
-  const [projects, setProjects] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const transition = usePageTransition();
+  const [typedText, setTypedText] = useState('');
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fullText = 'xdearboy'
+  const fullText = 'xdearboy';
 
   useEffect(() => {
-    let index = 0
+    let index = 0;
     const timer = setInterval(() => {
       if (index < fullText.length) {
-        setTypedText(fullText.slice(0, index + 1))
-        index++
+        setTypedText(fullText.slice(0, index + 1));
+        index++;
       } else {
-        clearInterval(timer)
+        clearInterval(timer);
       }
-    }, 100)
-    return () => clearInterval(timer)
-  }, [])
+    }, 100);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        setLoading(true)
-        const response = await fetch('https://api.github.com/users/xdearboy/repos')
-        if (!response.ok) throw new Error('Failed to fetch projects')
-        const data = await response.json()
-        const openProjects = data.filter((repo: any) => !repo.fork && !repo.archived)
-        const sortedProjects = openProjects.sort((a: any, b: any) => b.stargazers_count - a.stargazers_count)
-        setProjects(sortedProjects)
-        setError(null)
+        setLoading(true);
+        const response = await fetch('https://api.github.com/users/xdearboy/repos');
+        if (!response.ok) throw new Error('Failed to fetch projects');
+        const data = await response.json();
+        const openProjects = data.filter((repo: any) => !repo.fork && !repo.archived);
+        const sortedProjects = openProjects.sort(
+          (a: any, b: any) => b.stargazers_count - a.stargazers_count
+        );
+        setProjects(sortedProjects);
+        setError(null);
       } catch (err) {
-        setError('Failed to load projects from GitHub')
-        console.error('Error fetching projects:', err)
+        setError('Failed to load projects from GitHub');
+        console.error('Error fetching projects:', err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchProjects()
-  }, [])
+    };
+    fetchProjects();
+  }, []);
 
   const languages = [
     { name: 'python', years: 8 },
@@ -57,22 +59,32 @@ export default function HomePage() {
     { name: 'css3', years: 4 },
     { name: 'markdown', years: 3 },
     { name: 'sql', years: 3 },
-  ]
+  ];
 
   const technologies: Record<string, string[]> = {
     frontend: ['react', 'next.js', 'tailwind css', 'framer motion'],
     backend: ['express.js', 'fastify', 'flask', 'fastapi', 'restful api', 'graphql'],
     devops: [
-      'docker & docker compose', 'git & github', 'ci/cd', 'ansible',
-      'terraform', 'kubernetes', 'proxmox', 'nginx / h2o / haproxy',
-      'nomad', 'opentofu', 'ELK Stack',
+      'docker & docker compose',
+      'git & github',
+      'ci/cd',
+      'ansible',
+      'terraform',
+      'kubernetes',
+      'proxmox',
+      'nginx / h2o / haproxy',
+      'nomad',
+      'opentofu',
+      'ELK Stack',
     ],
     databases: ['postgresql', 'mysql', 'mongodb'],
     tools: ['linux', 'vs code', 'vim'],
-  }
+  };
 
   return (
-    <div className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}>
+    <div
+      className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}
+    >
       <div className="max-w-4xl mx-auto relative z-10">
         <nav className="flex justify-between items-center mb-8 text-sm">
           <div className="flex space-x-6">
@@ -80,11 +92,17 @@ export default function HomePage() {
               main
             </a>
             <span>/</span>
-            <Link to="/blog" className="text-muted-foreground hover:text-[#9BA3D6] transition-colors">
+            <Link
+              to="/blog"
+              className="text-muted-foreground hover:text-[#9BA3D6] transition-colors"
+            >
               blog
             </Link>
             <span>/</span>
-            <Link to="/donate" className="text-muted-foreground hover:text-[#9BA3D6] transition-colors">
+            <Link
+              to="/donate"
+              className="text-muted-foreground hover:text-[#9BA3D6] transition-colors"
+            >
               donate
             </Link>
           </div>
@@ -101,14 +119,20 @@ export default function HomePage() {
               <span className="text-muted-foreground">name:</span> xdearboy
             </div>
             <div>
-              <span className="text-muted-foreground">role:</span> middle devops engineer &amp; fullstack developer
+              <span className="text-muted-foreground">role:</span> middle devops engineer &amp;
+              fullstack developer
             </div>
             <div>
-              <span className="text-muted-foreground">focus:</span> fullstack development (python/js/ts/rust), cloud infrastructure, devops automation &amp; linux system administration
+              <span className="text-muted-foreground">focus:</span> fullstack development
+              (python/js/ts/rust), cloud infrastructure, devops automation &amp; linux system
+              administration
             </div>
             <div>
               <span className="text-muted-foreground">projects:</span>{' '}
-              <a href="https://github.com/xdearboy?tab=repositories" className="text-muted-foreground hover:text-accent transition-colors">
+              <a
+                href="https://github.com/xdearboy?tab=repositories"
+                className="text-muted-foreground hover:text-accent transition-colors"
+              >
                 discord bots, backend services, websites
               </a>
             </div>
@@ -132,8 +156,8 @@ export default function HomePage() {
             <CardContent>
               <div className="text-xs mb-4 text-foreground">i mess with these tech stacks:</div>
               <div className="text-xs space-y-1">
-                {languages.map((lang, index) => (
-                  <div key={index} className="flex items-center space-x-1">
+                {languages.map((lang) => (
+                  <div key={lang.name} className="flex items-center space-x-1">
                     <span className="text-muted-foreground emoji">•</span>
                     <span className="text-foreground">{lang.name}</span>
                     <span className="text-muted-foreground">({lang.years}y)</span>
@@ -143,14 +167,16 @@ export default function HomePage() {
 
               <div className="mt-6">
                 <h3 className="text-md mb-3 text-muted-foreground">technologies</h3>
-                <div className="text-xs mb-4 text-foreground">i work with these frameworks and libraries:</div>
+                <div className="text-xs mb-4 text-foreground">
+                  i work with these frameworks and libraries:
+                </div>
                 <div className="space-y-3 text-xs">
                   {Object.entries(technologies).map(([category, techs]) => (
                     <div key={category}>
                       <div className="text-primary font-semibold mb-1">{category}</div>
                       <div className="grid grid-cols-1 gap-1 ml-2">
-                        {techs.map((tech, index) => (
-                          <div key={index} className="flex items-center space-x-1">
+                        {techs.map((tech) => (
+                          <div key={tech} className="flex items-center space-x-1">
                             <span className="text-muted-foreground">○</span>
                             <span className="text-foreground">{tech}</span>
                           </div>
@@ -227,9 +253,10 @@ export default function HomePage() {
                     <span>telegram</span>
                   </a>
                   <button
+                    type="button"
                     onClick={() => {
-                      navigator.clipboard.writeText('feeeeelbaaaaad')
-                      alert('Юзернейм скопирован!')
+                      navigator.clipboard.writeText('feeeeelbaaaaad');
+                      alert('Юзернейм скопирован!');
                     }}
                     className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
                   >
@@ -262,10 +289,7 @@ export default function HomePage() {
             </Card>
 
             <div className="space-y-6">
-              <LastFMWidget
-                apiKey="3ccebef5f34a7ba295cee53acb50aa02"
-                username="xdearboy"
-              />
+              <LastFMWidget apiKey="3ccebef5f34a7ba295cee53acb50aa02" username="xdearboy" />
 
               <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
                 <CardHeader className="pb-1">
@@ -289,5 +313,5 @@ export default function HomePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,45 +1,47 @@
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { usePageTransition } from "@/hooks/usePageTransition"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePageTransition } from '@/hooks/usePageTransition';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function DonateCard() {
-  const transition = usePageTransition()
-  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
-  const [showNotification, setShowNotification] = useState(false)
+  const transition = usePageTransition();
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
 
   const cryptoAddresses = [
     {
-      title: "Cloudtips",
-      value: "pay.cloudtips.ru/p/fdaea5a6",
+      title: 'Cloudtips',
+      value: 'pay.cloudtips.ru/p/fdaea5a6',
       isLink: true,
     },
     // ----
     // ! Я был заблокирован в Crypto-Bot, поэтому половина путей для доната была убрана.
     // ----
-  ]
+  ];
 
   const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text)
-      setCopiedAddress(text)
-      setShowNotification(true)
+      await navigator.clipboard.writeText(text);
+      setCopiedAddress(text);
+      setShowNotification(true);
     } catch (err) {
-      console.error("Failed to copy text: ", err)
+      console.error('Failed to copy text: ', err);
     }
-  }
+  };
 
   useEffect(() => {
     if (showNotification) {
       const timer = setTimeout(() => {
-        setShowNotification(false)
-      }, 2000)
-      return () => clearTimeout(timer)
+        setShowNotification(false);
+      }, 2000);
+      return () => clearTimeout(timer);
     }
-  }, [showNotification])
+  }, [showNotification]);
 
   return (
-    <div className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}>
+    <div
+      className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}
+    >
       <div className="max-w-4xl mx-auto relative z-10">
         <nav className="flex justify-between items-center mb-8 text-sm">
           <div className="flex space-x-6">
@@ -47,7 +49,10 @@ export default function DonateCard() {
               main
             </Link>
             <span className="">/</span>
-            <Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              to="/blog"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               blog
             </Link>
             <span className="">/</span>
@@ -64,11 +69,10 @@ export default function DonateCard() {
           </h1>
 
           <div className="text-xs text-muted-foreground leading-relaxed">
-            hi! i'm a middle devops engineer & fullstack developer from moscow.
-            i'm interested in developing bots for discord, creating backend services
-            and web applications. my specialization is python, javascript/typescript,
-            rust, and automation of devops processes. if you like my work or
-            my projects, feel free to support me ❤️
+            hi! i'm a middle devops engineer & fullstack developer from moscow. i'm interested in
+            developing bots for discord, creating backend services and web applications. my
+            specialization is python, javascript/typescript, rust, and automation of devops
+            processes. if you like my work or my projects, feel free to support me ❤️
           </div>
         </div>
 
@@ -78,15 +82,19 @@ export default function DonateCard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {cryptoAddresses.map((crypto) => (
-                <div
-                  key={typeof crypto.value === "string" ? crypto.value : ""}
-                  onClick={() =>
-                    crypto.isLink
-                      ? window.open(`https://${crypto.value}`, "_blank")
-                      : copyToClipboard(crypto.value)
-                  }
-                  className={`
+              {cryptoAddresses.map((crypto) => {
+                const handleAction = () =>
+                  crypto.isLink
+                    ? window.open(`https://${crypto.value}`, '_blank')
+                    : copyToClipboard(crypto.value);
+
+                return (
+                  <button
+                    key={typeof crypto.value === 'string' ? crypto.value : ''}
+                    type="button"
+                    onClick={handleAction}
+                    onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleAction()}
+                    className={`
                     cursor-pointer
                     p-3 rounded-md
                     border border-border/50
@@ -96,15 +104,16 @@ export default function DonateCard() {
                     text-foreground
                     font-mono text-xs
                   `}
-                >
-                  <div className="flex flex-col gap-1">
-                    <h3 className="text-sm font-medium">{crypto.title}</h3>
+                  >
+                    <div className="flex flex-col gap-1">
+                      <h3 className="text-sm font-medium">{crypto.title}</h3>
                     <p className="text-xs break-all opacity-80 text-muted-foreground">
                       {crypto.value}
                     </p>
                   </div>
-                </div>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -118,5 +127,5 @@ export default function DonateCard() {
         </div>
       )}
     </div>
-  )
+  );
 }

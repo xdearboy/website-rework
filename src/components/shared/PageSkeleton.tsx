@@ -7,5 +7,5 @@ export default function PageSkeleton() {
         <div className="h-4 bg-muted rounded w-1/2" />
       </div>
     </div>
-  )
+  );
 }

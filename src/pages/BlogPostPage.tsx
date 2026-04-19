@@ -1,50 +1,63 @@
-import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
-import { fetchPost } from '@/lib/blog-client'
-import type { Post } from '@/lib/blog-client'
-import MarkdownRenderer from '@/components/MarkdownRenderer'
-import PostSkeleton from '@/components/PostSkeleton'
-import { Card, CardContent } from '@/components/ui/card'
-import { usePageTransition } from '@/hooks/usePageTransition'
+import MarkdownRenderer from '@/components/shared/MarkdownRenderer';
+import PostSkeleton from '@/components/shared/PostSkeleton';
+import { Card, CardContent } from '@/components/ui/card';
+import { usePageTransition } from '@/hooks/usePageTransition';
+import { fetchPost } from '@/lib/blog-client';
+import type { Post } from '@/lib/blog-client';
+import { ArrowLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 
 export default function BlogPostPage() {
-  const { slug } = useParams<{ slug: string }>()
-  const [post, setPost] = useState<Post | null | undefined>(undefined)
-  const [loading, setLoading] = useState(true)
+  const { slug } = useParams<{ slug: string }>();
+  const [post, setPost] = useState<Post | null | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!slug) return
-    setLoading(true)
+    if (!slug) return;
+    setLoading(true);
     fetchPost(slug)
       .then(setPost)
       .catch(() => setPost(null))
-      .finally(() => setLoading(false))
-  }, [slug])
+      .finally(() => setLoading(false));
+  }, [slug]);
 
-  const transition = usePageTransition()
+  const transition = usePageTransition();
 
-  if (loading) return <PostSkeleton />
+  if (loading) return <PostSkeleton />;
 
   if (!post) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 font-mono">
         <p className="text-muted-foreground">Пост не найден</p>
-        <Link to="/blog" className="text-primary underline text-sm">← Назад к блогу</Link>
+        <Link to="/blog" className="text-primary underline text-sm">
+          ← Назад к блогу
+        </Link>
       </div>
-    )
+    );
   }
 
   return (
-    <div className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}>
+    <div
+      className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}
+    >
       <div className="max-w-4xl mx-auto relative z-10">
         <nav className="flex justify-between items-center mb-8 text-sm">
           <div className="flex space-x-6">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">main</Link>
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              main
+            </Link>
             <span className="">/</span>
-            <Link to="/blog" className="text-accent transition-colors">blog</Link>
+            <Link to="/blog" className="text-accent transition-colors">
+              blog
+            </Link>
             <span className="">/</span>
-            <Link to="/donate" className="text-muted-foreground hover:text-foreground transition-colors">donate</Link>
+            <Link
+              to="/donate"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              donate
+            </Link>
           </div>
         </nav>
 
@@ -71,5 +84,5 @@ export default function BlogPostPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

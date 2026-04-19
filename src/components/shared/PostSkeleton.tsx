@@ -9,5 +9,5 @@ export default function PostSkeleton() {
         <div className="h-4 bg-muted rounded w-5/6" />
       </div>
     </div>
-  )
+  );
 }
