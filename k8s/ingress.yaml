@@ -198,6 +198,16 @@ spec:
                 name: portfolio
                 port:
                   number: 80
+    - host: garticrashers.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: portfolio
+                port:
+                  number: 80
   tls:
     - hosts:
         - dev0.kazakh.live
@@ -219,4 +229,5 @@ spec:
         - dev0.allah.delivery
         - dev0.allah.dog
         - dev0.dotfishrrra.rip
+        - garticrashers.ru
       secretName: dev0-tls
