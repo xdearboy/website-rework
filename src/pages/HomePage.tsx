@@ -105,6 +105,13 @@ export default function HomePage() {
             >
               donate
             </Link>
+            <span>/</span>
+            <Link
+              to="/degens"
+              className="text-muted-foreground hover:text-[#9BA3D6] transition-colors"
+            >
+              degens
+            </Link>
           </div>
         </nav>
 
