@@ -54,12 +54,15 @@ export function DegenMessageBubble({
   return (
     <div
       id={`message${message.id}`}
-      className={cn('flex flex-col py-1', isOwner ? 'items-end' : 'items-start')}
+      className={cn(
+        'flex min-w-0 flex-col py-1 [content-visibility:auto] [contain-intrinsic-size:0_120px]',
+        isOwner ? 'items-end' : 'items-start'
+      )}
     >
-      <div className="max-w-[82%] space-y-1.5">
+      <div className="w-full max-w-[94%] min-w-0 space-y-1.5 sm:max-w-[82%]">
         <div
           className={cn(
-            'rounded-2xl border px-3.5 pb-2.5 pt-2.5 text-sm shadow-sm backdrop-blur-sm',
+            'min-w-0 rounded-2xl border px-3 pb-2.5 pt-2.5 text-sm shadow-sm backdrop-blur-sm sm:px-3.5',
             isOwner
               ? 'rounded-tr-md border-primary/20 bg-primary/12'
               : 'rounded-tl-md border-border/60 bg-background/55'
@@ -97,7 +100,7 @@ export function DegenMessageBubble({
           {message.voiceMessageHref
             ? (audioPlayer ?? <div data-voice-href={message.voiceMessageHref} />)
             : renderedMessage && (
-                <div className="space-y-2 leading-relaxed text-foreground/95 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_blockquote]:border-l-2 [&_blockquote]:border-border/70 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_code]:rounded [&_code]:bg-muted/70 [&_code]:px-1 [&_code]:py-0.5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-border/60 [&_pre]:bg-background/70 [&_pre]:p-3">
+                <div className="min-w-0 space-y-2 overflow-hidden break-words leading-relaxed text-foreground/95 [&_*]:max-w-full [&_a]:break-all [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_blockquote]:border-l-2 [&_blockquote]:border-border/70 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_code]:rounded [&_code]:bg-muted/70 [&_code]:px-1 [&_code]:py-0.5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-border/60 [&_pre]:bg-background/70 [&_pre]:p-3">
                   {renderedMessage}
                 </div>
               )}
@@ -112,11 +115,11 @@ export function DegenMessageBubble({
         </div>
 
         {note && (
-          <div className="rounded-xl border border-amber-500/20 bg-amber-500/8 px-3.5 py-2.5 text-xs shadow-sm backdrop-blur-sm">
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/8 px-3 py-2.5 text-xs shadow-sm backdrop-blur-sm sm:px-3.5">
             <p className="mb-1 text-[11px] font-semibold tracking-[0.06em] text-amber-400/80 uppercase">
               note
             </p>
-            <span className="whitespace-pre-wrap leading-relaxed text-muted-foreground">
+            <span className="whitespace-pre-wrap break-words leading-relaxed text-muted-foreground">
               {note}
             </span>
           </div>

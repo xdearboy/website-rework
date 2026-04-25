@@ -25,13 +25,13 @@ export function DegenContextPanel({ contextPath }: Props) {
   }
 
   return (
-    <details className="rounded-xl border border-border/60 bg-card/45 text-sm shadow-sm backdrop-blur-sm" open>
+    <details className="min-w-0 rounded-xl border border-border/60 bg-card/45 text-sm shadow-sm backdrop-blur-sm" open>
       <summary className="flex list-none cursor-pointer items-center gap-1.5 px-4 py-3 select-none font-medium">
         <ChevronDown className="h-4 w-4 text-muted-foreground" />
         Контекст
       </summary>
 
-      <div className="space-y-2 px-4 pb-4 pt-1 leading-relaxed text-muted-foreground">
+      <div className="min-w-0 space-y-2 overflow-hidden break-words px-3 pb-4 pt-1 leading-relaxed text-muted-foreground sm:px-4">
         <ReactMarkdown
           components={{
             p: ({ children }) => <p className="text-sm leading-relaxed">{children}</p>,

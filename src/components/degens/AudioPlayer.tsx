@@ -16,7 +16,7 @@ function parseDuration(duration: string): number {
     return 0
   }
 
-  return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10)
+  return Number.parseInt(parts[0], 10) * 60 + Number.parseInt(parts[1], 10)
 }
 
 function formatTime(seconds: number): string {
@@ -73,7 +73,9 @@ export function DegenAudioPlayer({
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/65 px-3 py-2.5 shadow-sm">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-xl border border-border/60 bg-background/65 px-2.5 py-2.5 shadow-sm sm:flex-nowrap sm:gap-3 sm:px-3">
+        {/* Voice transcripts are rendered below the custom player when available. */}
+        {/* biome-ignore lint/a11y/useMediaCaption: Telegram voice notes do not ship VTT caption tracks. */}
         <audio
           ref={audioRef}
           src={src}
@@ -110,7 +112,7 @@ export function DegenAudioPlayer({
               step={0.1}
               value={currentTime}
               onChange={(event) => seek(Number(event.target.value))}
-              className="h-1.5 flex-1 cursor-pointer accent-primary"
+              className="h-1.5 min-w-[7rem] flex-1 cursor-pointer accent-primary"
               aria-label="Перемотка"
             />
             <span className="w-10 shrink-0 text-right text-[11px] tabular-nums tracking-[0.04em] text-muted-foreground">
