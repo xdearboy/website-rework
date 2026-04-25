@@ -103,11 +103,11 @@ export default function DegensChat() {
 
   return (
     <div
-      className={`relative min-h-screen overflow-hidden bg-background p-4 font-mono text-foreground transition-all duration-300 dark ${transition}`}
+      className={`relative min-h-screen overflow-hidden bg-background px-3 py-4 font-mono text-foreground transition-all duration-300 dark sm:p-4 ${transition}`}
     >
       <div className="relative z-10 mx-auto max-w-5xl">
-        <nav className="mb-8 flex items-center text-sm">
-          <div className="flex space-x-6">
+        <nav className="mb-6 flex min-w-0 items-center text-xs sm:mb-8 sm:text-sm">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 sm:gap-x-6">
             <Link to="/" className="text-muted-foreground transition-colors hover:text-[#9BA3D6]">
               main
             </Link>
@@ -119,13 +119,13 @@ export default function DegensChat() {
               degens
             </Link>
             <span>/</span>
-            <span className="text-accent">{degen.name}</span>
+            <span className="min-w-0 break-all text-accent sm:break-normal">{degen.name}</span>
           </div>
         </nav>
 
         <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-2xl">{degen.name}</h1>
+          <div className="min-w-0 space-y-2">
+            <h1 className="break-all text-xl sm:break-normal sm:text-2xl">{degen.name}</h1>
             <p className="text-sm text-muted-foreground">
               parsed telegram thread with voice playback, replies and archived notes.
             </p>
@@ -138,12 +138,12 @@ export default function DegensChat() {
           </Link>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_320px]">
-          <Card className="border border-border/50 bg-card/50 py-6 backdrop-blur-sm">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,2fr)_320px]">
+          <Card className="min-w-0 border border-border/50 bg-card/50 py-4 backdrop-blur-sm sm:py-6">
             <CardHeader className="pb-2">
               <CardTitle className="text-base text-primary">thread</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 sm:px-6">
               {loading && <p className="text-sm text-muted-foreground">loading thread...</p>}
 
               {error && (
@@ -153,7 +153,7 @@ export default function DegensChat() {
               )}
 
               {!loading && !error && (
-                <div className="flex flex-col gap-1">
+                <div className="flex min-w-0 flex-col gap-1">
                   {messages.map((message, index) => {
                     let isOwner = message.fromName === ownerName
 
@@ -193,10 +193,10 @@ export default function DegensChat() {
             </CardContent>
           </Card>
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <DegenContextPanel contextPath={degen.contextPath} />
 
-            <Card className="border border-border/50 bg-card/50 py-6 backdrop-blur-sm">
+            <Card className="border border-border/50 bg-card/50 py-4 backdrop-blur-sm sm:py-6">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base text-primary">stats</CardTitle>
               </CardHeader>
