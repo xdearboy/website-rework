@@ -8,7 +8,7 @@ interface Props {
   isOwner: boolean
   replyTo: DegenMessage | undefined
   note: string | undefined
-  audioPlayer?: React.ReactNode
+  voiceContent?: React.ReactNode
 }
 
 function plainText(html: string): string {
@@ -26,13 +26,7 @@ function scrollToMessage(messageId: string): void {
   })
 }
 
-export function DegenMessageBubble({
-  message,
-  isOwner,
-  replyTo,
-  note,
-  audioPlayer,
-}: Props) {
+export function DegenMessageBubble({ message, isOwner, replyTo, note, voiceContent }: Props) {
   if (message.type === 'service') {
     return (
       <div id={`message${message.id}`} className="flex justify-center py-4">
@@ -69,7 +63,12 @@ export function DegenMessageBubble({
           )}
         >
           {!message.isJoined && message.fromName && (
-            <p className={cn('mb-1.5 text-[11px] font-semibold tracking-[0.04em] text-primary/80', isOwner && 'text-right')}>
+            <p
+              className={cn(
+                'mb-1.5 text-[11px] font-semibold tracking-[0.04em] text-primary/80',
+                isOwner && 'text-right'
+              )}
+            >
               {cleanName(message.fromName)}
             </p>
           )}
@@ -81,24 +80,22 @@ export function DegenMessageBubble({
               className="mb-2.5 w-full rounded-lg border border-primary/15 bg-primary/6 px-2.5 py-2 text-left transition-colors hover:bg-primary/10"
             >
               <p className="mb-0.5 text-[11px] font-semibold tracking-[0.04em] text-primary/75">
-                {replyTo.fromName ? cleanName(replyTo.fromName) : 'Сообщение'}
+                {replyTo.fromName ? cleanName(replyTo.fromName) : 'Message'}
               </p>
               <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-                {replyTo.voiceMessageHref
-                  ? 'Голосовое сообщение'
-                  : plainText(replyTo.text ?? '').slice(0, 120)}
+                {replyTo.voiceMessageHref ? 'transcript' : plainText(replyTo.text ?? '').slice(0, 120)}
               </p>
             </button>
           )}
 
           {message.isForwarded && (
             <p className="mb-2 text-[11px] italic tracking-[0.04em] text-primary/65">
-              Переслано от {message.forwardedFrom ? cleanName(message.forwardedFrom) : ''}
+              Forwarded from {message.forwardedFrom ? cleanName(message.forwardedFrom) : 'Unknown'}
             </p>
           )}
 
           {message.voiceMessageHref
-            ? (audioPlayer ?? <div data-voice-href={message.voiceMessageHref} />)
+            ? (voiceContent ?? <div data-voice-href={message.voiceMessageHref} />)
             : renderedMessage && (
                 <div className="min-w-0 space-y-2 overflow-hidden break-words leading-relaxed text-foreground/95 [&_*]:max-w-full [&_a]:break-all [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_blockquote]:border-l-2 [&_blockquote]:border-border/70 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_code]:rounded [&_code]:bg-muted/70 [&_code]:px-1 [&_code]:py-0.5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-border/60 [&_pre]:bg-background/70 [&_pre]:p-3">
                   {renderedMessage}

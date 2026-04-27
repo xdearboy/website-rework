@@ -32,14 +32,14 @@ export default function DegensList() {
         <div className="mb-6 space-y-2">
           <h1 className="break-words text-xl sm:text-2xl">degens_archive</h1>
           <p className="max-w-2xl text-sm text-muted-foreground">
-            telegram exports, voice notes, context fragments and direct jumps into the archive.
+            anonymized telegram exports, transcript snippets and archived context fragments.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
           <Card className="border border-border/50 bg-card/50 py-4 backdrop-blur-sm sm:py-6">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base text-primary">available threads</CardTitle>
+              <CardTitle className="text-base text-primary">available cases</CardTitle>
             </CardHeader>
             <CardContent>
               {degens.length === 0 ? (
@@ -71,9 +71,9 @@ export default function DegensList() {
               <CardTitle className="text-base text-primary">notes</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-xs text-muted-foreground">
-              <p>messages preserve reply chains and voice message timing.</p>
-              <p>context blocks stay attached to each thread instead of living in a separate app.</p>
-              <p>links from the main page now lead here directly, so the archive feels native.</p>
+              <p>participant names are masked automatically across the archive.</p>
+              <p>voice entries are shown as transcript blocks instead of playable audio.</p>
+              <p>context stays attached to each case so the archive remains self-contained.</p>
             </CardContent>
           </Card>
         </div>

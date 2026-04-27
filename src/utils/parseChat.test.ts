@@ -32,9 +32,9 @@ describe('parseChat', () => {
       <div class="message default clearfix" id="message745084">
         <div class="body">
           <div class="pull_right date details" title="25.04.2026 19:03:44 UTC+03:00">19:03</div>
-          <div class="from_name">kezux</div>
+          <div class="from_name">User 1</div>
           <div class="forwarded body">
-            <div class="from_name">Ander <span class="date details" title="25.04.2026 19:02:26 UTC+03:00">25.04.2026 19:02:26</span></div>
+            <div class="from_name">User 2 <span class="date details" title="25.04.2026 19:02:26 UTC+03:00">25.04.2026 19:02:26</span></div>
             <div class="media_wrap clearfix">
               <a class="media clearfix pull_left block_link media_voice_message" href="voice_messages/audio_1.ogg">
                 <div class="body">
@@ -52,7 +52,7 @@ describe('parseChat', () => {
 
     expect(messages).toHaveLength(1)
     expect(messages[0].isForwarded).toBe(true)
-    expect(messages[0].forwardedFrom).toBe('Ander')
+    expect(messages[0].forwardedFrom).toBe('User 2')
   })
 
   it('parses voice message metadata', () => {
@@ -60,9 +60,9 @@ describe('parseChat', () => {
       <div class="message default clearfix" id="message745084">
         <div class="body">
           <div class="pull_right date details" title="25.04.2026 19:03:44 UTC+03:00">19:03</div>
-          <div class="from_name">kezux</div>
+          <div class="from_name">User 1</div>
           <div class="forwarded body">
-            <div class="from_name">Ander <span>date</span></div>
+            <div class="from_name">User 2 <span>date</span></div>
             <div class="media_wrap clearfix">
               <a class="media clearfix pull_left block_link media_voice_message" href="voice_messages/audio_1.ogg">
                 <div class="body">
@@ -104,7 +104,7 @@ describe('parseChat', () => {
       <div class="message default clearfix" id="message745086">
         <div class="body">
           <div class="pull_right date details" title="25.04.2026 19:05:18 UTC+03:00">19:05</div>
-          <div class="from_name">dd;(dddd</div>
+          <div class="from_name">User 3</div>
           <div class="reply_to details">
             In reply to <a href="#go_to_message745084" onclick="return GoToMessage(745084)">this message</a>
           </div>
@@ -131,7 +131,7 @@ describe('parseChat', () => {
       <div class="message default clearfix" id="message745083">
         <div class="body">
           <div class="pull_right date details" title="25.04.2026 19:03:28 UTC+03:00">19:03</div>
-          <div class="from_name">kezux</div>
+          <div class="from_name">User 1</div>
           <div class="text">valid message</div>
         </div>
       </div>
@@ -148,7 +148,7 @@ describe('parseChat', () => {
       <div class="message default clearfix" id="message745083">
         <div class="body">
           <div class="pull_right date details" title="25.04.2026 19:03:28 UTC+03:00">19:03</div>
-          <div class="from_name">kezux</div>
+          <div class="from_name">User 1</div>
           <div class="text">hello</div>
         </div>
       </div>
@@ -165,9 +165,9 @@ describe('parseChat', () => {
       <div class="message default clearfix" id="message745084">
         <div class="body">
           <div class="pull_right date details" title="25.04.2026 19:03:44 UTC+03:00">19:03</div>
-          <div class="from_name">kezux</div>
+          <div class="from_name">User 1</div>
           <div class="forwarded body">
-            <div class="from_name">Ander <span>date</span></div>
+            <div class="from_name">User 2 <span>date</span></div>
           </div>
         </div>
       </div>
@@ -175,6 +175,6 @@ describe('parseChat', () => {
 
     const messages = parseChat(html)
 
-    expect(messages[0].fromName).toBe('kezux')
+    expect(messages[0].fromName).toBe('User 1')
   })
 })

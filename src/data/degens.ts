@@ -2,9 +2,9 @@ import type { Degen } from '@/types/degens'
 
 export const degens: Degen[] = [
   {
-    id: 'kezux',
-    name: 'kezux',
-    exportPath: '/chats/kezux/messages.html',
-    contextPath: '/chats/kezux/context.md',
+    id: 'case-01',
+    name: 'case_01',
+    exportPath: '/chats/case-01/messages.html',
+    contextPath: '/chats/case-01/context.md',
   },
 ]

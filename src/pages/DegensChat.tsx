@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { degens } from '@/data/degens'
 import { usePageTransition } from '@/hooks/usePageTransition'
 import type { DegenMessage } from '@/types/degens'
+import { anonymizeMessages } from '@/utils/anonymizeMessages'
+import { decodeMojibake } from '@/utils/decodeMojibake'
 import { fetchTranscripts } from '@/utils/fetchTranscripts'
 import { parseChat } from '@/utils/parseChat'
 import { useEffect, useState } from 'react'
@@ -19,7 +21,6 @@ export default function DegensChat() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [ownerName, setOwnerName] = useState<string | null>(null)
-  const [activePlayerId, setActivePlayerId] = useState<string | null>(null)
   const [notes, setNotes] = useState<Record<string, string>>({})
   const [transcripts, setTranscripts] = useState<Record<string, string>>({})
 
@@ -34,7 +35,14 @@ export default function DegensChat() {
         .catch(() => ({})),
       fetchTranscripts(degen.id),
     ]).then(([loadedNotes, loadedTranscripts]) => {
-      setNotes(loadedNotes as Record<string, string>)
+      setNotes(
+        Object.fromEntries(
+          Object.entries(loadedNotes as Record<string, string>).map(([noteId, note]) => [
+            noteId,
+            decodeMojibake(note) ?? note,
+          ])
+        )
+      )
       setTranscripts(loadedTranscripts)
     })
   }, [degen])
@@ -67,9 +75,13 @@ export default function DegensChat() {
           }
           return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         })
+        const sanitizedMessages = anonymizeMessages(sortedMessages)
 
-        setMessages(sortedMessages)
-        setOwnerName(sortedMessages.find((message) => message.fromName && !message.isForwarded)?.fromName ?? null)
+        setMessages(sanitizedMessages)
+        setOwnerName(
+          sanitizedMessages.find((message) => message.fromName && !message.isForwarded)?.fromName ??
+            null
+        )
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : 'Не удалось загрузить переписку')
@@ -127,7 +139,7 @@ export default function DegensChat() {
           <div className="min-w-0 space-y-2">
             <h1 className="break-all text-xl sm:break-normal sm:text-2xl">{degen.name}</h1>
             <p className="text-sm text-muted-foreground">
-              parsed telegram thread with voice playback, replies and archived notes.
+              anonymized telegram thread with transcript-only voice entries, replies and archived notes.
             </p>
           </div>
           <Link
@@ -173,14 +185,9 @@ export default function DegensChat() {
                         isOwner={isOwner}
                         replyTo={messages.find((entry) => entry.id === message.replyToId)}
                         note={notes[message.id]}
-                        audioPlayer={
+                        voiceContent={
                           message.voiceMessageHref ? (
                             <DegenAudioPlayer
-                              src={`/chats/${id}/${message.voiceMessageHref}`}
-                              duration={message.voiceDuration ?? '00:00'}
-                              messageId={message.id}
-                              isActive={activePlayerId === message.id}
-                              onPlay={setActivePlayerId}
                               transcript={transcripts[message.id]}
                             />
                           ) : undefined
@@ -206,7 +213,7 @@ export default function DegensChat() {
                   <span className="text-muted-foreground">{messages.length}</span>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <span className="text-foreground">voice notes</span>
+                  <span className="text-foreground">transcript blocks</span>
                   <span className="text-muted-foreground">
                     {messages.filter((message) => message.voiceMessageHref).length}
                   </span>
