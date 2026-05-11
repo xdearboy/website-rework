@@ -81,6 +81,19 @@ export default function HomePage() {
     tools: ['linux', 'vs code', 'vim'],
   };
 
+  const bioFacts = [
+    { label: 'name', value: 'xdearboy' },
+    { label: 'role', value: 'middle devops engineer & fullstack developer' },
+    {
+      label: 'focus',
+      value:
+        'fullstack development (python/js/ts/rust), cloud infrastructure, devops automation & linux administration',
+    },
+    { label: 'location', value: 'moscow, russia' },
+    { label: 'timezone', value: 'utc+3' },
+    { label: 'languages', value: '🇷🇺 native, 🇬🇧 C1, 🇨🇳 learning' },
+  ];
+
   return (
     <div
       className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}
@@ -121,19 +134,17 @@ export default function HomePage() {
             <span className="animate-pulse text-muted-foreground">|</span>
           </h1>
 
-          <div className="text-sm space-y-1 mb-6">
-            <div>
-              <span className="text-muted-foreground">name:</span> xdearboy
-            </div>
-            <div>
-              <span className="text-muted-foreground">role:</span> middle devops engineer &amp;
-              fullstack developer
-            </div>
-            <div>
-              <span className="text-muted-foreground">focus:</span> fullstack development
-              (python/js/ts/rust), cloud infrastructure, devops automation &amp; linux system
-              administration
-            </div>
+          <p className="mb-4 max-w-3xl text-sm text-muted-foreground">
+            i build practical products: bots, backend services, and fast web apps with a strong
+            infra/devops backbone.
+          </p>
+
+          <div className="mb-6 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+            {bioFacts.map((fact) => (
+              <div key={fact.label}>
+                <span className="text-muted-foreground">{fact.label}:</span> {fact.value}
+              </div>
+            ))}
             <div>
               <span className="text-muted-foreground">projects:</span>{' '}
               <a
@@ -142,15 +153,6 @@ export default function HomePage() {
               >
                 discord bots, backend services, websites
               </a>
-            </div>
-            <div>
-              <span className="text-muted-foreground">location:</span> moscow/russia
-            </div>
-            <div>
-              <span className="text-muted-foreground">timezone:</span> utc+3
-            </div>
-            <div>
-              <span className="text-muted-foreground">langs:</span> 🇷🇺 native, 🇬🇧 C1, 🇨🇳 learning
             </div>
           </div>
         </div>
@@ -165,7 +167,7 @@ export default function HomePage() {
               <div className="text-xs space-y-1">
                 {languages.map((lang) => (
                   <div key={lang.name} className="flex items-center space-x-1">
-                    <span className="text-muted-foreground emoji">•</span>
+                    <span className="text-muted-foreground">•</span>
                     <span className="text-foreground">{lang.name}</span>
                     <span className="text-muted-foreground">({lang.years}y)</span>
                   </div>
@@ -184,7 +186,7 @@ export default function HomePage() {
                       <div className="grid grid-cols-1 gap-1 ml-2">
                         {techs.map((tech) => (
                           <div key={tech} className="flex items-center space-x-1">
-                            <span className="text-muted-foreground">○</span>
+                            <span className="text-muted-foreground">◦</span>
                             <span className="text-foreground">{tech}</span>
                           </div>
                         ))}
@@ -229,7 +231,7 @@ export default function HomePage() {
                             {project.language || 'Multiple languages'}
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
-                            ⭐ {project.stargazers_count}
+                            ★ {project.stargazers_count}
                           </div>
                         </div>
                       ))}
@@ -249,46 +251,46 @@ export default function HomePage() {
                     href="https://github.com/xdearboy"
                     className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
                   >
-                    <span className="text-muted-foreground">○</span>
+                    <span className="text-muted-foreground">◦</span>
                     <span>github</span>
                   </a>
                   <a
                     href="https://t.me/contactfiuimwix_bot"
                     className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
                   >
-                    <span className="text-muted-foreground">○</span>
+                    <span className="text-muted-foreground">◦</span>
                     <span>telegram</span>
                   </a>
                   <button
                     type="button"
                     onClick={() => {
                       navigator.clipboard.writeText('feeeeelbaaaaad');
-                      alert('Юзернейм скопирован!');
+                      alert('Username copied!');
                     }}
                     className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
                   >
-                    <span className="text-muted-foreground">○</span>
+                    <span className="text-muted-foreground">◦</span>
                     <span>discord</span>
                   </button>
                   <a
                     href="https://dev0.cfg/blog"
                     className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
                   >
-                    <span className="text-muted-foreground">○</span>
+                    <span className="text-muted-foreground">◦</span>
                     <span>blog</span>
                   </a>
                   <a
                     href="https://t.me/vroffteam"
                     className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
                   >
-                    <span className="text-muted-foreground">○</span>
+                    <span className="text-muted-foreground">◦</span>
                     <span>blog in telegram</span>
                   </a>
                   <a
                     href="https://dev0.cfd/donate"
                     className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
                   >
-                    <span className="text-muted-foreground">○</span>
+                    <span className="text-muted-foreground">◦</span>
                     <span>donate</span>
                   </a>
                 </div>

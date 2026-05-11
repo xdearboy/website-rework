@@ -1,21 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCallback, useEffect, useState } from 'react';
-
-interface LastFMTrack {
-  name: string;
-  artist: { '#text': string; mbid?: string };
-  album: { '#text': string; mbid?: string };
-  image: Array<{ '#text': string; size: string }>;
-  url?: string;
-  '@attr'?: { nowplaying: string };
-}
-
-interface LastFMResponse {
-  recenttracks: {
-    track: LastFMTrack[];
-  };
-}
+import { useLastFmNowPlaying } from '@/hooks/useLastFmNowPlaying';
+import { getBestLastFmImage } from '@/lib/lastfm-client';
 
 interface LastFMNowPlayingProps {
   apiKey: string;
@@ -23,98 +9,8 @@ interface LastFMNowPlayingProps {
 }
 
 export default function LastFMWidget({ apiKey, username }: LastFMNowPlayingProps) {
-  const [nowPlaying, setNowPlaying] = useState<LastFMTrack | null>(null);
-  const [prevTrack, setPrevTrack] = useState<LastFMTrack | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isChanging, setIsChanging] = useState(false);
-  const [userAvatar, setUserAvatar] = useState<string | null>(null);
-  const [avatarError, setAvatarError] = useState(false);
-
-  const fetchNowPlaying = useCallback(async () => {
-    try {
-      if (!apiKey || !username) {
-        setError('API key pls vstav hayu');
-        setIsLoading(false);
-        return;
-      }
-
-      const userResponse = await fetch(
-        `https://ws.audioscrobbler.com/2.0/?method=user.getInfo&user=${username}&api_key=${apiKey}&format=json`
-      );
-
-      if (!userResponse.ok) {
-        throw new Error('error');
-      }
-
-      const userData = await userResponse.json();
-
-      if (userData.user?.image) {
-        userData.user.image.forEach((img: any, index: number) => {
-          console.log(`[${index}] size: "${img.size}", url: "${img['#text']}"`);
-        });
-
-        const avatarUrl =
-          userData.user.image[3]?.['#text'] ||
-          userData.user.image[2]?.['#text'] ||
-          userData.user.image[1]?.['#text'] ||
-          userData.user.image[0]?.['#text'];
-
-        setUserAvatar(avatarUrl);
-      }
-
-      const response = await fetch(
-        `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${username}&api_key=${apiKey}&format=json&limit=1`
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch Last.fm data');
-      }
-
-      const data: LastFMResponse = await response.json();
-
-      const tracks = data.recenttracks.track;
-      if (tracks && tracks.length > 0) {
-        const currentTrack = tracks[0];
-
-        if (currentTrack['@attr']?.nowplaying === 'true') {
-          if (
-            !prevTrack ||
-            currentTrack.name !== prevTrack.name ||
-            currentTrack.artist['#text'] !== prevTrack.artist['#text']
-          ) {
-            setIsChanging(true);
-            setPrevTrack(nowPlaying);
-            setTimeout(() => {
-              setNowPlaying(currentTrack);
-              setIsChanging(false);
-            }, 300);
-          } else {
-            setNowPlaying(currentTrack);
-          }
-        } else {
-          setNowPlaying(null);
-        }
-      }
-    } catch (err) {
-      setError('error');
-      console.error('Last.fm error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [apiKey, username, prevTrack, nowPlaying]);
-
-  useEffect(() => {
-    fetchNowPlaying();
-    const interval = setInterval(fetchNowPlaying, 15000);
-    return () => clearInterval(interval);
-  }, [fetchNowPlaying]);
-
-  const getAlbumImage = (size = 'medium') => {
-    if (!nowPlaying?.image) return null;
-    const image = nowPlaying.image.find((img) => img.size === size);
-    return image?.['#text'] || nowPlaying.image[2]?.['#text'] || '/placeholder.jpg';
-  };
+  const { nowPlaying, isLoading, error, isChanging, userAvatar, avatarError, setAvatarError } =
+    useLastFmNowPlaying({ apiKey, username });
 
   const handleListen = () => {
     if (nowPlaying?.url) {
@@ -166,7 +62,7 @@ export default function LastFMWidget({ apiKey, username }: LastFMNowPlayingProps
         </CardHeader>
         <CardContent>
           <div className="text-center py-4">
-            <div className="text-sm text-muted-foreground">Сейчас ничего не играет</div>
+            <div className="text-sm text-muted-foreground">nothing is playing right now</div>
           </div>
         </CardContent>
       </Card>
@@ -197,7 +93,6 @@ export default function LastFMWidget({ apiKey, username }: LastFMNowPlayingProps
                     isChanging ? 'scale-90' : 'scale-100'
                   }`}
                   onError={(e) => {
-                    console.log('Avatar load error, falling back to album art');
                     setAvatarError(true);
                     e.currentTarget.src = '/placeholder.jpg';
                   }}
@@ -205,7 +100,7 @@ export default function LastFMWidget({ apiKey, username }: LastFMNowPlayingProps
               ) : (
                 <div className="relative">
                   <img
-                    src={getAlbumImage() || '/placeholder.jpg'}
+                    src={getBestLastFmImage(nowPlaying) || '/placeholder.jpg'}
                     alt={nowPlaying.album['#text']}
                     className={`w-12 h-12 rounded-lg object-cover flex-shrink-0 transition-transform duration-300 ${
                       isChanging ? 'scale-90' : 'scale-100'
@@ -247,7 +142,7 @@ export default function LastFMWidget({ apiKey, username }: LastFMNowPlayingProps
             className="w-full text-xs h-8"
             disabled={!nowPlaying.url}
           >
-            🎵 Listen on Last.fm
+            Listen on Last.fm
           </Button>
         </div>
       </CardContent>

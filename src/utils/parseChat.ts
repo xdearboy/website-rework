@@ -1,4 +1,5 @@
 import type { DegenMessage } from '@/types/degens'
+import { decodeMojibake } from './decodeMojibake'
 
 export function parseChat(html: string): DegenMessage[] {
   const parser = new DOMParser()
@@ -15,7 +16,8 @@ export function parseChat(html: string): DegenMessage[] {
 
       if (element.classList.contains('service')) {
         const details = element.querySelector('.body.details')
-        messages.push({ id, type: 'service', text: details?.textContent?.trim() })
+        const serviceText = details?.textContent?.trim()
+        messages.push({ id, type: 'service', text: decodeMojibake(serviceText) ?? serviceText })
         continue
       }
 
@@ -23,13 +25,19 @@ export function parseChat(html: string): DegenMessage[] {
       const body = element.querySelector(':scope > .body')
       if (body) {
         const directFromName = body.querySelector(':scope > .from_name')
-        if (directFromName) fromName = directFromName.textContent?.trim()
+        if (directFromName) {
+          const rawFromName = directFromName.textContent?.trim()
+          fromName = decodeMojibake(rawFromName) ?? rawFromName
+        }
       }
 
       let text: string | undefined
       if (body) {
         const directText = body.querySelector(':scope > .text')
-        if (directText) text = directText.innerHTML.trim()
+        if (directText) {
+          const rawText = directText.innerHTML.trim()
+          text = decodeMojibake(rawText) ?? rawText
+        }
       }
 
       const dateEl = element.querySelector('.pull_right.date.details')
@@ -52,7 +60,8 @@ export function parseChat(html: string): DegenMessage[] {
         if (fwdFromName) {
           const clone = fwdFromName.cloneNode(true) as HTMLElement
           clone.querySelector('span')?.remove()
-          forwardedFrom = clone.textContent?.trim()
+          const rawForwardedFrom = clone.textContent?.trim()
+          forwardedFrom = decodeMojibake(rawForwardedFrom) ?? rawForwardedFrom
         }
       }
 
