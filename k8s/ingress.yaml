@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: haproxy
   rules:
-    - host: garticrashers.ru
+    - host: devo.as214422.lol
       http:
         paths:
           - path: /
@@ -20,5 +20,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - garticrashers.ru
+        - devo.as214422.lol
       secretName: dev0-tls
