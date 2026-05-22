@@ -62,26 +62,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create namespace if not exists
-        run: kubectl create namespace default --dry-run=client -o yaml | kubectl apply -f -
+      - name: Check cluster health
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+          kubectl get componentstatuses || echo "Component status not available"
 
       - name: Apply PVC manifests
-        run: kubectl apply -f k8s/pvc.yaml
+        run: |
+          echo "Applying PVC manifests..."
+          kubectl apply -f k8s/pvc.yaml --timeout=60s
+          sleep 5
 
       - name: Apply k8s manifests
-        run: kubectl apply -f k8s/deployment.yaml k8s/service.yaml k8s/ingress.yaml k8s/hpa.yaml
+        run: |
+          echo "Applying deployment manifests..."
+          kubectl apply -f k8s/deployment.yaml k8s/service.yaml k8s/ingress.yaml k8s/hpa.yaml --timeout=60s
+          sleep 10
 
       - name: Update image
         run: |
+          echo "Setting new image..."
           kubectl set image deployment/portfolio \
             portfolio=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --record
+            --record \
+            --timeout=60s
 
       - name: Wait for rollout
-        run: kubectl rollout status deployment/portfolio --timeout=300s
+        run: |
+          echo "Waiting for deployment rollout..."
+          kubectl rollout status deployment/portfolio --timeout=600s
 
       - name: Verify pods
-        run: kubectl get pods -l app=portfolio
+        run: |
+          echo "Pod status:"
+          kubectl get pods -l app=portfolio -o wide
+          kubectl describe deployment portfolio
 
       - name: Notify deployment
         if: success()
@@ -90,6 +106,7 @@ jobs:
       - name: Rollback on failure
         if: failure()
         run: |
-          echo "❌ Deployment failed, rolling back..."
-          kubectl rollout undo deployment/portfolio
-          kubectl rollout status deployment/portfolio --timeout=120s
+          echo "❌ Deployment failed, attempting rollback..."
+          kubectl rollout undo deployment/portfolio --timeout=60s || true
+          sleep 10
+          kubectl get pods -l app=portfolio
