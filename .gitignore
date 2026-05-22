@@ -12,6 +12,12 @@ dist/stats.html
 public/blog/
 public/blog-manifest.json
 
+# photos and thumbnails stored in Longhorn persistent volume
+public/photos/*
+public/thumbs/*
+!public/photos/.gitkeep
+!public/thumbs/.gitkeep
+
 # env files
 .env
 .env.*
@@ -34,6 +40,10 @@ pnpm-debug.log*
 .idea/
 *.swp
 *.swo
+
+# claude
+.claude
+CLAUDE.md
 
 # os
 .DS_Store

@@ -113,6 +113,13 @@ export default function HomePage() {
             </Link>
             <span>/</span>
             <Link
+              to="/gallery"
+              className="text-muted-foreground hover:text-[#9BA3D6] transition-colors"
+            >
+              gallery
+            </Link>
+            <span>/</span>
+            <Link
               to="/donate"
               className="text-muted-foreground hover:text-[#9BA3D6] transition-colors"
             >

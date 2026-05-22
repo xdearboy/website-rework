@@ -1,21 +1,28 @@
-FROM node:20-alpine AS builder
+FROM oven/bun:latest AS builder
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
-
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+COPY package.json bun.lockb ./
+RUN bun install
 
 COPY . .
 
-RUN pnpm build
+RUN bun run build
 
-FROM nginx:alpine AS runner
+FROM oven/bun:latest
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/src /app/src
+COPY --from=builder /app/package.json /app/package.json
+COPY --from=builder /app/node_modules /app/node_modules
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 80
+EXPOSE 80 3000
 
-CMD ["nginx", "-g", "daemon off;"]
+RUN mkdir -p /app/public/thumbs
+
+CMD ["sh", "-c", "bun run src/server/index.ts & nginx -g 'daemon off;'"]

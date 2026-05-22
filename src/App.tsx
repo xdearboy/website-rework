@@ -9,6 +9,7 @@ const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const DonatePage = lazy(() => import('./pages/DonatePage'));
 const DegensList = lazy(() => import('./pages/DegensList'));
 const DegensChat = lazy(() => import('./pages/DegensChat'));
+const GalleryPage = lazy(() => import('./pages/GalleryPage'));
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/donate" element={<DonatePage />} />
         <Route path="/degens" element={<DegensList />} />
         <Route path="/degens/:id" element={<DegensChat />} />
+        <Route path="/gallery" element={<GalleryPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
