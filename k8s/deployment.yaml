@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: portfolio
-          image: ghcr.io/xdearboy/portfolio:latest
+          image: ghcr.io/xdearboy/website-rework:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
