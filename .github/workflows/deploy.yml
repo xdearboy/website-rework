@@ -68,15 +68,6 @@ jobs:
           kubectl get nodes
           kubectl get componentstatuses || echo "Component status not available"
 
-      - name: Create image pull secret
-        run: |
-          kubectl create secret docker-registry ghcr-secret \
-            --docker-server=ghcr.io \
-            --docker-username=${{ github.actor }} \
-            --docker-password=${{ secrets.GITHUB_TOKEN }} \
-            --docker-email=user@example.com \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Apply PVC manifests
         run: |
           echo "Applying PVC manifests..."
