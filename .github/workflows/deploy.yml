@@ -85,8 +85,7 @@ jobs:
           echo "Setting new image..."
           kubectl set image deployment/portfolio \
             portfolio=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --record \
-            --timeout=60s
+            --record
 
       - name: Wait for rollout
         run: |
