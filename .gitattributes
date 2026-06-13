@@ -1,9 +1,8 @@
+*.jpg filter=lfs diff=lfs merge=lfs -text
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.png filter=lfs diff=lfs merge=lfs -text
 *.webp filter=lfs diff=lfs merge=lfs -text
 *.gif filter=lfs diff=lfs merge=lfs -text
-*.jpg filter=lfs diff=lfs merge=lfs -text
-public/thumbs/** filter=lfs diff=lfs merge=lfs -text
 public/avatar.jpg filter=lfs diff=lfs merge=lfs -text
 public/placeholder.jpg filter=lfs diff=lfs merge=lfs -text
 *.jpg !text !filter !merge !diff

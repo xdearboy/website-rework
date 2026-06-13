@@ -18,6 +18,9 @@ public/thumbs/*
 !public/photos/.gitkeep
 !public/thumbs/.gitkeep
 
+# local gallery upload source, not committed
+gallery-src/
+
 # env files
 .env
 .env.*
@@ -44,6 +47,12 @@ pnpm-debug.log*
 # claude
 .claude
 CLAUDE.md
+
+# agents
+.agents/
+
+# scratch scripts
+_query_db.py
 
 # os
 .DS_Store
