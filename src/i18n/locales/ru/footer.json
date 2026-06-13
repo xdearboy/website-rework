@@ -1,0 +1,32 @@
+{
+  "nowPlaying": {
+    "label": "сейчас играет",
+    "nothingPlaying": "ничего не играет"
+  },
+  "timeWeather": {
+    "city": "Тверь",
+    "weatherCodes": {
+      "clear": "ясно",
+      "partlyCloudy": "малооблачно",
+      "cloudy": "облачно",
+      "fog": "туман",
+      "drizzle": "морось",
+      "rain": "дождь",
+      "snow": "снег",
+      "showers": "ливень",
+      "snowfall": "снегопад",
+      "thunderstorm": "гроза",
+      "unknown": "неизвестно"
+    }
+  },
+  "commitInfo": {
+    "prefix": "коммит",
+    "suffix": "! обновлено: {{date}}"
+  },
+  "quote": {
+    "placeholder": {
+      "text": "Сделай один раз — но сделай нормально.",
+      "source": "TODO"
+    }
+  }
+}

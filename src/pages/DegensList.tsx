@@ -1,83 +1,72 @@
-import { degens } from '@/data/degens'
-import { usePageTransition } from '@/hooks/usePageTransition'
-import { ChevronRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { degens } from '@/features/degens/data';
+import PageShell from '@/shared/layout/PageShell';
+import { getMotionMediaQueries } from '@/shared/lib/motion';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 export default function DegensList() {
-  const transition = usePageTransition()
+  const { t } = useTranslation('degens');
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add(getMotionMediaQueries(), (context) => {
+        const { reduceMotion } = context.conditions as { reduceMotion: boolean };
+
+        if (reduceMotion) {
+          gsap.set('[data-animate]', { opacity: 1, y: 0, clearProps: 'transform' });
+          return;
+        }
+
+        const introTargets = gsap.utils.toArray<HTMLElement>('[data-animate="intro"]');
+        gsap.set(introTargets, { opacity: 0, y: 24 });
+        gsap.to(introTargets, {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: 'power3.out',
+          stagger: 0.12,
+        });
+      });
+
+      return () => mm.revert();
+    },
+    { scope: containerRef }
+  );
 
   return (
-    <div
-      className={`relative min-h-screen overflow-hidden bg-background px-3 py-4 font-mono text-foreground transition-all duration-300 dark sm:p-4 ${transition}`}
-    >
-      <div className="relative z-10 mx-auto max-w-4xl">
-        <nav className="mb-6 flex min-w-0 items-center text-xs sm:mb-8 sm:text-sm">
-          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 sm:gap-x-6">
-            <Link to="/" className="text-muted-foreground transition-colors hover:text-[#9BA3D6]">
-              main
-            </Link>
-            <span>/</span>
-            <Link
-              to="/blog"
-              className="text-muted-foreground transition-colors hover:text-[#9BA3D6]"
-            >
-              blog
-            </Link>
-            <span>/</span>
-            <span className="text-accent">degens</span>
-          </div>
-        </nav>
+    <PageShell>
+      <div ref={containerRef}>
+        <p data-animate="intro" className="prose-landing mb-8">
+          <Link to="/">{t('nav.back', { ns: 'common' })}</Link>
+        </p>
 
-        <div className="mb-6 space-y-2">
-          <h1 className="break-words text-xl sm:text-2xl">degens_archive</h1>
-          <p className="max-w-2xl text-sm text-muted-foreground">
-            anonymized telegram exports, transcript snippets and archived context fragments.
-          </p>
-        </div>
+        <section data-animate="intro" className="prose-landing">
+          <h3>degens_archive</h3>
+          <p>{t('list.description')}</p>
 
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-          <Card className="border border-border/50 bg-card/50 py-4 backdrop-blur-sm sm:py-6">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base text-primary">available cases</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {degens.length === 0 ? (
-                <p className="py-16 text-center text-sm text-muted-foreground">
-                  no chats available yet
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {degens.map((degen) => (
-                    <Link key={degen.id} to={`/degens/${degen.id}`}>
-                      <div className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-border/60 bg-background/30 px-3 py-3 transition-colors hover:bg-accent/40 sm:px-4">
-                        <div className="min-w-0 space-y-1">
-                          <p className="font-medium text-foreground">{degen.name}</p>
-                          <p className="break-all text-xs text-muted-foreground sm:break-normal">
-                            /chats/{degen.id}/messages.html
-                          </p>
-                        </div>
-                        <ChevronRight className="shrink-0 text-muted-foreground" size={16} />
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border/50 bg-card/50 py-4 backdrop-blur-sm sm:py-6">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base text-primary">notes</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-xs text-muted-foreground">
-              <p>participant names are masked automatically across the archive.</p>
-              <p>voice entries are shown as transcript blocks instead of playable audio.</p>
-              <p>context stays attached to each case so the archive remains self-contained.</p>
-            </CardContent>
-          </Card>
-        </div>
+          {degens.length === 0 ? (
+            <p className="text-muted-foreground">{t('list.empty')}</p>
+          ) : (
+            <ul>
+              {degens.map((degen) => {
+                const description = t(`list.descriptions.${degen.id}`, { defaultValue: '' });
+                return (
+                  <li key={degen.id}>
+                    <Link to={`/degens/${degen.id}`}>{degen.name}</Link>
+                    {description && <span className="text-muted-foreground"> — {description}</span>}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
       </div>
-    </div>
-  )
+    </PageShell>
+  );
 }

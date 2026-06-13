@@ -1,0 +1,32 @@
+{
+  "nowPlaying": {
+    "label": "now playing",
+    "nothingPlaying": "nothing playing"
+  },
+  "timeWeather": {
+    "city": "Tver",
+    "weatherCodes": {
+      "clear": "clear",
+      "partlyCloudy": "partly cloudy",
+      "cloudy": "cloudy",
+      "fog": "fog",
+      "drizzle": "drizzle",
+      "rain": "rain",
+      "snow": "snow",
+      "showers": "showers",
+      "snowfall": "snowfall",
+      "thunderstorm": "thunderstorm",
+      "unknown": "unknown"
+    }
+  },
+  "commitInfo": {
+    "prefix": "commit",
+    "suffix": "! updated: {{date}}"
+  },
+  "quote": {
+    "placeholder": {
+      "text": "Do it once — but do it right.",
+      "source": "TODO"
+    }
+  }
+}

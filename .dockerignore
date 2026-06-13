@@ -1,0 +1,11 @@
+node_modules
+dist
+.git
+.github
+public/photos
+public/thumbs
+gallery-src
+.env
+.env.*
+!.env.example
+*.log

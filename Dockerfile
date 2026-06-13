@@ -1,6 +1,9 @@
 FROM oven/bun:latest AS builder
 WORKDIR /app
 
+ARG VITE_GALLERY_BASE_URL
+ENV VITE_GALLERY_BASE_URL=${VITE_GALLERY_BASE_URL}
+
 COPY package.json bun.lock* ./
 RUN bun install --no-save
 
@@ -22,7 +25,5 @@ COPY --from=builder /app/node_modules /app/node_modules
 COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80 3000
-
-RUN mkdir -p /app/public/thumbs
 
 CMD ["sh", "-c", "bun run src/server/index.ts & nginx -g 'daemon off;'"]

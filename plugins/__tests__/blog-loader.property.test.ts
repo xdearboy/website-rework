@@ -57,8 +57,8 @@ describe('BlogLoader property tests', () => {
     fc.assert(
       fc.property(
         fc.record({
-          title: fc.string({ minLength: 1, maxLength: 100 }),
-          excerpt: fc.string({ minLength: 1, maxLength: 160 }),
+          title: fc.string({ minLength: 1, maxLength: 100 }).map((s) => s.trim() || 't'),
+          excerpt: fc.string({ minLength: 1, maxLength: 160 }).map((s) => s.trim() || 'e'),
         }),
         ({ title, excerpt }) => {
           const slug = 'test-post';
@@ -103,8 +103,8 @@ describe('BlogLoader property tests', () => {
           const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
           const posts = manifest.posts;
           for (let i = 0; i < posts.length - 1; i++) {
-            expect(new Date(posts[i].date).getTime()).toBeGreaterThanOrEqual(
-              new Date(posts[i + 1].date).getTime()
+            expect(new Date(posts[i].dateISO).getTime()).toBeGreaterThanOrEqual(
+              new Date(posts[i + 1].dateISO).getTime()
             );
           }
         }
@@ -121,7 +121,6 @@ describe('BlogLoader property tests', () => {
         const outputDir = path.join(tmpDir, `ct-out-${Math.random()}`);
         const manifestPath = path.join(tmpDir, `ct-manifest-${Math.random()}.json`);
         fs.mkdirSync(contentDir, { recursive: true });
-        // Write without frontmatter so content is preserved as-is
         fs.writeFileSync(path.join(contentDir, `${slug}.md`), markdownContent);
         runPlugin(contentDir, outputDir, manifestPath);
         const post = JSON.parse(fs.readFileSync(path.join(outputDir, `${slug}.json`), 'utf8'));

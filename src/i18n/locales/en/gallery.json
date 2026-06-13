@@ -1,0 +1,22 @@
+{
+  "title": "gallery",
+  "description": "photos from trips and street shoots — with EXIF data (camera, lens, exposure). click a photo to open the viewer, then use arrows or Esc, zoom with shift + wheel.",
+  "loading": "loading gallery...",
+  "errors": {
+    "loadGallery": "failed to load gallery"
+  },
+  "categoryNav": {
+    "ariaLabel": "photo categories",
+    "all": "[All]"
+  },
+  "photoGrid": {
+    "empty": "no photos in this folder"
+  },
+  "photoViewer": {
+    "close": "close",
+    "previous": "previous photo",
+    "next": "next photo",
+    "loadError": "failed to load photo",
+    "zoomHint": "shift + wheel to zoom"
+  }
+}

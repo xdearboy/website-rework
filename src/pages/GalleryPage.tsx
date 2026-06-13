@@ -1,137 +1,114 @@
-import FolderBrowser from '@/components/shared/FolderBrowser';
-import PhotoGrid from '@/components/shared/PhotoGrid';
-import { usePageTransition } from '@/hooks/usePageTransition';
-import { ExifData, extractExif } from '@/lib/exif-utils';
-import { useEffect, useState } from 'react';
+import CategoryNav from '@/features/gallery/components/CategoryNav';
+import PhotoGrid from '@/features/gallery/components/PhotoGrid';
+import type { GalleryFolder, GalleryManifest, GalleryPhoto } from '@/features/gallery/types';
+import { usePageTransition } from '@/shared/hooks/usePageTransition';
+import PageShell from '@/shared/layout/PageShell';
+import { Skeleton, SkeletonGroup } from '@/shared/ui/Skeleton';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
-interface Photo {
-  url: string;
-  name: string;
-  exif: ExifData;
-  description?: string;
-}
+const PHOTO_SKELETON_KEYS = Array.from({ length: 12 }, (_, index) => `photo-${index}`);
 
-interface FolderStructure {
-  name: string;
-  path: string;
-  subfolders: FolderStructure[];
-  photoCount: number;
+function matchesPath(photoPath: string, currentPath: string) {
+  if (currentPath === '/') return true;
+  return photoPath === currentPath || photoPath.startsWith(`${currentPath}/`);
 }
 
 export default function GalleryPage() {
+  const { t } = useTranslation('gallery');
   const transition = usePageTransition();
-  const [folders, setFolders] = useState<FolderStructure[]>([]);
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [folders, setFolders] = useState<GalleryFolder[]>([]);
+  const [allPhotos, setAllPhotos] = useState<GalleryPhoto[]>([]);
   const [currentPath, setCurrentPath] = useState('/');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
+    const loadGalleryData = async () => {
+      const baseUrl = import.meta.env.VITE_GALLERY_BASE_URL;
+
+      if (!baseUrl) {
+        setError(t('errors.loadGallery'));
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await fetch(`${baseUrl}/gallery-manifest.json`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error('Failed to load gallery manifest');
+
+        const manifest: GalleryManifest = await response.json();
+        setFolders(manifest.folders || []);
+        setAllPhotos(
+          (manifest.photos || []).map((photo) => ({
+            ...photo,
+            exif: {
+              ...photo.exif,
+              date: photo.exif.date ? new Date(photo.exif.date) : undefined,
+            },
+          }))
+        );
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        setError(t('errors.loadGallery'));
+        console.error('Gallery load error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadGalleryData();
-  }, []);
 
-  const loadGalleryData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/gallery');
-      if (!response.ok) throw new Error('Failed to load gallery');
+    return () => controller.abort();
+  }, [t]);
 
-      const data = await response.json();
-      setFolders(data.folders || []);
-      setPhotos(data.photos || []);
-    } catch (err) {
-      setError('Не удалось загрузить галерею');
-      console.error('Gallery load error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFolderSelect = async (path: string) => {
-    setCurrentPath(path);
-    try {
-      const response = await fetch(`/api/gallery?path=${encodeURIComponent(path)}`);
-      if (!response.ok) throw new Error('Failed to load folder');
-
-      const data = await response.json();
-      setPhotos(data.photos || []);
-    } catch (err) {
-      setError('Не удалось загрузить папку');
-      console.error('Folder load error:', err);
-    }
-  };
-
-  const displayPath = currentPath === '/' ? 'Все фото' : currentPath;
+  const photos = useMemo(
+    () => allPhotos.filter((photo) => matchesPath(photo.path, currentPath)),
+    [allPhotos, currentPath]
+  );
 
   return (
-    <div
-      className={`min-h-screen bg-background text-foreground p-4 font-mono relative dark transition-all duration-300 ${transition}`}
-      style={{ overflow: selectedPhoto ? 'hidden' : 'auto' }}
-    >
-      <div className="max-w-7xl mx-auto">
-        <nav className="flex justify-between items-center mb-8 text-sm">
-          <div className="flex space-x-6">
-            <a href="/" className="text-muted-foreground hover:text-primary transition-colors">
-              main
-            </a>
-            <span>/</span>
-            <span className="text-accent">gallery</span>
-          </div>
-        </nav>
+    <PageShell className="lg:max-w-4xl 2xl:max-w-4xl">
+      <div className={`transition-all duration-300 ${transition}`}>
+        <Link to="/" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+          {t('nav.back', { ns: 'common' })}
+        </Link>
 
-        <div className="mb-8">
-          <h1 className="text-2xl mb-2">Галерея фотографий</h1>
-          <p className="text-sm text-muted-foreground mb-3">
-            Коллекция фотографий с EXIF данными и качественным отображением
-          </p>
-          <p className="text-xs text-muted-foreground bg-white/5 rounded px-3 py-2 inline-block">
-            💡 Подсказка: нажми на фото → Shift+колесико мыши для зума, стрелки для навигации
-          </p>
+        <div className="prose-landing mt-4">
+          <h3>{t('title')}</h3>
+          <p>{t('description')}</p>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-sm text-red-300">
-            {error}
-          </div>
-        )}
+        <div className="mt-4 mb-6">
+          <CategoryNav folders={folders} currentPath={currentPath} onSelect={setCurrentPath} />
+        </div>
+
+        {error && <p className="mb-6 text-sm text-destructive">{error}</p>}
 
         {loading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-sm">Загрузка галереи...</p>
-          </div>
+          <SkeletonGroup className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+            {PHOTO_SKELETON_KEYS.map((key) => (
+              <div key={key} className="space-y-1.5">
+                <Skeleton variant="square" className="w-full rounded border border-border" />
+                <Skeleton className="h-3 w-3/4" />
+              </div>
+            ))}
+          </SkeletonGroup>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="md:col-span-1">
-              <div className="sticky top-4">
-                <h2 className="text-sm font-semibold mb-4 text-primary">Папки</h2>
-                <FolderBrowser
-                  folders={folders}
-                  currentPath={currentPath}
-                  onFolderSelect={handleFolderSelect}
-                />
-              </div>
-            </div>
-
-            <div className="md:col-span-3">
-              <div className="mb-6">
-                <h2 className="text-sm font-semibold text-muted-foreground mb-2">
-                  {displayPath}
-                </h2>
-                <p className="text-xs text-muted-foreground">
-                  {photos.length} фотографий · Нажми на фото для просмотра
-                </p>
-              </div>
-
-              <PhotoGrid
-                photos={photos}
-                selectedPhoto={selectedPhoto}
-                onSelectPhoto={setSelectedPhoto}
-              />
-            </div>
-          </div>
+          <PhotoGrid
+            photos={photos}
+            selectedPhoto={selectedPhoto}
+            onSelectPhoto={setSelectedPhoto}
+          />
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

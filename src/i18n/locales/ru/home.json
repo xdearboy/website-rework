@@ -1,0 +1,75 @@
+{
+  "header": {
+    "subtitle": "мидл devops-инженер и fullstack-разработчик",
+    "avatarAlt": "аватар xdearboy"
+  },
+  "about": {
+    "title": "обо мне",
+    "paragraph1": "привет! я <strong>xdearboy</strong> — мидл devops-инженер и fullstack-разработчик. собираю практичные продукты: ботов, бэкенд-сервисы и быстрые веб-приложения с прочным infra/devops-фундаментом под капотом. а ещё дико люблю фотографировать — загляни в раздел галерея.",
+    "paragraph2": "фокус — больше в сторону devops: облачная инфраструктура, автоматизация и администрирование linux; плюс fullstack-разработка (python/js/ts/rust). ещё совсем чуть-чуть увлекаюсь сетевым администрированием. часовой пояс — utc+3, языки:",
+    "languages": {
+      "ru": "родной",
+      "en": "C1",
+      "cn": "забросил"
+    }
+  },
+  "contacts": {
+    "github": "github",
+    "telegram": "telegram",
+    "blogTelegram": "блог в telegram"
+  },
+  "whatsNext": {
+    "title": "что дальше?",
+    "items": {
+      "kubernetes": "копаю глубже в kubernetes & мониторинг (текущее обучение)",
+      "devops": "автоматизация и devops остаются в фокусе",
+      "bots": "пилю новые боты и бэкенд-сервисы для собственных проектов",
+      "redesign": "постепенно переезжаю на новый дизайн сайта (этот самый редизайн)"
+    }
+  },
+  "sections": {
+    "title": "разделы",
+    "latestPost": "последний пост:",
+    "explore": {
+      "blog": "блог",
+      "gallery": "галерея",
+      "degens": "degens",
+      "donate": "донат"
+    }
+  },
+  "projects": {
+    "title": "проекты",
+    "subtitle": "открытые репозитории с github, отсортированы по звёздам:",
+    "loading": "загрузка проектов...",
+    "error": "не удалось загрузить проекты с github"
+  },
+  "activity": {
+    "title": "активность",
+    "github": "github",
+    "contributions_one": "{{count}} контрибуция на github за год",
+    "contributions_few": "{{count}} контрибуции на github за год",
+    "contributions_many": "{{count}} контрибуций на github за год",
+    "legend": {
+      "less": "меньше",
+      "more": "больше"
+    },
+    "loading": "загрузка активности github...",
+    "error": "не удалось загрузить активность github",
+    "tooltip_one": "{{count}} контрибуция · {{date}}",
+    "tooltip_few": "{{count}} контрибуции · {{date}}",
+    "tooltip_many": "{{count}} контрибуций · {{date}}",
+    "wakatime": {
+      "title": "время за кодингом",
+      "total": "всего: {{total}} ({{range}})",
+      "error": "не удалось загрузить wakatime"
+    }
+  },
+  "interests": {
+    "title": "интересы & стек",
+    "languagesSubtitle": "языки программирования, с которыми работаю:",
+    "frameworksSubtitle": "фреймворки и инструменты по категориям:",
+    "langYears_one": "({{count}} год)",
+    "langYears_few": "({{count}} года)",
+    "langYears_many": "({{count}} лет)"
+  }
+}

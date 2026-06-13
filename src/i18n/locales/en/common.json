@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "back": "← back",
+    "backToBlog": "← back to blog",
+    "backToHome": "← back",
+    "backToDegens": "← back"
+  },
+  "status": {
+    "loading": "loading...",
+    "error": "error",
+    "tryAgain": "try again",
+    "notFound": "not found"
+  },
+  "errors": {
+    "generic": "something went wrong",
+    "loadFailed": "failed to load data"
+  }
+}

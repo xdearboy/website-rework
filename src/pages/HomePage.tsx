@@ -1,333 +1,473 @@
-import LastFMWidget from '@/components/shared/LastFMWidget';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { usePageTransition } from '@/hooks/usePageTransition';
-import { useEffect, useState } from 'react';
+import { type PostMeta, fetchManifest } from '@/features/blog/lib/blog-client';
+import CommitInfo from '@/features/home/components/CommitInfo';
+import GithubContributions from '@/features/home/components/GithubContributions';
+import NowPlayingWidget from '@/features/home/components/NowPlayingWidget';
+import ProjectCarousel, { type GithubProject } from '@/features/home/components/ProjectCarousel';
+import TimeWeatherWidget from '@/features/home/components/TimeWeatherWidget';
+import WakatimeStats from '@/features/home/components/WakatimeStats';
+import { contacts, explorePages, languages, technologies } from '@/features/home/data';
+import PageShell from '@/shared/layout/PageShell';
+import { getMotionMediaQueries } from '@/shared/lib/motion';
+import { FlagIcon } from '@/shared/ui/FlagIcon';
+import { Skeleton, SkeletonGroup } from '@/shared/ui/Skeleton';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
+import { useEffect, useRef, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText, ScrambleTextPlugin);
+
 export default function HomePage() {
-  const transition = usePageTransition();
-  const [typedText, setTypedText] = useState('');
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fullText = 'xdearboy';
-
-  useEffect(() => {
-    let index = 0;
-    const timer = setInterval(() => {
-      if (index < fullText.length) {
-        setTypedText(fullText.slice(0, index + 1));
-        index++;
-      } else {
-        clearInterval(timer);
-      }
-    }, 100);
-    return () => clearInterval(timer);
-  }, []);
+  const { t } = useTranslation('home');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [projects, setProjects] = useState<GithubProject[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState<string | null>(null);
+  const [latestPost, setLatestPost] = useState<PostMeta | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchProjects = async () => {
       try {
-        setLoading(true);
-        const response = await fetch('https://api.github.com/users/xdearboy/repos');
+        setProjectsLoading(true);
+        const response = await fetch('https://api.github.com/users/xdearboy/repos', {
+          signal: controller.signal,
+        });
         if (!response.ok) throw new Error('Failed to fetch projects');
-        const data = await response.json();
-        const openProjects = data.filter((repo: any) => !repo.fork && !repo.archived);
-        const sortedProjects = openProjects.sort(
-          (a: any, b: any) => b.stargazers_count - a.stargazers_count
+        const data: GithubProject[] = await response.json();
+        const exclude = new Set(['Pterodactyl-Crasher', 'Pterodactyl-Crasher-EN']);
+        const pinned = 'speedra';
+        const openProjects = data.filter(
+          (repo) => !repo.fork && !repo.archived && !exclude.has(repo.name)
         );
-        setProjects(sortedProjects);
-        setError(null);
+        const pinnedRepo = openProjects.find((repo) => repo.name === pinned);
+        const rest = openProjects
+          .filter((repo) => repo.name !== pinned)
+          .sort((a, b) => b.stargazers_count - a.stargazers_count);
+        const sorted = pinnedRepo
+          ? [pinnedRepo, ...rest.filter((r) => r.id !== pinnedRepo.id)]
+          : rest;
+        setProjects(sorted.slice(0, 6));
+        setProjectsError(null);
       } catch (err) {
-        setError('Failed to load projects from GitHub');
-        console.error('Error fetching projects:', err);
+        if (!controller.signal.aborted) {
+          setProjectsError(t('projects.error'));
+          console.error('Error fetching projects:', err);
+        }
       } finally {
-        setLoading(false);
+        setProjectsLoading(false);
       }
     };
+
     fetchProjects();
+    return () => controller.abort();
+  }, [t]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetchManifest()
+      .then((manifest) => {
+        if (!controller.signal.aborted) {
+          setLatestPost(manifest.posts[0] ?? null);
+        }
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted) {
+          console.error('Error fetching blog manifest:', err);
+        }
+      });
+
+    return () => controller.abort();
   }, []);
 
-  const languages = [
-    { name: 'python', years: 8 },
-    { name: 'javascript/typescript', years: 4 },
-    { name: 'java', years: 1 },
-    { name: 'rust', years: 1 },
-    { name: 'bash', years: 5 },
-    { name: 'html5', years: 4 },
-    { name: 'css3', years: 4 },
-    { name: 'markdown', years: 3 },
-    { name: 'sql', years: 3 },
-  ];
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
 
-  const technologies: Record<string, string[]> = {
-    frontend: ['react', 'next.js', 'tailwind css', 'framer motion'],
-    backend: ['express.js', 'fastify', 'flask', 'fastapi', 'restful api', 'graphql'],
-    devops: [
-      'docker & docker compose',
-      'git & github',
-      'ci/cd',
-      'ansible',
-      'terraform',
-      'kubernetes',
-      'proxmox',
-      'nginx / h2o / haproxy',
-      'nomad',
-      'opentofu',
-      'ELK Stack',
-    ],
-    databases: ['postgresql', 'mysql', 'mongodb'],
-    tools: ['linux', 'vs code', 'vim'],
-  };
+      mm.add(getMotionMediaQueries(), (context) => {
+        const { reduceMotion } = context.conditions as { reduceMotion: boolean };
 
-  const bioFacts = [
-    { label: 'name', value: 'xdearboy' },
-    { label: 'role', value: 'middle devops engineer & fullstack developer' },
-    {
-      label: 'focus',
-      value:
-        'fullstack development (python/js/ts/rust), cloud infrastructure, devops automation & linux administration',
+        const splits: SplitText[] = [];
+
+        if (reduceMotion) {
+          gsap.set('[data-animate]', { opacity: 1, y: 0, clearProps: 'transform' });
+          gsap.set('[data-hr-draw]', { scaleX: 1, clearProps: 'transform' });
+          gsap.set('[data-footer-widget]', { opacity: 1, y: 0, clearProps: 'transform' });
+          gsap.set('[data-name-cursor]', { opacity: 1 });
+          return;
+        }
+
+        gsap.set('[data-hr-draw]', { scaleX: 0, transformOrigin: 'left center' });
+
+        const addCascade = (
+          tl: gsap.core.Timeline,
+          container: HTMLElement,
+          pos: string | number
+        ) => {
+          const children = Array.from(container.children) as HTMLElement[];
+          if (children.length === 0) return;
+          gsap.set(children, { opacity: 0, y: 18 });
+          tl.to(
+            children,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.55,
+              ease: 'power3.out',
+              stagger: 0.08,
+            },
+            pos
+          );
+        };
+
+        const nameEl = containerRef.current?.querySelector<HTMLElement>('[data-name-split]');
+        const scrambleEl = containerRef.current?.querySelector<HTMLElement>('[data-scramble]');
+        const cursorEl = containerRef.current?.querySelector<HTMLElement>('[data-name-cursor]');
+        const headerImg = containerRef.current?.querySelector<HTMLElement>('header img');
+        const headerSubtitle = containerRef.current?.querySelector<HTMLElement>('header p');
+
+        const introTl = gsap.timeline();
+
+        if (headerImg) {
+          gsap.set(headerImg, { opacity: 0, scale: 0.92, y: 12 });
+          introTl.to(
+            headerImg,
+            { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+            0
+          );
+        }
+
+        if (nameEl) {
+          const split = SplitText.create(nameEl, { type: 'chars' });
+          splits.push(split);
+          gsap.set(split.chars, { opacity: 0, y: 18, rotateX: -60 });
+          introTl.to(
+            split.chars,
+            {
+              opacity: 1,
+              y: 0,
+              rotateX: 0,
+              duration: 0.5,
+              ease: 'back.out(1.7)',
+              stagger: 0.035,
+            },
+            0.05
+          );
+        }
+
+        if (cursorEl) {
+          gsap.set(cursorEl, { opacity: 0 });
+        }
+
+        if (scrambleEl) {
+          const originalText = scrambleEl.textContent ?? '';
+          gsap.set(scrambleEl, { opacity: 1 });
+          introTl.to(
+            scrambleEl,
+            {
+              duration: 0.8,
+              ease: 'none',
+              scrambleText: {
+                text: originalText,
+                chars: '01<>/_xX@#',
+                revealDelay: 0.15,
+                speed: 0.35,
+              },
+            },
+            0.35
+          );
+        }
+
+        if (headerSubtitle) {
+          gsap.set(headerSubtitle, { opacity: 0, y: 10 });
+          introTl.to(headerSubtitle, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.5);
+        }
+
+        const introExtras = gsap.utils.toArray<HTMLElement>('[data-animate="intro"]').slice(1);
+        for (const el of introExtras) {
+          if (el.matches('hr[data-hr-draw]')) {
+            introTl.to(el, { scaleX: 1, duration: 0.6, ease: 'power3.out' }, '<0.1');
+          } else {
+            addCascade(introTl, el, '<0.1');
+          }
+        }
+
+        if (cursorEl) {
+          introTl.set(cursorEl, { opacity: 1 }, 1.15);
+          introTl.call(
+            () => {
+              gsap.to(cursorEl, {
+                opacity: 0,
+                duration: 0.6,
+                repeat: -1,
+                yoyo: true,
+                ease: 'steps(1)',
+              });
+            },
+            undefined,
+            1.15
+          );
+        }
+
+        const revealTargets = gsap.utils.toArray<HTMLElement>('[data-animate="reveal"]');
+        for (const el of revealTargets) {
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+          });
+
+          if (el.matches('hr[data-hr-draw]')) {
+            tl.to(el, { scaleX: 1, duration: 0.6, ease: 'power3.out' }, 0);
+          } else if (el.tagName === 'FOOTER') {
+            const widgets = gsap.utils.toArray<HTMLElement>('[data-footer-widget]', el);
+            const innerHrs = gsap.utils.toArray<HTMLElement>('hr[data-hr-draw]', el);
+            if (widgets.length > 0) {
+              gsap.set(widgets, { opacity: 0, y: 28, scale: 0.97 });
+              tl.to(
+                widgets,
+                {
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  duration: 0.6,
+                  ease: 'back.out(1.2)',
+                  stagger: 0.1,
+                },
+                0
+              );
+            }
+            if (innerHrs.length > 0) {
+              tl.to(innerHrs, { scaleX: 1, duration: 0.6, ease: 'power3.out' }, 0.15);
+            }
+          } else {
+            addCascade(tl, el, 0);
+          }
+        }
+
+        const hoverTargets = gsap.utils.toArray<HTMLElement>('[data-hover-pop]');
+        const hoverCleanups: Array<() => void> = [];
+        for (const el of hoverTargets) {
+          const skewTo = gsap.quickTo(el, 'skewX', { duration: 0.3, ease: 'power3.out' });
+          const yTo = gsap.quickTo(el, 'y', { duration: 0.2, ease: 'power2.out' });
+          const scaleTo = gsap.quickTo(el, 'scale', { duration: 0.2, ease: 'power2.out' });
+
+          const onEnter = () => {
+            yTo(-2);
+            scaleTo(1.05);
+            skewTo(-6);
+          };
+          const onLeave = () => {
+            yTo(0);
+            scaleTo(1);
+            skewTo(0);
+          };
+          el.addEventListener('mouseenter', onEnter);
+          el.addEventListener('mouseleave', onLeave);
+          hoverCleanups.push(() => {
+            el.removeEventListener('mouseenter', onEnter);
+            el.removeEventListener('mouseleave', onLeave);
+          });
+        }
+
+        return () => {
+          for (const cleanup of hoverCleanups) cleanup();
+          for (const el of hoverTargets) {
+            gsap.set(el, { clearProps: 'all' });
+          }
+          for (const split of splits) split.revert();
+        };
+      });
+
+      return () => mm.revert();
     },
-    { label: 'location', value: 'moscow, russia' },
-    { label: 'timezone', value: 'utc+3' },
-    { label: 'languages', value: '🇷🇺 native, 🇬🇧 C1, 🇨🇳 learning' },
-  ];
+    { scope: containerRef }
+  );
 
   return (
-    <div
-      className={`min-h-screen bg-background text-foreground p-4 font-mono relative overflow-hidden dark transition-all duration-300 ${transition}`}
-    >
-      <div className="max-w-4xl mx-auto relative z-10">
-        <nav className="flex justify-between items-center mb-8 text-sm">
-          <div className="flex space-x-6">
-            <a href="#main" className="text-accent hover:text-primary transition-colors hover:glow">
-              main
-            </a>
-            <span>/</span>
-            <Link
-              to="/blog"
-              className="text-muted-foreground hover:text-[#9BA3D6] transition-colors"
-            >
-              blog
-            </Link>
-            <span>/</span>
-            <Link
-              to="/gallery"
-              className="text-muted-foreground hover:text-[#9BA3D6] transition-colors"
-            >
-              gallery
-            </Link>
-            <span>/</span>
-            <Link
-              to="/donate"
-              className="text-muted-foreground hover:text-[#9BA3D6] transition-colors"
-            >
-              donate
-            </Link>
-            <span>/</span>
-            <Link
-              to="/degens"
-              className="text-muted-foreground hover:text-[#9BA3D6] transition-colors"
-            >
-              degens
-            </Link>
+    <PageShell>
+      <div ref={containerRef}>
+        <header data-animate="intro" className="mb-8 flex items-center gap-3 sm:gap-4">
+          <img
+            src="/avatar.jpg"
+            alt={t('header.avatarAlt')}
+            className="size-16 shrink-0 rounded-2xl border border-border object-cover sm:size-20"
+          />
+          <div className="min-w-0">
+            <h1 className="text-lg font-bold text-foreground break-words sm:text-2xl">
+              <span data-name-split className="inline-block">
+                xdearboy
+              </span>{' '}
+              <span className="text-sm font-normal text-muted-foreground sm:text-lg">
+                <span data-scramble>{'// @xdearboy'}</span>
+                <span data-name-cursor className="text-primary">
+                  _
+                </span>
+              </span>
+            </h1>
+            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{t('header.subtitle')}</p>
           </div>
-        </nav>
+        </header>
+        <hr data-animate="intro" data-hr-draw className="mb-8 border-t-2 border-gray-600" />
 
-        <div className="mb-4">
-          <h1 className="text-2xl mb-2 min-h-[2rem]">
-            <span className="text-foreground">{typedText}</span>
-            <span className="animate-pulse text-muted-foreground">|</span>
-          </h1>
-
-          <p className="mb-4 max-w-3xl text-sm text-muted-foreground">
-            i build practical products: bots, backend services, and fast web apps with a strong
-            infra/devops backbone.
+        <section data-animate="intro" className="prose-landing">
+          <h3>{t('about.title')}</h3>
+          <p>
+            <Trans t={t} i18nKey="about.paragraph1" components={{ strong: <strong /> }} />
           </p>
-
-          <div className="mb-6 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
-            {bioFacts.map((fact) => (
-              <div key={fact.label}>
-                <span className="text-muted-foreground">{fact.label}:</span> {fact.value}
-              </div>
+          <p>
+            {t('about.paragraph2')} <FlagIcon code="RU" /> {t('about.languages.ru')},{' '}
+            <FlagIcon code="GB" /> {t('about.languages.en')}, <FlagIcon code="CN" />{' '}
+            {t('about.languages.cn')}.
+          </p>
+          <p className="text-center">
+            {contacts.map((contact, index) => (
+              <span key={contact.href}>
+                {index === 0 && '| '}
+                <a
+                  data-hover-pop
+                  href={contact.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-1"
+                >
+                  {t(contact.labelKey)}
+                </a>
+                {index < contacts.length - 1 ? ' ~ ' : ' |'}
+              </span>
             ))}
-            <div>
-              <span className="text-muted-foreground">projects:</span>{' '}
-              <a
-                href="https://github.com/xdearboy?tab=repositories"
-                className="text-muted-foreground hover:text-accent transition-colors"
-              >
-                discord bots, backend services, websites
-              </a>
-            </div>
-          </div>
-        </div>
+          </p>
+        </section>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-3">
-          <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
-            <CardHeader className="pb-1">
-              <CardTitle className="text-primary text-base">my programming languages</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xs mb-4 text-foreground">i mess with these tech stacks:</div>
-              <div className="text-xs space-y-1">
-                {languages.map((lang) => (
-                  <div key={lang.name} className="flex items-center space-x-1">
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-foreground">{lang.name}</span>
-                    <span className="text-muted-foreground">({lang.years}y)</span>
-                  </div>
+        <hr data-animate="intro" data-hr-draw className="prose-landing-hr" />
+
+        <section data-animate="reveal" className="prose-landing">
+          <h3>{t('whatsNext.title')}</h3>
+          <ul>
+            <li>{t('whatsNext.items.kubernetes')}</li>
+            <li>{t('whatsNext.items.devops')}</li>
+            <li>{t('whatsNext.items.bots')}</li>
+            <li>{t('whatsNext.items.redesign')}</li>
+          </ul>
+        </section>
+
+        <hr data-animate="reveal" data-hr-draw className="prose-landing-hr" />
+
+        <section data-animate="reveal" className="prose-landing">
+          <h3>{t('sections.title')}</h3>
+          {latestPost && (
+            <p>
+              {t('sections.latestPost')}{' '}
+              <Link to={`/blog/${latestPost.slug}`}>{latestPost.title}</Link> — {latestPost.date}
+            </p>
+          )}
+          <p className="flex flex-wrap gap-x-3 gap-y-2">
+            {explorePages.map((page) => (
+              <Link key={page.to} data-hover-pop to={page.to} className="inline-block">
+                [{t(page.labelKey)}]
+              </Link>
+            ))}
+          </p>
+        </section>
+
+        <hr data-animate="reveal" data-hr-draw className="prose-landing-hr" />
+
+        <section data-animate="reveal" className="prose-landing">
+          <h3>{t('projects.title')}</h3>
+          <p>{t('projects.subtitle')}</p>
+          {projectsLoading ? (
+            <SkeletonGroup className="min-h-32 space-y-2 sm:min-h-28">
+              <Skeleton className="h-5 w-1/3" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-5/6" />
+              <Skeleton className="mt-1 h-3 w-1/4" />
+            </SkeletonGroup>
+          ) : projectsError ? (
+            <p className="text-muted-foreground">{projectsError}</p>
+          ) : (
+            <ProjectCarousel projects={projects} />
+          )}
+        </section>
+
+        <hr data-animate="reveal" data-hr-draw className="prose-landing-hr" />
+
+        <section data-animate="reveal" className="prose-landing">
+          <h3>{t('activity.title')}</h3>
+          <div className="space-y-4">
+            <GithubContributions />
+            <WakatimeStats />
+          </div>
+        </section>
+
+        <hr data-animate="reveal" data-hr-draw className="prose-landing-hr" />
+
+        <section data-animate="reveal" className="prose-landing">
+          <h3>{t('interests.title')}</h3>
+          <p>{t('interests.languagesSubtitle')}</p>
+          <ul>
+            {languages.map((lang) => (
+              <li key={lang.name}>
+                {lang.url ? (
+                  <a href={lang.url} target="_blank" rel="noopener noreferrer">
+                    {lang.name}
+                  </a>
+                ) : (
+                  lang.name
+                )}{' '}
+                <span className="text-muted-foreground">
+                  {t('interests.langYears', { count: lang.years })}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p>{t('interests.frameworksSubtitle')}</p>
+          <ul>
+            {Object.entries(technologies).map(([category, techs]) => (
+              <li key={category}>
+                <strong>{category}</strong>:{' '}
+                {techs.map((tech, index) => (
+                  <span key={tech.name}>
+                    {tech.url ? (
+                      <a href={tech.url} target="_blank" rel="noopener noreferrer">
+                        {tech.name}
+                      </a>
+                    ) : (
+                      tech.name
+                    )}
+                    {index < techs.length - 1 ? ', ' : ''}
+                  </span>
                 ))}
-              </div>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-              <div className="mt-6">
-                <h3 className="text-md mb-3 text-muted-foreground">technologies</h3>
-                <div className="text-xs mb-4 text-foreground">
-                  i work with these frameworks and libraries:
-                </div>
-                <div className="space-y-3 text-xs">
-                  {Object.entries(technologies).map(([category, techs]) => (
-                    <div key={category}>
-                      <div className="text-primary font-semibold mb-1">{category}</div>
-                      <div className="grid grid-cols-1 gap-1 ml-2">
-                        {techs.map((tech) => (
-                          <div key={tech} className="flex items-center space-x-1">
-                            <span className="text-muted-foreground">◦</span>
-                            <span className="text-foreground">{tech}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="space-y-6">
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
-              <CardHeader className="pb-1">
-                <CardTitle className="text-primary text-base">projects</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 text-sm">
-                  {loading ? (
-                    <div className="text-muted-foreground text-xs">Loading projects...</div>
-                  ) : error ? (
-                    <div className="text-muted-foreground text-xs">{error}</div>
-                  ) : (
-                    <div
-                      className="max-h-64 overflow-y-auto overflow-x-hidden space-y-4 invisible-scrollbar"
-                      style={{ scrollbarWidth: 'thin', scrollbarColor: 'transparent transparent' }}
-                    >
-                      {projects.map((project, index) => (
-                        <div key={project.id || index}>
-                          <a
-                            href={project.html_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-muted-foreground font-semibold hover:text-primary transition-colors block"
-                          >
-                            {project.name}
-                          </a>
-                          <div className="text-xs text-muted-foreground mb-1">
-                            {project.description || 'No description'}
-                          </div>
-                          <div className="text-foreground text-xs">
-                            {project.language || 'Multiple languages'}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            ★ {project.stargazers_count}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
-              <CardHeader className="pb-1">
-                <CardTitle className="text-primary text-base">links</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <a
-                    href="https://github.com/xdearboy"
-                    className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
-                  >
-                    <span className="text-muted-foreground">◦</span>
-                    <span>github</span>
-                  </a>
-                  <a
-                    href="https://t.me/contactfiuimwix_bot"
-                    className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
-                  >
-                    <span className="text-muted-foreground">◦</span>
-                    <span>telegram</span>
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText('feeeeelbaaaaad');
-                      alert('Username copied!');
-                    }}
-                    className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
-                  >
-                    <span className="text-muted-foreground">◦</span>
-                    <span>discord</span>
-                  </button>
-                  <a
-                    href="https://dev0.cfg/blog"
-                    className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
-                  >
-                    <span className="text-muted-foreground">◦</span>
-                    <span>blog</span>
-                  </a>
-                  <a
-                    href="https://t.me/vroffteam"
-                    className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
-                  >
-                    <span className="text-muted-foreground">◦</span>
-                    <span>blog in telegram</span>
-                  </a>
-                  <a
-                    href="https://dev0.cfd/donate"
-                    className="flex items-center space-x-2 text-foreground hover:text-muted-foreground transition-colors"
-                  >
-                    <span className="text-muted-foreground">◦</span>
-                    <span>donate</span>
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="space-y-6">
-              <LastFMWidget apiKey="3ccebef5f34a7ba295cee53acb50aa02" username="xdearboy" />
-
-              <Card className="bg-card/50 backdrop-blur-sm border border-border/50 py-6">
-                <CardHeader className="pb-1">
-                  <CardTitle className="text-primary text-base">activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-sm space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-foreground">current focus:</span>
-                      <span className="text-muted-foreground">automation &amp; devops</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-foreground">learning:</span>
-                      <span className="text-muted-foreground">kubernetes &amp; monitoring</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+        <hr data-animate="reveal" data-hr-draw className="prose-landing-hr" />
+        <footer data-animate="reveal" className="space-y-6">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div data-footer-widget className="min-w-0 sm:flex-1">
+              <NowPlayingWidget apiKey="3ccebef5f34a7ba295cee53acb50aa02" username="xdearboy" />
+            </div>
+            <div data-footer-widget className="shrink-0">
+              <TimeWeatherWidget />
             </div>
           </div>
-        </div>
+
+          <hr data-hr-draw className="prose-landing-hr" />
+
+          <div data-footer-widget>
+            <CommitInfo />
+          </div>
+        </footer>
       </div>
-    </div>
+    </PageShell>
   );
 }

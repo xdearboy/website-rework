@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "back": "← назад",
+    "backToBlog": "← назад к блогу",
+    "backToHome": "← назад",
+    "backToDegens": "← назад"
+  },
+  "status": {
+    "loading": "загрузка...",
+    "error": "ошибка",
+    "tryAgain": "попробовать снова",
+    "notFound": "не найдено"
+  },
+  "errors": {
+    "generic": "что-то пошло не так",
+    "loadFailed": "не удалось загрузить данные"
+  }
+}

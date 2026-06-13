@@ -1,0 +1,36 @@
+{
+  "list": {
+    "description": "anonymized telegram exports, conversation fragments, and archival context. participant names are masked automatically, voice messages are shown as transcripts.",
+    "empty": "no archives available yet",
+    "descriptions": {
+      "case-01": "anonymized telegram export, voice messages as transcripts, replies and notes"
+    }
+  },
+  "chat": {
+    "description": "anonymized telegram thread: voice messages as transcripts, replies, and archival notes.",
+    "thread": "thread",
+    "loading": "loading thread...",
+    "loadError": "failed to load thread",
+    "originalLanguageNotice": "archive in original language (RU)",
+    "stats": {
+      "title": "stats",
+      "messages": "messages",
+      "voiceTranscripts": "voice transcripts",
+      "notes": "notes",
+      "transcripts": "transcripts"
+    }
+  },
+  "message": {
+    "messageFallback": "message",
+    "transcript": "transcript",
+    "forwardedFrom": "forwarded from {{name}}",
+    "unknown": "unknown",
+    "note": "note"
+  },
+  "audioPlayer": {
+    "transcriptUnavailable": "transcript unavailable"
+  },
+  "contextPanel": {
+    "context": "context"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "header": {
+    "subtitle": "mid-level devops engineer & fullstack developer",
+    "avatarAlt": "xdearboy avatar"
+  },
+  "about": {
+    "title": "about me",
+    "paragraph1": "hey! i'm <strong>xdearboy</strong> — a mid-level devops engineer and fullstack developer. i build practical products: bots, backend services, and fast web apps, all backed by a solid infra/devops foundation. i'm also crazy about photography — check out the gallery section.",
+    "paragraph2": "my focus leans more toward devops: cloud infrastructure, automation, and linux administration; plus fullstack development (python/js/ts/rust). i'm also just a tiny bit into network administration. timezone — utc+3, languages:",
+    "languages": {
+      "ru": "native",
+      "en": "C1",
+      "cn": "gave up"
+    }
+  },
+  "contacts": {
+    "github": "github",
+    "telegram": "telegram",
+    "blogTelegram": "blog on telegram"
+  },
+  "whatsNext": {
+    "title": "what's next?",
+    "items": {
+      "kubernetes": "digging deeper into kubernetes & monitoring (currently learning)",
+      "devops": "automation and devops remain the focus",
+      "bots": "building new bots and backend services for my own projects",
+      "redesign": "gradually moving to the site's new design (this very redesign)"
+    }
+  },
+  "sections": {
+    "title": "sections",
+    "latestPost": "latest post:",
+    "explore": {
+      "blog": "blog",
+      "gallery": "gallery",
+      "degens": "degens",
+      "donate": "donate"
+    }
+  },
+  "projects": {
+    "title": "projects",
+    "subtitle": "open-source repos from github, sorted by stars:",
+    "loading": "loading projects...",
+    "error": "failed to load projects from github"
+  },
+  "activity": {
+    "title": "activity",
+    "github": "github",
+    "contributions_one": "{{count}} github contribution in the last year",
+    "contributions_other": "{{count}} github contributions in the last year",
+    "legend": {
+      "less": "less",
+      "more": "more"
+    },
+    "loading": "loading github activity...",
+    "error": "failed to load github activity",
+    "tooltip_one": "{{count}} contribution · {{date}}",
+    "tooltip_other": "{{count}} contributions · {{date}}",
+    "wakatime": {
+      "title": "coding time",
+      "total": "total: {{total}} ({{range}})",
+      "error": "failed to load wakatime"
+    }
+  },
+  "interests": {
+    "title": "interests & stack",
+    "languagesSubtitle": "programming languages i work with:",
+    "frameworksSubtitle": "frameworks and tools by category:",
+    "langYears_one": "({{count}} yr)",
+    "langYears_other": "({{count}} yrs)"
+  }
+}

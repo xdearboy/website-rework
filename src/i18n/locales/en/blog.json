@@ -1,0 +1,11 @@
+{
+  "title": "blog",
+  "empty": "no blog posts yet.",
+  "errors": {
+    "loadPosts": "failed to load posts"
+  },
+  "post": {
+    "notFound": "post not found",
+    "translationUnavailable": "translation unavailable, showing original"
+  }
+}

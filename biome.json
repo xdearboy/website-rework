@@ -33,13 +33,13 @@
     "files": {
         "include": [
             "src/**",
-            "plugins/**"
+            "plugins/**",
+            "scripts/**"
         ],
         "ignore": [
             "src/__tests__",
             "plugins/__tests__",
-            "src/components/ui/use-toast.ts",
-            "src/components/ui/use-mobile.tsx"
+            "src/shared/layout/PixelBlast.tsx"
         ]
     }
 }

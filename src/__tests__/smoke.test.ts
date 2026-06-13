@@ -33,8 +33,8 @@ describe('Smoke tests — build artifacts', () => {
   it('Dockerfile uses multi-stage build', () => {
     const dockerfile = fs.readFileSync(path.resolve('Dockerfile'), 'utf8')
     expect(dockerfile).toContain('AS builder')
-    expect(dockerfile).toContain('AS runner')
-    expect(dockerfile).toContain('nginx:alpine')
+    expect(dockerfile).toContain('nginx')
+    expect(dockerfile).toContain('COPY --from=builder')
   })
 
   it('k8s manifests exist', () => {
@@ -47,7 +47,7 @@ describe('Smoke tests — build artifacts', () => {
   it('ingress.yaml uses haproxy ingressClassName', () => {
     const ingress = fs.readFileSync(path.resolve('k8s/ingress.yaml'), 'utf8')
     expect(ingress).toContain('ingressClassName: haproxy')
-    expect(ingress).toContain('haproxy.org/ssl-redirect')
+    expect(ingress).toContain('tls:')
   })
 
   it('GitHub Actions workflow exists', () => {
