@@ -5,7 +5,7 @@ ARG VITE_GALLERY_BASE_URL
 ENV VITE_GALLERY_BASE_URL=${VITE_GALLERY_BASE_URL}
 
 COPY package.json bun.lock* ./
-RUN bun install --no-save
+RUN bun install --frozen-lockfile
 
 COPY . .
 
