@@ -2,7 +2,9 @@ FROM oven/bun:latest AS builder
 WORKDIR /app
 
 ARG VITE_GALLERY_BASE_URL
+ARG GIT_COMMIT_HASH=dev
 ENV VITE_GALLERY_BASE_URL=${VITE_GALLERY_BASE_URL}
+ENV GIT_COMMIT_HASH=${GIT_COMMIT_HASH}
 
 COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile

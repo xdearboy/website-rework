@@ -48,6 +48,7 @@ jobs:
           push: true
           build-args: |
             VITE_GALLERY_BASE_URL=${{ vars.VITE_GALLERY_BASE_URL }}
+            GIT_COMMIT_HASH=${{ github.sha }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}

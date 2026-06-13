@@ -6,6 +6,7 @@ import { execSync } from 'child_process'
 import { blogLoaderPlugin } from './plugins/vite-plugin-blog-loader'
 
 function getCommitHash(): string {
+  if (process.env.GIT_COMMIT_HASH) return process.env.GIT_COMMIT_HASH;
   try {
     return execSync('git rev-parse --short HEAD').toString().trim()
   } catch {
