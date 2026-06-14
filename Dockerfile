@@ -12,22 +12,19 @@ RUN bun install --frozen-lockfile
 COPY . .
 
 RUN bun run build
+RUN bun build src/server/index.ts --target=node --outfile=server.js
 
-FROM oven/bun:latest
+FROM node:20-slim
 
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY --from=builder /app/src /app/src
-COPY --from=builder /app/package.json /app/package.json
-COPY --from=builder /app/bun.lock* /app/
-
-RUN bun install --frozen-lockfile --production
+COPY --from=builder /app/server.js /app/server.js
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80 3000
 
-CMD ["sh", "-c", "bun run src/server/index.ts & nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "node server.js & nginx -g 'daemon off;'"]
