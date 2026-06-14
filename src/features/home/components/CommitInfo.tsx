@@ -6,6 +6,7 @@ const REPO_URL = 'https://github.com/xdearboy/website-rework';
 export default function CommitInfo() {
   const { t } = useTranslation('footer');
   const hash = __COMMIT_HASH__;
+  const shortHash = hash === 'dev' ? hash : hash.slice(0, 7);
   const date = formatDate(__BUILD_DATE__, {
     day: '2-digit',
     month: '2-digit',
@@ -16,7 +17,7 @@ export default function CommitInfo() {
     <p className="text-center text-xs text-muted-foreground">
       {t('commitInfo.prefix')}{' '}
       {hash === 'dev' ? (
-        <span className="text-primary">{hash}</span>
+        <span className="text-primary">{shortHash}</span>
       ) : (
         <a
           href={`${REPO_URL}/commit/${hash}`}
@@ -24,7 +25,7 @@ export default function CommitInfo() {
           rel="noopener noreferrer"
           className="text-primary hover:underline"
         >
-          {hash}
+          {shortHash}
         </a>
       )}
       {t('commitInfo.suffix', { date })}
