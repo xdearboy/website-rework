@@ -1,4 +1,4 @@
-FROM oven/bun:latest AS builder
+FROM oven/bun:1.3.5 AS builder
 WORKDIR /app
 
 ARG VITE_GALLERY_BASE_URL
