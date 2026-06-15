@@ -139,9 +139,7 @@ const server = createServer(async (req, res) => {
       if (vitalsBuffer.length > VITALS_BUFFER_SIZE) {
         vitalsBuffer.splice(0, vitalsBuffer.length - VITALS_BUFFER_SIZE);
       }
-      console.log(
-        `[vitals] ${entry.name}=${entry.value} rating=${entry.rating} path=${entry.path} cpu=${entry.cpu} conn=${entry.conn}`
-      );
+      console.log(JSON.stringify({ type: 'web-vitals', ...entry }));
     } catch (err) {
       console.error('Vitals parse error:', err);
     }

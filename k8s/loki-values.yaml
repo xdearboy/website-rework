@@ -1,0 +1,23 @@
+loki:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 10Gi
+  config:
+    table_manager:
+      retention_deletes_enabled: true
+      retention_period: 720h
+
+promtail:
+  enabled: true
+
+grafana:
+  enabled: false
+prometheus:
+  enabled: false
+fluent-bit:
+  enabled: false
+filebeat:
+  enabled: false
+logstash:
+  enabled: false
