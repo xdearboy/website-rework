@@ -1,4 +1,5 @@
 import SiteBackground from '@/shared/layout/SiteBackground';
+import { isLowEndDevice } from '@/shared/lib/deviceCapability';
 import { getMotionMediaQueries } from '@/shared/lib/motion';
 import { scrollToTop } from '@/shared/lib/smoothScroll';
 import PageSkeleton from '@/shared/ui/PageSkeleton';
@@ -8,11 +9,11 @@ import { ScrollSmoother } from 'gsap/ScrollSmoother';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Suspense, lazy, useRef } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
+import HomePage from './pages/HomePage';
 import NotFoundPage from './pages/NotFoundPage';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollSmoother);
 
-const HomePage = lazy(() => import('./pages/HomePage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const DonatePage = lazy(() => import('./pages/DonatePage'));
@@ -32,6 +33,10 @@ export default function App() {
         const { reduceMotion } = context.conditions as { reduceMotion: boolean };
 
         if (reduceMotion) {
+          return;
+        }
+
+        if (isLowEndDevice()) {
           return;
         }
 

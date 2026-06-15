@@ -55,6 +55,8 @@ type PixelBlastProps = {
   transparent?: boolean;
   edgeFade?: number;
   noiseAmount?: number;
+  maxPixelRatio?: number;
+  maxFps?: number;
 };
 
 const createTouchTexture = (): TouchTexture => {
@@ -381,6 +383,8 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
   transparent = true,
   edgeFade = 0.5,
   noiseAmount = 0,
+  maxPixelRatio = 2,
+  maxFps = 0,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const visibilityRef = useRef({ visible: true });
@@ -457,7 +461,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       });
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxPixelRatio));
       container.appendChild(renderer.domElement);
       if (transparent) renderer.setClearAlpha(0);
       else renderer.setClearColor(0x000000, 1);
@@ -592,10 +596,19 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         passive: true,
       });
       let raf = 0;
+      let lastRenderTime = 0;
       const animate = () => {
         if (autoPauseOffscreen && !visibilityRef.current.visible) {
           raf = requestAnimationFrame(animate);
           return;
+        }
+        if (maxFps > 0) {
+          const now = performance.now();
+          if (now - lastRenderTime < 1000 / maxFps) {
+            raf = requestAnimationFrame(animate);
+            return;
+          }
+          lastRenderTime = now;
         }
         uniforms.uTime.value = timeOffset + clock.getElapsedTime() * speedRef.current;
         if (liquidEffect) {
@@ -698,6 +711,8 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
     variant,
     color,
     speed,
+    maxPixelRatio,
+    maxFps,
   ]);
 
   return (
