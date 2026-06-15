@@ -1,5 +1,7 @@
 {
   "name": "xdearboy-portfolio",
+  "license": "MIT",
+  "author": "xdearboy",
   "scripts": {
     "dev": "concurrently \"pnpm run api\" \"vite\"",
     "api": "bun run --watch src/server/index.ts",
