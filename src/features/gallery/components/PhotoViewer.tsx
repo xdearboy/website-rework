@@ -16,6 +16,10 @@ interface PhotoViewerProps {
   onNavigate?: (index: number) => void;
 }
 
+function touchDistance(a: React.Touch, b: React.Touch): number {
+  return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+}
+
 function exifLine(photo: GalleryPhoto): string | null {
   const { exif } = photo;
   const parts = [
@@ -46,6 +50,8 @@ export default function PhotoViewer({ photo, allPhotos, onClose, onNavigate }: P
   const overlayRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const isFirstOpenRef = useRef(true);
+  const pinchRef = useRef<{ startDist: number; startZoom: number } | null>(null);
+  const touchPanRef = useRef<{ x: number; y: number } | null>(null);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally resets pan/zoom only when the displayed photo changes; the state setters are stable.
   useEffect(() => {
@@ -155,6 +161,46 @@ export default function PhotoViewer({ photo, allPhotos, onClose, onNavigate }: P
     setIsDragging(false);
   };
 
+  const clampOffset = (x: number, y: number, currentZoom: number) => {
+    const maxOffset = Math.min(window.innerWidth, window.innerHeight) * (currentZoom - 1) * 0.4;
+    setOffsetX(Math.max(-maxOffset, Math.min(maxOffset, x)));
+    setOffsetY(Math.max(-maxOffset, Math.min(maxOffset, y)));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      pinchRef.current = {
+        startDist: touchDistance(e.touches[0], e.touches[1]),
+        startZoom: zoom,
+      };
+      touchPanRef.current = null;
+    } else if (e.touches.length === 1 && zoom > 1) {
+      touchPanRef.current = {
+        x: e.touches[0].clientX - offsetX,
+        y: e.touches[0].clientY - offsetY,
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && pinchRef.current) {
+      const dist = touchDistance(e.touches[0], e.touches[1]);
+      const next = pinchRef.current.startZoom * (dist / pinchRef.current.startDist);
+      setZoom(Math.max(1, Math.min(5, next)));
+    } else if (e.touches.length === 1 && touchPanRef.current && zoom > 1) {
+      clampOffset(
+        e.touches[0].clientX - touchPanRef.current.x,
+        e.touches[0].clientY - touchPanRef.current.y,
+        zoom
+      );
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) pinchRef.current = null;
+    if (e.touches.length === 0) touchPanRef.current = null;
+  };
+
   const caption = exifLine(photo);
 
   return (
@@ -173,6 +219,9 @@ export default function PhotoViewer({ photo, allPhotos, onClose, onNavigate }: P
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       onKeyDown={(e) => {
         if (e.key === 'Escape') onClose();
       }}
@@ -199,7 +248,7 @@ export default function PhotoViewer({ photo, allPhotos, onClose, onNavigate }: P
         )}
 
         <div
-          className="flex flex-1 items-center justify-center overflow-auto px-10 pb-16 sm:px-0"
+          className="flex flex-1 items-center justify-center overflow-hidden px-10 pb-16 sm:px-0"
           onWheel={handleWheel}
         >
           {imageError ? (

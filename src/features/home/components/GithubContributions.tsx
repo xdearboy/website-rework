@@ -31,6 +31,8 @@ interface MonthLabel {
 
 const USERNAME = 'xdearboy';
 const API_URL = `https://github-contributions-api.jogruber.de/v4/${USERNAME}?y=last`;
+const MOBILE_QUERY = '(max-width: 639px)';
+const WEEKS_ON_MOBILE = 26;
 const DAYS_IN_WEEK = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const WEEKDAY_LABEL_ROWS = [1, 3, 5];
@@ -107,6 +109,16 @@ export default function GithubContributions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mql = window.matchMedia(MOBILE_QUERY);
+    const onChange = () => setIsMobile(mql.matches);
+    onChange();
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -154,9 +166,10 @@ export default function GithubContributions() {
   }
 
   const weeks = buildWeeks(data.contributions);
-  const monthLabels = buildMonthLabels(weeks);
+  const visibleWeeks = isMobile ? weeks.slice(-WEEKS_ON_MOBILE) : weeks;
+  const monthLabels = buildMonthLabels(visibleWeeks);
   const total = data.total.lastYear ?? 0;
-  const gridColumns = `repeat(${weeks.length}, minmax(0, 1fr))`;
+  const gridColumns = `repeat(${visibleWeeks.length}, minmax(0, 1fr))`;
 
   return (
     <div className="rounded-lg border border-border/60 bg-card/40 p-3 sm:p-4">
@@ -164,7 +177,7 @@ export default function GithubContributions() {
         {t('activity.github')}
       </p>
 
-      <div className="overflow-x-auto scrollbar-thin">
+      <div className="overflow-hidden">
         <div
           className="mb-1 grid"
           style={{ gridTemplateColumns: `20px ${gridColumns}` }}
@@ -205,7 +218,7 @@ export default function GithubContributions() {
             </span>
           ))}
 
-          {weeks.map((week) =>
+          {visibleWeeks.map((week) =>
             week.map((day) =>
               day.level === null ? (
                 <div key={day.date} className="aspect-square rounded-[2px]" />
