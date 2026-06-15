@@ -18,7 +18,20 @@ spec:
                 name: portfolio
                 port:
                   number: 80
+    - host: d3vo.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: portfolio
+                port:
+                  number: 80
   tls:
     - hosts:
         - devo.as214422.lol
       secretName: dev0-tls
+    - hosts:
+        - d3vo.ru
+      secretName: d3vo-ru-tls
