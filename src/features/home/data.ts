@@ -120,6 +120,12 @@ export const badges: Badge[] = [
     href: 'https://play2go.cloud',
     title: 'play2go.cloud',
   },
+  {
+    src: '/badges/kubernetes.png',
+    alt: 'kubernetes 88x31',
+    href: 'https://kubernetes.io',
+    title: 'kubernetes',
+  },
 ];
 
 export const ownButton: Badge = {
