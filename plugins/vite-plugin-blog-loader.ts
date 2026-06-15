@@ -40,13 +40,27 @@ function deriveExcerpt(content: string): string {
   return `${plainContent.slice(0, 160)}...`;
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 export function blogLoaderPlugin(options: BlogLoaderOptions = {}): Plugin {
   const contentDir = options.contentDir ?? 'content/blog';
   const outputDir = options.outputDir ?? 'public/blog';
   const manifestPath = options.manifestPath ?? 'public/blog-manifest.json';
 
+  let generatedPosts: PostMeta[] = [];
+  let outDir = 'dist';
+
   return {
     name: 'blog-loader',
+    configResolved(config) {
+      outDir = config.build.outDir || 'dist';
+    },
     buildStart() {
       const allFiles = fs.existsSync(contentDir) ? fs.readdirSync(contentDir) : [];
 
@@ -138,6 +152,66 @@ export function blogLoaderPlugin(options: BlogLoaderOptions = {}): Plugin {
           generatedAt: new Date().toISOString(),
         } satisfies BlogManifest)
       );
+
+      generatedPosts = cleanPosts;
+    },
+    writeBundle() {
+      const indexPath = path.join(outDir, 'index.html');
+      if (!fs.existsSync(indexPath)) {
+        return;
+      }
+
+      const indexHtml = fs.readFileSync(indexPath, 'utf8');
+      const blogDir = path.join(outDir, 'blog');
+      fs.mkdirSync(blogDir, { recursive: true });
+
+      for (const post of generatedPosts) {
+        const title = escapeHtml(post.title);
+        const excerpt = escapeHtml(post.excerpt);
+        const url = `https://d3vo.ru/blog/${post.slug}`;
+
+        let html = indexHtml;
+
+        html = html.replace(/<title>.*?<\/title>/, `<title>${title} — xdearboy</title>`);
+        html = html.replace(
+          /<link rel="canonical" href="[^"]*" \/>/,
+          `<link rel="canonical" href="${url}" />`
+        );
+        html = html.replace(
+          /<meta property="og:type" content="[^"]*" \/>/,
+          '<meta property="og:type" content="article" />'
+        );
+        html = html.replace(
+          /<meta property="og:title" content="[^"]*" \/>/,
+          `<meta property="og:title" content="${title}" />`
+        );
+        html = html.replace(
+          /<meta\s+property="og:description"\s+content="[^"]*"\s*\/>/,
+          `<meta property="og:description" content="${excerpt}" />`
+        );
+        html = html.replace(
+          /<meta property="og:url" content="[^"]*" \/>/,
+          `<meta property="og:url" content="${url}" />`
+        );
+        html = html.replace(
+          /<meta name="twitter:title" content="[^"]*" \/>/,
+          `<meta name="twitter:title" content="${title}" />`
+        );
+        html = html.replace(
+          /<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/>/,
+          `<meta name="twitter:description" content="${excerpt}" />`
+        );
+
+        if (post.dateISO) {
+          html = html.replace(
+            /<meta property="og:url" content="[^"]*" \/>/,
+            (match) =>
+              `${match}\n    <meta property="article:published_time" content="${escapeHtml(post.dateISO)}" />`
+          );
+        }
+
+        fs.writeFileSync(path.join(blogDir, `${post.slug}.html`), html);
+      }
     },
   };
 }
