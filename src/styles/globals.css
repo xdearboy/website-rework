@@ -237,3 +237,48 @@
     @apply font-semibold text-foreground;
   }
 }
+
+/* -------------------------------------------------------------------- */
+/* CSS-driven intro reveal (LCP-safe, no JS dependency)                  */
+/* -------------------------------------------------------------------- */
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .intro-reveal > * {
+    opacity: 0;
+    animation: intro-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .intro-reveal > *:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .intro-reveal > *:nth-child(2) {
+    animation-delay: 0.08s;
+  }
+
+  .intro-reveal > *:nth-child(3) {
+    animation-delay: 0.16s;
+  }
+
+  .intro-reveal > *:nth-child(4) {
+    animation-delay: 0.24s;
+  }
+
+  .intro-reveal > *:nth-child(5) {
+    animation-delay: 0.32s;
+  }
+
+  .intro-reveal > *:nth-child(6) {
+    animation-delay: 0.4s;
+  }
+}

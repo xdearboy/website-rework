@@ -1,4 +1,4 @@
-import type { ContactLink, ExplorePage, LanguageItem, TechnologyCategories } from './types';
+import type { Badge, ContactLink, ExplorePage, LanguageItem, TechnologyCategories } from './types';
 
 export const languages: LanguageItem[] = [
   { name: 'python', years: 8, url: 'https://www.python.org' },
@@ -64,3 +64,66 @@ export const explorePages: ExplorePage[] = [
   { labelKey: 'sections.explore.degens', to: '/degens' },
   { labelKey: 'sections.explore.donate', to: '/donate' },
 ];
+
+export const badges: Badge[] = [
+  {
+    src: 'https://sshi.pw/badge.png',
+    alt: 'sshi.pw 88x31',
+    href: 'https://sshi.pw',
+    title: 'sshi.pw',
+  },
+  {
+    src: 'https://files.webstealing.cc/u/badge.png',
+    alt: 'webstealing 88x31',
+    href: 'https://webstealing.cc',
+    title: 'webstealing.cc',
+  },
+  {
+    src: 'https://glutesha.me/badges/interactive/glutesha.png',
+    alt: 'glutesha 88x31',
+    href: 'https://glutesha.me',
+    title: 'glutesha.me',
+  },
+  {
+    src: 'https://edwardcode.net/www/button.gif',
+    alt: 'edwardcode 88x31',
+    href: 'https://edwardcode.net',
+    title: 'edwardcode.net',
+  },
+  {
+    src: 'https://nichind.dev/88x31.gif',
+    alt: 'nichind 88x31',
+    href: 'https://nichind.dev',
+    title: 'nichind.dev',
+  },
+  {
+    src: 'https://otomir23.me/88x31.png',
+    alt: "otomir23's 88x31 button",
+    href: 'https://otomir23.me',
+    title: 'otomir23.me',
+  },
+  {
+    src: 'https://cyber.dabamos.de/88x31/powered-by-debian.gif',
+    alt: 'powered by debian',
+    href: 'https://www.debian.org',
+    title: 'powered by debian',
+  },
+  {
+    src: '/badges/datagio.png',
+    alt: 'datagio 88x31',
+    href: 'https://t.me/datagio_robot',
+    title: 'datagio',
+  },
+  {
+    src: '/badges/play2go.png',
+    alt: 'play2go 88x31',
+    href: 'https://play2go.cloud',
+    title: 'play2go.cloud',
+  },
+];
+
+export const ownButton: Badge = {
+  src: '/badges/badge.gif',
+  href: 'https://d3vo.ru',
+  alt: 'devo',
+};

@@ -71,5 +71,13 @@
     "langYears_one": "({{count}} год)",
     "langYears_few": "({{count}} года)",
     "langYears_many": "({{count}} лет)"
+  },
+  "badges": {
+    "title": "88x31 бейджи",
+    "subtitle": "88x31 бейджи друзей и сайтов, которые мне нравятся. бери и мой:",
+    "ownLabel": "мой бейдж:",
+    "grabTitle": "забери мой бейдж",
+    "copy": "копировать",
+    "copied": "скопировано"
   }
 }

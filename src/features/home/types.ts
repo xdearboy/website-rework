@@ -18,3 +18,10 @@ export type ExplorePage = {
   labelKey: string;
   to: string;
 };
+
+export type Badge = {
+  src: string;
+  alt: string;
+  href?: string;
+  title?: string;
+};

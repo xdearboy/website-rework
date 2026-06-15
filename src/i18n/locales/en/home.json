@@ -68,5 +68,13 @@
     "frameworksSubtitle": "frameworks and tools by category:",
     "langYears_one": "({{count}} yr)",
     "langYears_other": "({{count}} yrs)"
+  },
+  "badges": {
+    "title": "88x31 badges",
+    "subtitle": "88x31 badges from friends and sites i like. grab mine:",
+    "ownLabel": "my badge:",
+    "grabTitle": "grab my badge",
+    "copy": "copy",
+    "copied": "copied"
   }
 }

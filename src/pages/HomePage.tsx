@@ -1,4 +1,5 @@
 import { type PostMeta, fetchManifest } from '@/features/blog/lib/blog-client';
+import BadgeWall from '@/features/home/components/BadgeWall';
 import CommitInfo from '@/features/home/components/CommitInfo';
 import GithubContributions from '@/features/home/components/GithubContributions';
 import NowPlayingWidget from '@/features/home/components/NowPlayingWidget';
@@ -191,6 +192,7 @@ export default function HomePage() {
 
         const introExtras = gsap.utils.toArray<HTMLElement>('[data-animate="intro"]').slice(1);
         for (const el of introExtras) {
+          if (el.matches('[data-intro-instant]')) continue;
           if (el.matches('hr[data-hr-draw]')) {
             introTl.to(el, { scaleX: 1, duration: 0.6, ease: 'power3.out' }, '<0.1');
           } else {
@@ -318,7 +320,7 @@ export default function HomePage() {
         </header>
         <hr data-animate="intro" data-hr-draw className="mb-8 border-t-2 border-gray-600" />
 
-        <section data-animate="intro" className="prose-landing">
+        <section data-animate="intro" data-intro-instant className="prose-landing intro-reveal">
           <h3>{t('about.title')}</h3>
           <p>
             <Trans t={t} i18nKey="about.paragraph1" components={{ strong: <strong /> }} />
@@ -448,6 +450,14 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <hr data-animate="reveal" data-hr-draw className="prose-landing-hr" />
+
+        <section data-animate="reveal" className="prose-landing">
+          <h3>{t('badges.title')}</h3>
+          <p>{t('badges.subtitle')}</p>
+          <BadgeWall />
         </section>
 
         <hr data-animate="reveal" data-hr-draw className="prose-landing-hr" />
