@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.5 AS builder
+FROM oven/bun:1.3.5-alpine AS builder
 WORKDIR /app
 
 ARG VITE_GALLERY_BASE_URL
@@ -14,11 +14,11 @@ COPY . .
 RUN bun run build
 RUN bun build src/server/index.ts --target=node --outfile=server.js
 
-FROM node:20-slim
+FROM node:20-alpine
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache nginx && mkdir -p /run/nginx
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY --from=builder /app/server.js /app/server.js
