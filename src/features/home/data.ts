@@ -126,6 +126,12 @@ export const badges: Badge[] = [
     href: 'https://kubernetes.io',
     title: 'kubernetes',
   },
+  {
+    src: '/badges/vdsok.gif',
+    alt: 'vdsok 88x31',
+    href: 'https://vdsok.guru',
+    title: 'vdsok',
+  },
 ];
 
 export const ownButton: Badge = {
