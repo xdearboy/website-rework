@@ -1,5 +1,6 @@
 import SiteBackground from '@/shared/layout/SiteBackground';
 import { isLowEndDevice } from '@/shared/lib/deviceCapability';
+import { trackPageView } from '@/shared/lib/metrika';
 import { getMotionMediaQueries } from '@/shared/lib/motion';
 import { scrollToTop } from '@/shared/lib/smoothScroll';
 import PageSkeleton from '@/shared/ui/PageSkeleton';
@@ -7,7 +8,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollSmoother } from 'gsap/ScrollSmoother';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Suspense, lazy, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -55,6 +56,12 @@ export default function App() {
     },
     { scope: wrapperRef }
   );
+
+  useEffect(() => {
+    if (import.meta.env.PROD) {
+      trackPageView();
+    }
+  }, [pathname]);
 
   useGSAP(() => {
     if (!hash) {
