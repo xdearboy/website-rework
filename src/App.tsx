@@ -21,6 +21,7 @@ const DonatePage = lazy(() => import('./pages/DonatePage'));
 const DegensList = lazy(() => import('./pages/DegensList'));
 const DegensChat = lazy(() => import('./pages/DegensChat'));
 const GalleryPage = lazy(() => import('./pages/GalleryPage'));
+const WpwPage = lazy(() => import('./pages/WpwPage'));
 
 export default function App() {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -57,6 +58,7 @@ export default function App() {
     { scope: wrapperRef }
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: track page views whenever the route pathname changes
   useEffect(() => {
     if (import.meta.env.PROD) {
       trackPageView();
@@ -86,6 +88,7 @@ export default function App() {
               <Route path="/degens" element={<DegensList />} />
               <Route path="/degens/:id" element={<DegensChat />} />
               <Route path="/gallery" element={<GalleryPage />} />
+              <Route path="/wpw" element={<WpwPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>

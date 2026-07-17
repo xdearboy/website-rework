@@ -1,0 +1,86 @@
+{
+  "title": "WPW syndrome",
+  "subtitle": "Wolff-Parkinson-White syndrome",
+  "intro": "This section is dedicated to my experience living with and treating Wolff-Parkinson-White (WPW) syndrome — a congenital heart anomaly featuring an extra electrical pathway that can cause sudden tachycardia episodes.",
+  "status": {
+    "title": "current status",
+    "waiting": "awaiting follow-up RFA (scheduled for August 11)",
+    "pulse": "resting heart rate: ~90–100 bpm"
+  },
+  "countdown": {
+    "days_one": "{{count}} day remaining until surgery",
+    "days_other": "{{count}} days remaining until surgery",
+    "today": "the surgery is scheduled for today",
+    "passed": "the surgery has taken place"
+  },
+  "timeline": {
+    "title": "history & treatment",
+    "step1": {
+      "date": "before treatment",
+      "title": "diagnosis & symptoms",
+      "desc": "episodes of sudden tachycardia caused by an abnormal electrical pathway in the heart."
+    },
+    "step2": {
+      "date": "February 11",
+      "title": "radiofrequency ablation (RFA)",
+      "desc": "the first operation to ablate the extra conduction pathway was performed. temporary relief followed."
+    },
+    "step3": {
+      "date": "spring – summer",
+      "title": "suspected recurrence",
+      "desc": "symptoms began to return, resting heart rate often staying at 90–100 bpm. 24-hour Holter monitoring confirmed recurrence concerns."
+    },
+    "step4": {
+      "date": "August 11",
+      "title": "follow-up surgery",
+      "desc": "a second RFA procedure is scheduled to permanently resolve the extra pathway."
+    }
+  },
+  "faq": {
+    "title": "frequently asked questions (FAQ)",
+    "attractions": {
+      "q": "Can I ride extreme amusement park rides?",
+      "a": "No, if the syndrome is active or a recurrence is suspected. Sudden adrenaline surges and heavy G-forces can trigger a severe arrhythmia episode."
+    },
+    "sports": {
+      "q": "What are the exercise limitations?",
+      "a": "Active sports like football (soccer) are strictly forbidden. Only calm, moderate swimming is allowed, ensuring your heart rate stays low."
+    },
+    "caffeine": {
+      "q": "Can I drink coffee or energy drinks?",
+      "a": "Coffee and energy drinks are categorically forbidden. The caffeine, taurine, and other stimulants they contain are highly likely to trigger a tachycardia episode."
+    },
+    "cure": {
+      "q": "How effective is the RFA procedure?",
+      "a": "The primary success rate of RFA is around 90–95%, but there is a 6–10% chance of pathway recurrence (see this scientific article on <anchor>PubMed</anchor>). In case of recurrence, a repeat ablation is required."
+    },
+    "inherited": {
+      "q": "Is WPW congenital or acquired?",
+      "a": "It is a congenital heart condition, meaning you are born with it. The extra pathway is present from birth, though symptoms may manifest at any age."
+    }
+  },
+  "procedure": {
+    "title": "how the procedure works: personal RFA experience",
+    "intro": "Radiofrequency catheter ablation (RFA) and electrophysiological study (EPS) are high-tech, catheter-based vascular interventions rather than open-heart surgery. Here is how my procedure went:",
+    "step1": {
+      "title": "1. Femoral access",
+      "desc": "First, a local anesthetic is injected into the groin area. Then, an introducer sheath — a flat plastic port about the size of a flat finger — is inserted into the femoral artery. The doctors guide thin, flexible electrode catheters through it directly to the heart."
+    },
+    "step2": {
+      "title": "2. EPS & 3D heart mapping",
+      "desc": "A magnetic system under the operating table acts like a GPS, tracking the catheter tips to construct a detailed 3D model of the heart chambers on a monitor. To map the abnormal conduction path, the heart is stimulated with electrical impulses. During my EPS, they accelerated my heart rate to 380 bpm."
+    },
+    "step3": {
+      "title": "3. Locating the pathway & switching legs",
+      "desc": "The doctors began mapping from the right femoral artery, but found the pathway was not located where they expected. They had to urgently establish access through the left femoral artery without delay."
+    },
+    "step4": {
+      "title": "4. General sedation & ablation",
+      "desc": "Once the catheters were successfully repositioned from the left side, I was put under deep sedation (deep sedation / strong anesthesia, no mechanical ventilation). The electrophysiologists located the exact root of the extra pathway and ablated ('sealed') it using high-frequency electrical current. I woke up after the procedure was finished."
+    },
+    "step5": {
+      "title": "5. Recovery and aftermath",
+      "desc": "Waking up was the hardest part. The access wounds in both legs were extremely painful — it felt as if they had been stabbed through with a knife. After the sheaths are removed, pressure bandages are applied, and you must lie completely flat and motionless on your back for the first 24 hours to prevent arterial bleeding."
+    }
+  }
+}

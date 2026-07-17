@@ -29,7 +29,8 @@ export default function GalleryPage() {
     const controller = new AbortController();
 
     const loadGalleryData = async () => {
-      const baseUrl = import.meta.env.VITE_GALLERY_BASE_URL || 'https://storage.yandexcloud.net/photos88';
+      const baseUrl =
+        import.meta.env.VITE_GALLERY_BASE_URL || 'https://storage.yandexcloud.net/photos88';
 
       if (!baseUrl) {
         setError(t('errors.loadGallery'));
