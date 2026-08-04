@@ -31,6 +31,20 @@ export default function PostListItem({ post }: PostListItemProps) {
           {post.excerpt}
         </p>
       )}
+      {post.tags.length > 0 && (
+        <p className="mt-1.5 flex flex-wrap gap-1.5">
+          {post.tags.map((tag) => (
+            <Link
+              key={tag}
+              to={`/blog?tag=${encodeURIComponent(tag)}`}
+              onClick={(event) => event.stopPropagation()}
+              className="rounded-full border border-border/50 px-2 py-0.5 text-[11px] text-muted-foreground transition-colors duration-150 hover:border-primary/50 hover:text-primary"
+            >
+              {tag}
+            </Link>
+          ))}
+        </p>
+      )}
     </li>
   );
 }

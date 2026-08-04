@@ -5,9 +5,9 @@ import { getMotionMediaQueries } from '@/shared/lib/motion';
 import { Skeleton, SkeletonGroup } from '@/shared/ui/Skeleton';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 gsap.registerPlugin(useGSAP);
 
@@ -19,6 +19,30 @@ export default function BlogPage() {
   const [posts, setPosts] = useState<PostMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTag = searchParams.get('tag');
+  const setActiveTag = (tag: string | null) => {
+    setSearchParams(tag ? { tag } : {}, { replace: true });
+  };
+
+  const allTags = useMemo(
+    () => Array.from(new Set(posts.flatMap((post) => post.tags))).sort(),
+    [posts]
+  );
+
+  const filteredPosts = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return posts.filter((post) => {
+      const matchesTag = !activeTag || post.tags.includes(activeTag);
+      const matchesQuery =
+        !normalizedQuery ||
+        post.title.toLowerCase().includes(normalizedQuery) ||
+        post.excerpt.toLowerCase().includes(normalizedQuery) ||
+        post.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery));
+      return matchesTag && matchesQuery;
+    });
+  }, [posts, query, activeTag]);
 
   const load = () => {
     setLoading(true);
@@ -55,10 +79,28 @@ export default function BlogPage() {
           ease: 'power3.out',
           stagger: 0.12,
         });
+      });
+
+      return () => mm.revert();
+    },
+    { scope: containerRef, dependencies: [loading, error] }
+  );
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add(getMotionMediaQueries(), (context) => {
+        const { reduceMotion } = context.conditions as { reduceMotion: boolean };
+
+        if (reduceMotion) {
+          gsap.set('[data-animate="reveal-item"]', { opacity: 1, y: 0, clearProps: 'transform' });
+          return;
+        }
 
         const itemTargets = gsap.utils.toArray<HTMLElement>('[data-animate="reveal-item"]');
         if (itemTargets.length > 0) {
-          const tl = gsap.timeline({ delay: 0.15 });
+          const tl = gsap.timeline({ delay: 0.05 });
 
           itemTargets.forEach((item, index) => {
             const title = item.querySelector<HTMLElement>('[data-reveal-title]');
@@ -92,7 +134,7 @@ export default function BlogPage() {
 
       return () => mm.revert();
     },
-    { scope: containerRef, dependencies: [posts, loading, error] }
+    { scope: containerRef, dependencies: [filteredPosts] }
   );
 
   return (
@@ -105,11 +147,60 @@ export default function BlogPage() {
           >
             {t('nav.back', { ns: 'common' })}
           </Link>
+          <a
+            href="/rss.xml"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-muted-foreground underline decoration-gray-500 underline-offset-2 transition-colors duration-150 hover:text-primary hover:decoration-primary"
+          >
+            {t('rss')}
+          </a>
         </header>
 
         <section data-animate="intro" className="prose-landing">
           <h3>{t('title')}</h3>
         </section>
+
+        {!loading && !error && posts.length > 0 && (
+          <section data-animate="intro" className="mb-6 space-y-3">
+            <input
+              type="text"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t('search.placeholder')}
+              className="w-full rounded-lg border border-border/50 bg-card/20 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none sm:text-base"
+            />
+            {allTags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveTag(null)}
+                  className={`rounded-full border px-2.5 py-1 text-xs transition-colors duration-150 ${
+                    activeTag === null
+                      ? 'border-primary/50 text-primary'
+                      : 'border-border/50 text-muted-foreground hover:text-primary hover:border-primary/50'
+                  }`}
+                >
+                  {t('search.allTags')}
+                </button>
+                {allTags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setActiveTag(tag === activeTag ? null : tag)}
+                    className={`rounded-full border px-2.5 py-1 text-xs transition-colors duration-150 ${
+                      activeTag === tag
+                        ? 'border-primary/50 text-primary'
+                        : 'border-border/50 text-muted-foreground hover:text-primary hover:border-primary/50'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
         <section data-animate="intro">
           {error ? (
@@ -136,9 +227,11 @@ export default function BlogPage() {
             </SkeletonGroup>
           ) : posts.length === 0 ? (
             <p className="text-sm text-muted-foreground sm:text-base">{t('empty')}</p>
+          ) : filteredPosts.length === 0 ? (
+            <p className="text-sm text-muted-foreground sm:text-base">{t('search.noResults')}</p>
           ) : (
             <ul className="space-y-6">
-              {posts.map((post) => (
+              {filteredPosts.map((post) => (
                 <PostListItem key={post.slug} post={post} />
               ))}
             </ul>

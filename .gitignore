@@ -5,12 +5,16 @@ node_modules/
 dist/
 dist-ssr/
 
+.pnpm-store/
+
 # vite stats
 dist/stats.html
 
 # generated at build time — don't commit, plugin regenerates on build
 public/blog/
 public/blog-manifest.json
+public/rss.xml
+public/changelog.json
 
 # photos and thumbnails stored in Longhorn persistent volume
 public/photos/*
@@ -60,3 +64,4 @@ Thumbs.db
 
 # kiro
 .kiro
+.pnpm-store/v11/files/4a/2675375043bffb4b1997d89e09817c3e8cfd5cf3f4fd1bdd2be3ee1175d3f0764496091607d77fb5d6221ddf9ac572768c4d58152523c4f31f2690c6d849b6

@@ -1,0 +1,11 @@
+{
+  "title": "uses",
+  "subtitle": "hardware and software I use every day.",
+  "sections": {
+    "hardware": "hardware",
+    "os": "os",
+    "editor": "editor & terminal",
+    "homelab": "homelab / self-hosted infra",
+    "browser": "browser"
+  }
+}

@@ -16,6 +16,7 @@ export interface PostMeta {
   dateISO: string;
   excerpt: string;
   hasEn: boolean;
+  tags: string[];
 }
 
 export interface Post extends PostMeta {
@@ -46,6 +47,55 @@ function escapeHtml(value: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function escapeXml(value: string): string {
+  return escapeHtml(value).replace(/'/g, '&apos;');
+}
+
+function normalizeTags(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((tag): tag is string => typeof tag === 'string' && tag.trim().length > 0);
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+const SITE_URL = 'https://d3vo.ru';
+
+function buildRssFeed(posts: PostMeta[]): string {
+  const items = posts
+    .map((post) => {
+      const url = `${SITE_URL}/blog/${post.slug}`;
+      const pubDate = post.dateISO ? new Date(post.dateISO).toUTCString() : '';
+      return `    <item>
+      <title>${escapeXml(post.title)}</title>
+      <link>${url}</link>
+      <guid isPermaLink="true">${url}</guid>
+      ${pubDate ? `<pubDate>${pubDate}</pubDate>` : ''}
+      <description>${escapeXml(post.excerpt)}</description>
+      ${post.tags.map((tag) => `<category>${escapeXml(tag)}</category>`).join('\n      ')}
+    </item>`;
+    })
+    .join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>xdearboy — блог</title>
+    <link>${SITE_URL}/blog</link>
+    <description>личный блог xdearboy: заметки о коде, devops и не только</description>
+    <language>ru</language>
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="${SITE_URL}/rss.xml" rel="self" type="application/rss+xml" />
+${items}
+  </channel>
+</rss>
+`;
 }
 
 export function blogLoaderPlugin(options: BlogLoaderOptions = {}): Plugin {
@@ -87,6 +137,7 @@ export function blogLoaderPlugin(options: BlogLoaderOptions = {}): Plugin {
         const sortKey = rawDate ? rawDate.getTime() : 0;
         const rawExcerpt = typeof data.excerpt === 'string' ? data.excerpt.trim() : '';
         const excerpt = rawExcerpt || deriveExcerpt(content);
+        const tags = normalizeTags(data.tags);
 
         const enFile = `${slug}.en.md`;
         const hasEn = allFiles.includes(enFile);
@@ -118,6 +169,7 @@ export function blogLoaderPlugin(options: BlogLoaderOptions = {}): Plugin {
               dateISO,
               excerpt: enExcerpt,
               hasEn,
+              tags,
               content: enContent,
             } satisfies Post)
           );
@@ -126,22 +178,32 @@ export function blogLoaderPlugin(options: BlogLoaderOptions = {}): Plugin {
         fs.mkdirSync(outputDir, { recursive: true });
         fs.writeFileSync(
           path.join(outputDir, `${slug}.json`),
-          JSON.stringify({ slug, title, date, dateISO, excerpt, hasEn, content } satisfies Post)
+          JSON.stringify({
+            slug,
+            title,
+            date,
+            dateISO,
+            excerpt,
+            hasEn,
+            tags,
+            content,
+          } satisfies Post)
         );
 
-        return { slug, title, date, dateISO, excerpt, hasEn, _sortKey: sortKey };
+        return { slug, title, date, dateISO, excerpt, hasEn, tags, _sortKey: sortKey };
       });
 
       posts.sort((a, b) => b._sortKey - a._sortKey);
 
       const cleanPosts: PostMeta[] = posts.map(
-        ({ slug, title, date, dateISO, excerpt, hasEn }) => ({
+        ({ slug, title, date, dateISO, excerpt, hasEn, tags }) => ({
           slug,
           title,
           date,
           dateISO,
           excerpt,
           hasEn,
+          tags,
         })
       );
 
@@ -154,6 +216,9 @@ export function blogLoaderPlugin(options: BlogLoaderOptions = {}): Plugin {
       );
 
       generatedPosts = cleanPosts;
+
+      const rssPath = path.join(path.dirname(manifestPath), 'rss.xml');
+      fs.writeFileSync(rssPath, buildRssFeed(cleanPosts));
     },
     writeBundle() {
       const indexPath = path.join(outDir, 'index.html');

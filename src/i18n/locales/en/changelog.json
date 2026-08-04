@@ -1,0 +1,8 @@
+{
+  "title": "changelog",
+  "subtitle": "site changes, auto-collected from the commit history.",
+  "empty": "no entries yet.",
+  "errors": {
+    "loadFailed": "failed to load changelog"
+  }
+}

@@ -35,6 +35,12 @@ spec:
           ports:
             - containerPort: 80
               protocol: TCP
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: url
           resources:
             requests:
               cpu: "50m"

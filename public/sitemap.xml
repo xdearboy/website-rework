@@ -26,6 +26,21 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://d3vo.ru/uses</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://d3vo.ru/guestbook</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://d3vo.ru/changelog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
     <loc>https://d3vo.ru/blog/coffee</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

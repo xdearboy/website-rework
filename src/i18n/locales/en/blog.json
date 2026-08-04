@@ -1,6 +1,15 @@
 {
   "title": "blog",
   "empty": "no blog posts yet.",
+  "rss": "rss",
+  "search": {
+    "placeholder": "search posts...",
+    "allTags": "all tags",
+    "noResults": "nothing found."
+  },
+  "stats": {
+    "views": "views"
+  },
   "errors": {
     "loadPosts": "failed to load posts"
   },

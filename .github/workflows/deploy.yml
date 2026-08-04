@@ -82,15 +82,33 @@ jobs:
           kubectl get nodes
           kubectl get componentstatuses || echo "Component status not available"
 
+      - name: Ensure Postgres credentials secret
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          if [ -z "$POSTGRES_PASSWORD" ]; then
+            echo "::error::POSTGRES_PASSWORD secret is not set"
+            exit 1
+          fi
+          kubectl create secret generic postgres-credentials \
+            --from-literal=username=portfolio \
+            --from-literal=password="$POSTGRES_PASSWORD" \
+            --from-literal=database=portfolio \
+            --from-literal=url="postgresql://portfolio:${POSTGRES_PASSWORD}@postgres.default.svc.cluster.local:5432/portfolio" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Apply k8s manifests
         run: |
           echo "Applying deployment manifests..."
           for i in {1..3}; do
             echo "Attempt $i..."
-            kubectl apply -f k8s/deployment.yaml -f k8s/service.yaml -f k8s/ingress.yaml -f k8s/hpa.yaml --validate=false && break
+            kubectl apply -f k8s/postgres.yaml -f k8s/deployment.yaml -f k8s/service.yaml -f k8s/ingress.yaml -f k8s/hpa.yaml --validate=false && break
             if [ $i -lt 3 ]; then sleep 10; fi
           done
           sleep 10
+
+      - name: Wait for Postgres rollout
+        run: kubectl rollout status deployment/postgres --timeout=300s
 
       - name: Update image
         run: |

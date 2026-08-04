@@ -4,6 +4,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import path from 'path'
 import { execSync } from 'child_process'
 import { blogLoaderPlugin } from './plugins/vite-plugin-blog-loader'
+import { changelogPlugin } from './plugins/vite-plugin-changelog'
 
 function getCommitHash(): string {
   if (process.env.GIT_COMMIT_HASH) return process.env.GIT_COMMIT_HASH;
@@ -17,6 +18,7 @@ function getCommitHash(): string {
 export default defineConfig({
   plugins: [
     blogLoaderPlugin(),
+    changelogPlugin(),
     react(),
     visualizer({ filename: 'dist/stats.html', open: false }),
   ],

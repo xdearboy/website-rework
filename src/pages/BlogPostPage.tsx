@@ -1,4 +1,5 @@
 import MarkdownContent from '@/features/blog/components/MarkdownContent';
+import PostStats from '@/features/blog/components/PostStats';
 import { type LocalizedPost, fetchPost } from '@/features/blog/lib/blog-client';
 import PageShell from '@/shared/layout/PageShell';
 import { formatDate } from '@/shared/lib/formatDate';
@@ -132,12 +133,30 @@ export default function BlogPostPage() {
           <h1 data-title-split className="mb-2 text-xl font-bold text-foreground sm:text-2xl">
             {post.title}
           </h1>
-          <p className="mb-6 text-xs text-muted-foreground sm:text-sm">{date}</p>
+          <p
+            className={`text-xs text-muted-foreground sm:text-sm ${post.tags.length > 0 ? 'mb-2' : 'mb-6'}`}
+          >
+            {date}
+          </p>
+          {post.tags.length > 0 && (
+            <p className="mb-6 flex flex-wrap gap-1.5">
+              {post.tags.map((tag) => (
+                <Link
+                  key={tag}
+                  to={`/blog?tag=${encodeURIComponent(tag)}`}
+                  className="rounded-full border border-border/50 px-2 py-0.5 text-[11px] text-muted-foreground transition-colors duration-150 hover:border-primary/50 hover:text-primary"
+                >
+                  {tag}
+                </Link>
+              ))}
+            </p>
+          )}
           {post.isTranslationFallback && (
             <p className="mb-6 rounded-md border border-border bg-muted/60 px-3 py-2 text-xs text-muted-foreground sm:text-sm">
               {t('post.translationUnavailable')}
             </p>
           )}
+          <PostStats slug={post.slug} />
           <hr className="prose-landing-hr" />
           <MarkdownContent content={post.content} />
         </article>

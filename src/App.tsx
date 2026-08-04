@@ -22,6 +22,9 @@ const DegensList = lazy(() => import('./pages/DegensList'));
 const DegensChat = lazy(() => import('./pages/DegensChat'));
 const GalleryPage = lazy(() => import('./pages/GalleryPage'));
 const WpwPage = lazy(() => import('./pages/WpwPage'));
+const UsesPage = lazy(() => import('./pages/UsesPage'));
+const ChangelogPage = lazy(() => import('./pages/ChangelogPage'));
+const GuestbookPage = lazy(() => import('./pages/GuestbookPage'));
 
 export default function App() {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -89,6 +92,9 @@ export default function App() {
               <Route path="/degens/:id" element={<DegensChat />} />
               <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/wpw" element={<WpwPage />} />
+              <Route path="/uses" element={<UsesPage />} />
+              <Route path="/changelog" element={<ChangelogPage />} />
+              <Route path="/guestbook" element={<GuestbookPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>

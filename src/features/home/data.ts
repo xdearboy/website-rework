@@ -64,6 +64,9 @@ export const explorePages: ExplorePage[] = [
   { labelKey: 'sections.explore.degens', to: '/degens' },
   { labelKey: 'sections.explore.donate', to: '/donate' },
   { labelKey: 'sections.explore.wpw', to: '/wpw' },
+  { labelKey: 'sections.explore.uses', to: '/uses' },
+  { labelKey: 'sections.explore.guestbook', to: '/guestbook' },
+  { labelKey: 'sections.explore.changelog', to: '/changelog' },
 ];
 
 export const badges: Badge[] = [
