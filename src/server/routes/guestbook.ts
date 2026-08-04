@@ -1,41 +1,55 @@
 import { Elysia, t } from 'elysia';
-import { insertGuestbookEntry, isGuestbookRateLimited, listGuestbookEntries } from '../db';
+import {
+  guestbookEntryExists,
+  insertGuestbookEntry,
+  isGuestbookRateLimited,
+  listGuestbookEntries,
+} from '../db';
+import { SESSION_COOKIE, currentUser, isOwner } from '../lib/auth';
 import { clientIp } from '../lib/client-ip';
 
 export const guestbookRoutes = new Elysia()
   .get('/api/guestbook', async () => ({ entries: await listGuestbookEntries() }))
   .post(
     '/api/guestbook',
-    async ({ body, headers, set }) => {
-      const name = body.name.trim();
+    async ({ body, headers, cookie, set }) => {
+      const user = await currentUser(cookie[SESSION_COOKIE]?.value as string | undefined);
+      if (!user) {
+        set.status = 401;
+        return { error: 'sign in with github to post' };
+      }
+
       const message = body.message.trim();
-      const website = body.website?.trim();
-
-      if (website) {
-        // honeypot tripped — pretend success, don't tip the bot off
-        set.status = 201;
-        return { id: 0, name, message, createdAt: new Date().toISOString() };
-      }
-      if (!name || !message) {
+      if (!message) {
         set.status = 400;
-        return { error: 'name and message are required' };
+        return { error: 'message is required' };
       }
 
-      const ip = clientIp(headers);
-      if (await isGuestbookRateLimited(ip)) {
+      const parentId = body.parentId ?? null;
+      if (parentId !== null) {
+        if (!isOwner(user)) {
+          set.status = 403;
+          return { error: 'only the site owner can reply' };
+        }
+        if (!(await guestbookEntryExists(parentId))) {
+          set.status = 404;
+          return { error: 'entry not found' };
+        }
+      }
+
+      if (await isGuestbookRateLimited(user.githubId)) {
         set.status = 429;
         return { error: 'rate limited' };
       }
 
-      const entry = await insertGuestbookEntry(name, message, ip);
+      const entry = await insertGuestbookEntry(message, user, clientIp(headers), parentId);
       set.status = 201;
       return entry;
     },
     {
       body: t.Object({
-        name: t.String({ minLength: 1, maxLength: 40 }),
         message: t.String({ minLength: 1, maxLength: 500 }),
-        website: t.Optional(t.String({ maxLength: 200 })),
+        parentId: t.Optional(t.Integer()),
       }),
     }
   );

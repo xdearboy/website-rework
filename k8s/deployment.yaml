@@ -41,6 +41,20 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: url
+            - name: SITE_URL
+              value: https://d3vo.ru
+            - name: OWNER_GITHUB_ID
+              value: "105206420"
+            - name: GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: github-oauth
+                  key: client_id
+            - name: GITHUB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: github-oauth
+                  key: client_secret
           resources:
             requests:
               cpu: "50m"

@@ -2,20 +2,27 @@
   "title": "guestbook",
   "subtitle": "leave a few words — everyone who stops by will see them.",
   "empty": "nobody has written anything yet. be the first.",
-  "form": {
-    "name": "name",
-    "namePlaceholder": "what's your name",
-    "message": "message",
-    "messagePlaceholder": "what do you want to say",
-    "submit": "send",
-    "submitting": "sending..."
+  "auth": {
+    "prompt": "sign in with github to leave an entry.",
+    "signIn": "sign in with github",
+    "signedInAs": "signed in as",
+    "signOut": "sign out"
   },
+  "form": {
+    "messagePlaceholder": "what do you want to say",
+    "message": "message",
+    "submit": "send",
+    "submitting": "sending...",
+    "reply": "reply",
+    "replyPlaceholder": "your reply",
+    "cancel": "cancel"
+  },
+  "authorBadge": "author",
   "errors": {
     "loadFailed": "failed to load entries",
     "submitFailed": "failed to submit entry",
     "rateLimited": "too fast — wait a minute before posting again",
-    "nameRequired": "enter a name",
-    "nameTooLong": "name must be 40 characters or fewer",
+    "unauthorized": "you need to sign in with github",
     "messageRequired": "enter a message",
     "messageTooLong": "message must be 500 characters or fewer"
   }

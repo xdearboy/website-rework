@@ -1,27 +1,29 @@
+import GuestbookEntryItem from '@/features/guestbook/components/GuestbookEntryItem';
 import {
   type GuestbookEntry,
   RateLimitError,
+  type Session,
+  UnauthorizedError,
   fetchGuestbookEntries,
+  fetchSession,
+  logout,
   submitGuestbookEntry,
 } from '@/features/guestbook/lib/guestbook-client';
 import PageShell from '@/shared/layout/PageShell';
-import { formatDate } from '@/shared/lib/formatDate';
 import { getMotionMediaQueries } from '@/shared/lib/motion';
 import { Skeleton, SkeletonGroup } from '@/shared/ui/Skeleton';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
 import { useGSAP } from '@gsap/react';
-import { zodResolver } from '@hookform/resolvers/zod';
 import gsap from 'gsap';
 import { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { z } from 'zod';
 
 gsap.registerPlugin(useGSAP);
 
 const ENTRY_SKELETON_KEYS = ['entry-1', 'entry-2', 'entry-3'];
+const MAX_MESSAGE_LENGTH = 500;
 
 const INPUT_CLASS =
   'w-full rounded-lg border border-border/50 bg-card/20 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none sm:text-base';
@@ -30,35 +32,23 @@ export default function GuestbookPage() {
   const { t } = useTranslation('guestbook');
   const containerRef = useRef<HTMLDivElement>(null);
   const [entries, setEntries] = useState<GuestbookEntry[]>([]);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const schema = z.object({
-    name: z.string().trim().min(1, t('errors.nameRequired')).max(40, t('errors.nameTooLong')),
-    message: z
-      .string()
-      .trim()
-      .min(1, t('errors.messageRequired'))
-      .max(500, t('errors.messageTooLong')),
-    website: z.string().optional(),
-  });
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues: { name: '', message: '', website: '' },
-  });
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [replyTo, setReplyTo] = useState<number | null>(null);
+  const [replyText, setReplyText] = useState('');
 
   const load = () => {
     setLoading(true);
     setLoadError(null);
-    fetchGuestbookEntries()
-      .then(setEntries)
+    Promise.all([fetchGuestbookEntries(), fetchSession()])
+      .then(([loadedEntries, loadedSession]) => {
+        setEntries(loadedEntries);
+        setSession(loadedSession);
+      })
       .catch(() => setLoadError(t('errors.loadFailed')))
       .finally(() => setLoading(false));
   };
@@ -68,18 +58,57 @@ export default function GuestbookPage() {
     load();
   }, []);
 
-  const onSubmit = handleSubmit(async (values) => {
+  const describeError = (err: unknown) => {
+    if (err instanceof RateLimitError) return t('errors.rateLimited');
+    if (err instanceof UnauthorizedError) return t('errors.unauthorized');
+    return t('errors.submitFailed');
+  };
+
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const trimmed = message.trim();
+    if (!trimmed) return;
+
+    setSubmitting(true);
     setSubmitError(null);
     try {
-      const entry = await submitGuestbookEntry(values);
+      const entry = await submitGuestbookEntry(trimmed);
       setEntries((prev) => [entry, ...prev]);
-      reset();
+      setMessage('');
     } catch (err) {
-      setSubmitError(
-        err instanceof RateLimitError ? t('errors.rateLimited') : t('errors.submitFailed')
-      );
+      setSubmitError(describeError(err));
+    } finally {
+      setSubmitting(false);
     }
-  });
+  };
+
+  const onReply = async (event: React.FormEvent, parentId: number) => {
+    event.preventDefault();
+    const trimmed = replyText.trim();
+    if (!trimmed) return;
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const reply = await submitGuestbookEntry(trimmed, parentId);
+      setEntries((prev) =>
+        prev.map((entry) =>
+          entry.id === parentId ? { ...entry, replies: [...entry.replies, reply] } : entry
+        )
+      );
+      setReplyText('');
+      setReplyTo(null);
+    } catch (err) {
+      setSubmitError(describeError(err));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const onSignOut = async () => {
+    await logout().catch(() => {});
+    setSession((prev) => (prev ? { ...prev, user: null, isOwner: false } : prev));
+  };
 
   useGSAP(
     () => {
@@ -109,6 +138,8 @@ export default function GuestbookPage() {
     { scope: containerRef, dependencies: [loading, loadError] }
   );
 
+  const ownerGithubId = session?.ownerGithubId ?? null;
+
   return (
     <PageShell>
       <div ref={containerRef}>
@@ -122,52 +153,51 @@ export default function GuestbookPage() {
         </section>
 
         <section data-animate="intro" className="mt-6">
-          <form onSubmit={onSubmit} className="space-y-3">
-            <div>
-              <input
-                {...register('name')}
-                type="text"
-                placeholder={t('form.namePlaceholder')}
-                aria-label={t('form.name')}
-                className={INPUT_CLASS}
-              />
-              {errors.name && (
-                <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
-              )}
-            </div>
+          {session?.user ? (
+            <form onSubmit={onSubmit} className="space-y-3">
+              <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:text-sm">
+                <img src={session.user.avatarUrl} alt="" className="size-5 shrink-0 rounded-full" />
+                <span>
+                  {t('auth.signedInAs')}{' '}
+                  <span className="font-bold text-foreground">{session.user.login}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={onSignOut}
+                  className="text-primary underline underline-offset-2"
+                >
+                  {t('auth.signOut')}
+                </button>
+              </p>
 
-            <div>
               <textarea
-                {...register('message')}
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
                 rows={4}
+                maxLength={MAX_MESSAGE_LENGTH}
                 placeholder={t('form.messagePlaceholder')}
                 aria-label={t('form.message')}
                 className={`${INPUT_CLASS} resize-y`}
               />
-              {errors.message && (
-                <p className="mt-1 text-xs text-destructive">{errors.message.message}</p>
+
+              {submitError && (
+                <Alert variant="destructive">
+                  <AlertDescription>{submitError}</AlertDescription>
+                </Alert>
               )}
+
+              <Button type="submit" disabled={submitting || !message.trim()}>
+                {submitting ? t('form.submitting') : t('form.submit')}
+              </Button>
+            </form>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground sm:text-base">{t('auth.prompt')}</p>
+              <Button asChild>
+                <a href="/api/auth/github">{t('auth.signIn')}</a>
+              </Button>
             </div>
-
-            <input
-              {...register('website')}
-              type="text"
-              tabIndex={-1}
-              autoComplete="off"
-              aria-hidden="true"
-              className="absolute left-[-9999px] h-0 w-0 opacity-0"
-            />
-
-            {submitError && (
-              <Alert variant="destructive">
-                <AlertDescription>{submitError}</AlertDescription>
-              </Alert>
-            )}
-
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? t('form.submitting') : t('form.submit')}
-            </Button>
-          </form>
+          )}
         </section>
 
         <section data-animate="intro" className="mt-8">
@@ -195,21 +225,72 @@ export default function GuestbookPage() {
           ) : entries.length === 0 ? (
             <p className="text-sm text-muted-foreground sm:text-base">{t('empty')}</p>
           ) : (
-            <ul className="space-y-5">
+            <ul className="space-y-6">
               {entries.map((entry) => (
-                <li key={entry.id} className="list-none">
-                  <p className="mb-0.5 text-xs text-muted-foreground sm:text-sm">
-                    <span className="font-bold text-foreground">{entry.name}</span>
-                    {' — '}
-                    {formatDate(new Date(entry.createdAt), {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })}
-                  </p>
-                  <p className="whitespace-pre-wrap text-sm text-foreground/80 sm:text-base">
-                    {entry.message}
-                  </p>
+                <li key={entry.id} className="list-none space-y-3">
+                  <GuestbookEntryItem entry={entry} ownerGithubId={ownerGithubId} />
+
+                  {entry.replies.length > 0 && (
+                    <div className="space-y-3 pl-4">
+                      {entry.replies.map((reply) => (
+                        <GuestbookEntryItem
+                          key={reply.id}
+                          entry={reply}
+                          ownerGithubId={ownerGithubId}
+                          isReply
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {session?.isOwner &&
+                    (replyTo === entry.id ? (
+                      <form
+                        onSubmit={(event) => onReply(event, entry.id)}
+                        className="space-y-2 pl-4"
+                      >
+                        <textarea
+                          value={replyText}
+                          onChange={(event) => setReplyText(event.target.value)}
+                          rows={3}
+                          maxLength={MAX_MESSAGE_LENGTH}
+                          placeholder={t('form.replyPlaceholder')}
+                          aria-label={t('form.reply')}
+                          className={`${INPUT_CLASS} resize-y`}
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            type="submit"
+                            size="sm"
+                            disabled={submitting || !replyText.trim()}
+                          >
+                            {submitting ? t('form.submitting') : t('form.submit')}
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setReplyTo(null);
+                              setReplyText('');
+                            }}
+                          >
+                            {t('form.cancel')}
+                          </Button>
+                        </div>
+                      </form>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReplyTo(entry.id);
+                          setReplyText('');
+                        }}
+                        className="pl-4 text-xs text-primary underline underline-offset-2"
+                      >
+                        {t('form.reply')}
+                      </button>
+                    ))}
                 </li>
               ))}
             </ul>

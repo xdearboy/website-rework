@@ -33,61 +33,174 @@ export async function ensureSchema(): Promise<void> {
       PRIMARY KEY (slug, emoji, ip)
     )
   `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS sessions (
+      token TEXT PRIMARY KEY,
+      github_id BIGINT NOT NULL,
+      login TEXT NOT NULL,
+      avatar_url TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      expires_at TIMESTAMPTZ NOT NULL
+    )
+  `;
+
+  // entries predate github auth, so the author columns are nullable
+  await sql`ALTER TABLE guestbook_entries ADD COLUMN IF NOT EXISTS github_id BIGINT`;
+  await sql`ALTER TABLE guestbook_entries ADD COLUMN IF NOT EXISTS login TEXT`;
+  await sql`ALTER TABLE guestbook_entries ADD COLUMN IF NOT EXISTS avatar_url TEXT`;
+  await sql`
+    ALTER TABLE guestbook_entries
+    ADD COLUMN IF NOT EXISTS parent_id INTEGER
+    REFERENCES guestbook_entries(id) ON DELETE CASCADE
+  `;
+  await sql`ALTER TABLE guestbook_entries ALTER COLUMN ip DROP NOT NULL`;
 }
 
-export interface GuestbookEntry {
+export interface GuestbookAuthor {
+  githubId: number | null;
+  login: string | null;
+  avatarUrl: string | null;
+}
+
+export interface GuestbookEntry extends GuestbookAuthor {
   id: number;
   name: string;
   message: string;
   createdAt: string;
+  replies: GuestbookEntry[];
+}
+
+interface GuestbookRow {
+  id: number;
+  name: string;
+  message: string;
+  created_at: Date;
+  github_id: string | null;
+  login: string | null;
+  avatar_url: string | null;
+  parent_id: number | null;
 }
 
 const GUESTBOOK_PAGE_SIZE = 100;
 const GUESTBOOK_RATE_LIMIT_SECONDS = 60;
 
-export async function listGuestbookEntries(): Promise<GuestbookEntry[]> {
-  const rows = await sql<{ id: number; name: string; message: string; created_at: Date }[]>`
-    SELECT id, name, message, created_at
-    FROM guestbook_entries
-    ORDER BY created_at DESC
-    LIMIT ${GUESTBOOK_PAGE_SIZE}
-  `;
-
-  return rows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    message: row.message,
-    createdAt: row.created_at.toISOString(),
-  }));
-}
-
-export async function isGuestbookRateLimited(ip: string): Promise<boolean> {
-  const [row] = await sql<{ count: string }[]>`
-    SELECT count(*)::text AS count
-    FROM guestbook_entries
-    WHERE ip = ${ip}
-      AND created_at > now() - ${GUESTBOOK_RATE_LIMIT_SECONDS} * interval '1 second'
-  `;
-  return Number(row?.count ?? 0) > 0;
-}
-
-export async function insertGuestbookEntry(
-  name: string,
-  message: string,
-  ip: string
-): Promise<GuestbookEntry> {
-  const [row] = await sql<{ id: number; name: string; message: string; created_at: Date }[]>`
-    INSERT INTO guestbook_entries (name, message, ip)
-    VALUES (${name}, ${message}, ${ip})
-    RETURNING id, name, message, created_at
-  `;
-
+function toEntry(row: GuestbookRow): GuestbookEntry {
   return {
     id: row.id,
     name: row.name,
     message: row.message,
     createdAt: row.created_at.toISOString(),
+    githubId: row.github_id === null ? null : Number(row.github_id),
+    login: row.login,
+    avatarUrl: row.avatar_url,
+    replies: [],
   };
+}
+
+export async function listGuestbookEntries(): Promise<GuestbookEntry[]> {
+  const rows = await sql<GuestbookRow[]>`
+    SELECT id, name, message, created_at, github_id, login, avatar_url, parent_id
+    FROM guestbook_entries
+    WHERE parent_id IS NULL
+    ORDER BY created_at DESC
+    LIMIT ${GUESTBOOK_PAGE_SIZE}
+  `;
+
+  const entries = rows.map(toEntry);
+  if (entries.length === 0) return entries;
+
+  const replies = await sql<GuestbookRow[]>`
+    SELECT id, name, message, created_at, github_id, login, avatar_url, parent_id
+    FROM guestbook_entries
+    WHERE parent_id IN ${sql(entries.map((entry) => entry.id))}
+    ORDER BY created_at ASC
+  `;
+
+  const byId = new Map(entries.map((entry) => [entry.id, entry]));
+  for (const row of replies) {
+    byId.get(row.parent_id as number)?.replies.push(toEntry(row));
+  }
+
+  return entries;
+}
+
+export async function isGuestbookRateLimited(githubId: number): Promise<boolean> {
+  const [row] = await sql<{ count: string }[]>`
+    SELECT count(*)::text AS count
+    FROM guestbook_entries
+    WHERE github_id = ${githubId}
+      AND created_at > now() - ${GUESTBOOK_RATE_LIMIT_SECONDS} * interval '1 second'
+  `;
+  return Number(row?.count ?? 0) > 0;
+}
+
+export async function guestbookEntryExists(id: number): Promise<boolean> {
+  const [row] = await sql<{ exists: boolean }[]>`
+    SELECT EXISTS (
+      SELECT 1 FROM guestbook_entries WHERE id = ${id} AND parent_id IS NULL
+    ) AS exists
+  `;
+  return row?.exists ?? false;
+}
+
+export async function insertGuestbookEntry(
+  message: string,
+  author: { githubId: number; login: string; avatarUrl: string },
+  ip: string,
+  parentId: number | null
+): Promise<GuestbookEntry> {
+  const [row] = await sql<GuestbookRow[]>`
+    INSERT INTO guestbook_entries (name, message, ip, github_id, login, avatar_url, parent_id)
+    VALUES (
+      ${author.login}, ${message}, ${ip},
+      ${author.githubId}, ${author.login}, ${author.avatarUrl}, ${parentId}
+    )
+    RETURNING id, name, message, created_at, github_id, login, avatar_url, parent_id
+  `;
+
+  return toEntry(row);
+}
+
+export interface SessionUser {
+  githubId: number;
+  login: string;
+  avatarUrl: string;
+}
+
+const SESSION_TTL_DAYS = 30;
+
+export async function createSession(token: string, user: SessionUser): Promise<void> {
+  await sql`
+    INSERT INTO sessions (token, github_id, login, avatar_url, expires_at)
+    VALUES (
+      ${token}, ${user.githubId}, ${user.login}, ${user.avatarUrl},
+      now() + ${SESSION_TTL_DAYS} * interval '1 day'
+    )
+  `;
+}
+
+export async function getSession(token: string): Promise<SessionUser | null> {
+  const [row] = await sql<{ github_id: string; login: string; avatar_url: string }[]>`
+    SELECT github_id, login, avatar_url
+    FROM sessions
+    WHERE token = ${token} AND expires_at > now()
+  `;
+  if (!row) return null;
+
+  return {
+    githubId: Number(row.github_id),
+    login: row.login,
+    avatarUrl: row.avatar_url,
+  };
+}
+
+export async function deleteSession(token: string): Promise<void> {
+  await sql`DELETE FROM sessions WHERE token = ${token}`;
+}
+
+export async function deleteExpiredSessions(): Promise<void> {
+  await sql`DELETE FROM sessions WHERE expires_at <= now()`;
 }
 
 export interface PostStats {
