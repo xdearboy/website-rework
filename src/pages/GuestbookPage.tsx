@@ -4,6 +4,7 @@ import {
   RateLimitError,
   type Session,
   UnauthorizedError,
+  deleteGuestbookEntry,
   fetchGuestbookEntries,
   fetchSession,
   logout,
@@ -102,6 +103,26 @@ export default function GuestbookPage() {
       setSubmitError(describeError(err));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const onDelete = async (id: number, parentId?: number) => {
+    if (!window.confirm(t('form.confirmDelete'))) return;
+
+    setSubmitError(null);
+    try {
+      await deleteGuestbookEntry(id);
+      setEntries((prev) =>
+        parentId === undefined
+          ? prev.filter((entry) => entry.id !== id)
+          : prev.map((entry) =>
+              entry.id === parentId
+                ? { ...entry, replies: entry.replies.filter((reply) => reply.id !== id) }
+                : entry
+            )
+      );
+    } catch {
+      setSubmitError(t('errors.deleteFailed'));
     }
   };
 
@@ -233,12 +254,18 @@ export default function GuestbookPage() {
                   {entry.replies.length > 0 && (
                     <div className="space-y-3 pl-4">
                       {entry.replies.map((reply) => (
-                        <GuestbookEntryItem
-                          key={reply.id}
-                          entry={reply}
-                          ownerGithubId={ownerGithubId}
-                          isReply
-                        />
+                        <div key={reply.id} className="space-y-1">
+                          <GuestbookEntryItem entry={reply} ownerGithubId={ownerGithubId} isReply />
+                          {session?.isOwner && (
+                            <button
+                              type="button"
+                              onClick={() => onDelete(reply.id, entry.id)}
+                              className="pl-3 text-xs text-muted-foreground underline underline-offset-2 hover:text-destructive"
+                            >
+                              {t('form.delete')}
+                            </button>
+                          )}
+                        </div>
                       ))}
                     </div>
                   )}
@@ -280,16 +307,25 @@ export default function GuestbookPage() {
                         </div>
                       </form>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setReplyTo(entry.id);
-                          setReplyText('');
-                        }}
-                        className="pl-4 text-xs text-primary underline underline-offset-2"
-                      >
-                        {t('form.reply')}
-                      </button>
+                      <div className="flex gap-3 pl-4">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReplyTo(entry.id);
+                            setReplyText('');
+                          }}
+                          className="text-xs text-primary underline underline-offset-2"
+                        >
+                          {t('form.reply')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDelete(entry.id)}
+                          className="text-xs text-muted-foreground underline underline-offset-2 hover:text-destructive"
+                        >
+                          {t('form.delete')}
+                        </button>
+                      </div>
                     ))}
                 </li>
               ))}

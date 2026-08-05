@@ -1,5 +1,6 @@
 import { Elysia, t } from 'elysia';
 import {
+  deleteGuestbookEntry,
   guestbookEntryExists,
   insertGuestbookEntry,
   isGuestbookRateLimited,
@@ -52,4 +53,22 @@ export const guestbookRoutes = new Elysia()
         parentId: t.Optional(t.Integer()),
       }),
     }
+  )
+  .delete(
+    '/api/guestbook/:id',
+    async ({ params, cookie, set }) => {
+      const user = await currentUser(cookie[SESSION_COOKIE]?.value as string | undefined);
+      if (!isOwner(user)) {
+        set.status = user ? 403 : 401;
+        return { error: 'only the site owner can delete entries' };
+      }
+
+      if (!(await deleteGuestbookEntry(params.id))) {
+        set.status = 404;
+        return { error: 'entry not found' };
+      }
+
+      return { ok: true };
+    },
+    { params: t.Object({ id: t.Integer() }) }
   );

@@ -66,8 +66,8 @@ spec:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 5
-            periodSeconds: 10
+            initialDelaySeconds: 2
+            periodSeconds: 3
             failureThreshold: 3
           livenessProbe:
             httpGet:

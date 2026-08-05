@@ -15,7 +15,9 @@
     "submitting": "sending...",
     "reply": "reply",
     "replyPlaceholder": "your reply",
-    "cancel": "cancel"
+    "cancel": "cancel",
+    "delete": "delete",
+    "confirmDelete": "delete this entry?"
   },
   "authorBadge": "author",
   "errors": {
@@ -24,6 +26,7 @@
     "rateLimited": "too fast — wait a minute before posting again",
     "unauthorized": "you need to sign in with github",
     "messageRequired": "enter a message",
-    "messageTooLong": "message must be 500 characters or fewer"
+    "messageTooLong": "message must be 500 characters or fewer",
+    "deleteFailed": "failed to delete entry"
   }
 }

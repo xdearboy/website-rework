@@ -42,6 +42,11 @@ export async function fetchGuestbookEntries(): Promise<GuestbookEntry[]> {
   return data.entries;
 }
 
+export async function deleteGuestbookEntry(id: number): Promise<void> {
+  const res = await fetch(`/api/guestbook/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Failed to delete entry: ${res.status}`);
+}
+
 export async function submitGuestbookEntry(
   message: string,
   parentId?: number

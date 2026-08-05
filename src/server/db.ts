@@ -144,6 +144,12 @@ export async function guestbookEntryExists(id: number): Promise<boolean> {
   return row?.exists ?? false;
 }
 
+/** deletes an entry and, thanks to the parent_id cascade, its replies */
+export async function deleteGuestbookEntry(id: number): Promise<boolean> {
+  const rows = await sql`DELETE FROM guestbook_entries WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
 export async function insertGuestbookEntry(
   message: string,
   author: { githubId: number; login: string; avatarUrl: string },

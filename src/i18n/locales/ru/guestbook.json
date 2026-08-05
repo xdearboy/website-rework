@@ -15,7 +15,9 @@
     "submitting": "отправляю...",
     "reply": "ответить",
     "replyPlaceholder": "твой ответ",
-    "cancel": "отмена"
+    "cancel": "отмена",
+    "delete": "удалить",
+    "confirmDelete": "удалить эту запись?"
   },
   "authorBadge": "автор",
   "errors": {
@@ -24,6 +26,7 @@
     "rateLimited": "слишком часто — подожди минуту перед следующей записью",
     "unauthorized": "нужно войти через github",
     "messageRequired": "введи сообщение",
-    "messageTooLong": "сообщение не длиннее 500 символов"
+    "messageTooLong": "сообщение не длиннее 500 символов",
+    "deleteFailed": "не удалось удалить запись"
   }
 }

@@ -9,6 +9,18 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  # runs alongside build-and-push, so it costs no extra wall-clock time
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint, typecheck and test
+        run: |
+          docker run --rm -v "$PWD":/app -w /app oven/bun:1.3.5-alpine sh -c \
+            "bun install --frozen-lockfile && bunx biome ci src plugins && bunx tsc --noEmit && bun run test"
+
   build-and-push:
     runs-on: self-hosted
     permissions:
@@ -71,7 +83,7 @@ jobs:
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
   deploy:
-    needs: build-and-push
+    needs: [build-and-push, test]
     runs-on: self-hosted
     if: success()
 
@@ -131,9 +143,8 @@ jobs:
           for i in {1..3}; do
             echo "Attempt $i..."
             kubectl apply -f k8s/postgres.yaml -f k8s/deployment.yaml -f k8s/service.yaml -f k8s/ingress.yaml -f k8s/hpa.yaml --validate=false && break
-            if [ $i -lt 3 ]; then sleep 10; fi
+            if [ $i -lt 3 ]; then sleep 5; fi
           done
-          sleep 10
 
       - name: Wait for Postgres rollout
         id: postgres_rollout
