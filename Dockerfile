@@ -1,15 +1,17 @@
 FROM oven/bun:1.3.5-alpine AS builder
 WORKDIR /app
 
-ARG VITE_GALLERY_BASE_URL
-ARG GIT_COMMIT_HASH=dev
-ENV VITE_GALLERY_BASE_URL=${VITE_GALLERY_BASE_URL}
-ENV GIT_COMMIT_HASH=${GIT_COMMIT_HASH}
-
 COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile
 
 COPY . .
+
+# after the install layer: GIT_COMMIT_HASH changes every commit and would
+# otherwise invalidate the dependency cache on every build
+ARG VITE_GALLERY_BASE_URL
+ARG GIT_COMMIT_HASH=dev
+ENV VITE_GALLERY_BASE_URL=${VITE_GALLERY_BASE_URL}
+ENV GIT_COMMIT_HASH=${GIT_COMMIT_HASH}
 
 RUN bun run build
 RUN bun build src/server/index.ts --target=node --outfile=server.js
