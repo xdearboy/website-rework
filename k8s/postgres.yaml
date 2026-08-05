@@ -29,6 +29,18 @@ spec:
       labels:
         app: postgres
     spec:
+      # the longhorn volume can only attach on nodes running longhorn-manager;
+      # primevault-vapro has no node.longhorn.io object, so scheduling there
+      # leaves the pod stuck in ContainerCreating with FailedAttachVolume
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - primevault-vapro.intezio.net
       containers:
         - name: postgres
           image: postgres:16-alpine
