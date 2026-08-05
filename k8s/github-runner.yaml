@@ -23,7 +23,8 @@ metadata:
   name: portfolio-runner
   namespace: default
 spec:
-  replicas: 1
+  # two runners so the test job and the image build actually run in parallel
+  replicas: 2
   selector: {}
   template:
     metadata:
