@@ -136,7 +136,19 @@ jobs:
           sleep 10
 
       - name: Wait for Postgres rollout
-        run: kubectl rollout status deployment/postgres --timeout=300s
+        id: postgres_rollout
+        run: kubectl rollout status deployment/postgres --timeout=180s
+
+      - name: Diagnose Postgres
+        if: failure() && steps.postgres_rollout.outcome == 'failure'
+        run: |
+          kubectl get pods -l app=postgres -o wide
+          kubectl describe pod -l app=postgres | tail -40
+          kubectl get pvc postgres-data
+          kubectl describe pvc postgres-data | tail -20
+          kubectl logs -l app=postgres --tail=50 --all-containers || true
+          kubectl get events --sort-by=.lastTimestamp | tail -25
+          kubectl get nodes -o wide
 
       - name: Update image
         run: |
