@@ -82,7 +82,9 @@ export const authRoutes = new Elysia()
         maxAge: SESSION_MAX_AGE,
       });
 
-      return redirect('/guestbook');
+      // must be absolute: with a cookie on the response the node adapter builds a
+      // Response.redirect, which rejects relative paths
+      return redirect(`${config.siteUrl}/guestbook`);
     },
     { query: t.Object({ code: t.String(), state: t.String() }) }
   )
