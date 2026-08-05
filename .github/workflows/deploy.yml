@@ -195,6 +195,13 @@ jobs:
         if: success()
         run: echo "✅ Deployment successful - ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
 
+      # last, and never fatal: this manages the runners that this job is running on,
+      # so the site is already deployed before anything here can disturb them
+      - name: Sync runner scale
+        if: success()
+        continue-on-error: true
+        run: kubectl apply -f k8s/github-runner.yaml
+
       - name: Rollback on failure
         if: failure()
         run: |
