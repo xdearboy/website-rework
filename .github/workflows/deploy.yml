@@ -16,10 +16,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Lint, typecheck and test
+      - name: Install and build
         run: |
           docker run --rm -v "$PWD":/app -w /app oven/bun:1.3.5-alpine sh -c \
-            "bun install --frozen-lockfile && bunx biome ci src plugins && bunx tsc --noEmit && bun run test"
+            "bun install --frozen-lockfile && bun run build"
+
+      # runs under real node, not bun: that is the production runtime, and it is where
+      # the elysia node adapter behaves differently
+      - name: Lint, typecheck and test
+        run: |
+          docker run --rm -v "$PWD":/app -w /app node:20-alpine sh -c \
+            "npx biome ci src plugins && npx tsc --noEmit && npx vitest run"
 
   build-and-push:
     runs-on: self-hosted
