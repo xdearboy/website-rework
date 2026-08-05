@@ -149,6 +149,11 @@ jobs:
           kubectl logs -l app=postgres --tail=50 --all-containers || true
           kubectl get events --sort-by=.lastTimestamp | tail -25
           kubectl get nodes -o wide
+          echo "--- longhorn nodes ---"
+          kubectl get nodes.longhorn.io -A -o wide || true
+          echo "--- longhorn volume ---"
+          kubectl -n longhorn-system get volumes.longhorn.io -o wide || true
+          kubectl -n longhorn-system get replicas.longhorn.io -o wide || true
 
       - name: Update image
         run: |
