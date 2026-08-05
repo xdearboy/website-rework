@@ -21,7 +21,11 @@ export interface Session {
   ownerGithubId: number;
 }
 
-export class RateLimitError extends Error {}
+export class RateLimitError extends Error {
+  constructor(readonly retryAfter: number) {
+    super('rate limited');
+  }
+}
 export class UnauthorizedError extends Error {}
 
 export async function fetchSession(): Promise<Session> {
@@ -58,7 +62,10 @@ export async function submitGuestbookEntry(
   });
 
   if (res.status === 401) throw new UnauthorizedError('not signed in');
-  if (res.status === 429) throw new RateLimitError('rate limited');
+  if (res.status === 429) {
+    const body = (await res.json().catch(() => ({}))) as { retryAfter?: number };
+    throw new RateLimitError(body.retryAfter ?? 30);
+  }
   if (!res.ok) throw new Error(`Failed to submit entry: ${res.status}`);
 
   return (await res.json()) as GuestbookEntry;

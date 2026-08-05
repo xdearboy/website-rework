@@ -60,7 +60,7 @@ export default function GuestbookPage() {
   }, []);
 
   const describeError = (err: unknown) => {
-    if (err instanceof RateLimitError) return t('errors.rateLimited');
+    if (err instanceof RateLimitError) return t('errors.rateLimited', { seconds: err.retryAfter });
     if (err instanceof UnauthorizedError) return t('errors.unauthorized');
     return t('errors.submitFailed');
   };
@@ -256,21 +256,35 @@ export default function GuestbookPage() {
                       {entry.replies.map((reply) => (
                         <div key={reply.id} className="space-y-1">
                           <GuestbookEntryItem entry={reply} ownerGithubId={ownerGithubId} isReply />
-                          {session?.isOwner && (
-                            <button
-                              type="button"
-                              onClick={() => onDelete(reply.id, entry.id)}
-                              className="pl-3 text-xs text-muted-foreground underline underline-offset-2 hover:text-destructive"
-                            >
-                              {t('form.delete')}
-                            </button>
-                          )}
+                          <div className="flex gap-3 pl-3">
+                            {session?.user && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setReplyTo(entry.id);
+                                  setReplyText(`@${reply.login ?? reply.name}, `);
+                                }}
+                                className="text-xs text-primary underline underline-offset-2"
+                              >
+                                {t('form.reply')}
+                              </button>
+                            )}
+                            {session?.isOwner && (
+                              <button
+                                type="button"
+                                onClick={() => onDelete(reply.id, entry.id)}
+                                className="text-xs text-muted-foreground underline underline-offset-2 hover:text-destructive"
+                              >
+                                {t('form.delete')}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
                   )}
 
-                  {session?.isOwner &&
+                  {session?.user &&
                     (replyTo === entry.id ? (
                       <form
                         onSubmit={(event) => onReply(event, entry.id)}
@@ -318,13 +332,15 @@ export default function GuestbookPage() {
                         >
                           {t('form.reply')}
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => onDelete(entry.id)}
-                          className="text-xs text-muted-foreground underline underline-offset-2 hover:text-destructive"
-                        >
-                          {t('form.delete')}
-                        </button>
+                        {session.isOwner && (
+                          <button
+                            type="button"
+                            onClick={() => onDelete(entry.id)}
+                            className="text-xs text-muted-foreground underline underline-offset-2 hover:text-destructive"
+                          >
+                            {t('form.delete')}
+                          </button>
+                        )}
                       </div>
                     ))}
                 </li>

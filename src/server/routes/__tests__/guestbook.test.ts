@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const OWNER = { githubId: 105206420, login: 'xdearboy', avatarUrl: 'https://avatars/1' };
 const GUEST = { githubId: 999001, login: 'someguest', avatarUrl: 'https://avatars/2' };
 
-const state = { rateLimited: false, parentExists: true, deleted: true };
+const state = { cooldown: 0, threadRoot: 1 as number | null, deleted: true };
 
 vi.mock('../../db', () => ({
   getSession: vi.fn(async (token: string) => {
@@ -15,8 +15,8 @@ vi.mock('../../db', () => ({
     return null;
   }),
   listGuestbookEntries: vi.fn(async () => []),
-  isGuestbookRateLimited: vi.fn(async () => state.rateLimited),
-  guestbookEntryExists: vi.fn(async () => state.parentExists),
+  guestbookCooldownRemaining: vi.fn(async () => state.cooldown),
+  resolveThreadRoot: vi.fn(async () => state.threadRoot),
   deleteGuestbookEntry: vi.fn(async () => state.deleted),
   insertGuestbookEntry: vi.fn(async (message: string, author: typeof OWNER) => ({
     id: 1,
@@ -49,8 +49,8 @@ function post(body: unknown, token?: string) {
 
 describe('guestbook routes', () => {
   beforeEach(() => {
-    state.rateLimited = false;
-    state.parentExists = true;
+    state.cooldown = 0;
+    state.threadRoot = 1;
     state.deleted = true;
   });
 
@@ -97,11 +97,11 @@ describe('guestbook routes', () => {
     expect(res.status).toBe(400);
   });
 
-  it('forbids a guest from replying', async () => {
+  it('lets any signed-in visitor reply', async () => {
     const app = await buildApp();
     const res = await app.handle(post({ message: 'reply', parentId: 1 }, 'guesttoken'));
 
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(201);
   });
 
   it('lets the owner reply', async () => {
@@ -112,19 +112,21 @@ describe('guestbook routes', () => {
   });
 
   it('returns 404 when replying to a missing entry', async () => {
-    state.parentExists = false;
+    state.threadRoot = null;
     const app = await buildApp();
     const res = await app.handle(post({ message: 'thanks', parentId: 999 }, 'ownertoken'));
 
     expect(res.status).toBe(404);
   });
 
-  it('returns 429 when rate limited', async () => {
-    state.rateLimited = true;
+  it('reports the remaining cooldown when rate limited', async () => {
+    state.cooldown = 42;
     const app = await buildApp();
     const res = await app.handle(post({ message: 'hi' }, 'guesttoken'));
 
     expect(res.status).toBe(429);
+    expect(res.headers.get('retry-after')).toBe('42');
+    await expect(res.json()).resolves.toMatchObject({ retryAfter: 42 });
   });
 
   it('rejects a message over the length limit', async () => {

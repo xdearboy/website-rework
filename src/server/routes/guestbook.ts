@@ -1,10 +1,10 @@
 import { Elysia, t } from 'elysia';
 import {
   deleteGuestbookEntry,
-  guestbookEntryExists,
+  guestbookCooldownRemaining,
   insertGuestbookEntry,
-  isGuestbookRateLimited,
   listGuestbookEntries,
+  resolveThreadRoot,
 } from '../db';
 import { SESSION_COOKIE, currentUser, isOwner } from '../lib/auth';
 import { clientIp } from '../lib/client-ip';
@@ -26,21 +26,20 @@ export const guestbookRoutes = new Elysia()
         return { error: 'message is required' };
       }
 
-      const parentId = body.parentId ?? null;
-      if (parentId !== null) {
-        if (!isOwner(user)) {
-          set.status = 403;
-          return { error: 'only the site owner can reply' };
-        }
-        if (!(await guestbookEntryExists(parentId))) {
+      let parentId: number | null = null;
+      if (body.parentId !== undefined) {
+        parentId = await resolveThreadRoot(body.parentId);
+        if (parentId === null) {
           set.status = 404;
           return { error: 'entry not found' };
         }
       }
 
-      if (await isGuestbookRateLimited(user.githubId)) {
+      const retryAfter = await guestbookCooldownRemaining(user.githubId);
+      if (retryAfter > 0) {
         set.status = 429;
-        return { error: 'rate limited' };
+        set.headers['Retry-After'] = String(retryAfter);
+        return { error: 'rate limited', retryAfter };
       }
 
       const entry = await insertGuestbookEntry(message, user, clientIp(headers), parentId);

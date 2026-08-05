@@ -23,7 +23,7 @@
   "errors": {
     "loadFailed": "failed to load entries",
     "submitFailed": "failed to submit entry",
-    "rateLimited": "too fast — wait a minute before posting again",
+    "rateLimited": "too fast — wait {{seconds}}s before posting again",
     "unauthorized": "you need to sign in with github",
     "messageRequired": "enter a message",
     "messageTooLong": "message must be 500 characters or fewer",

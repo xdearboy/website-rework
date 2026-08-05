@@ -83,7 +83,10 @@ interface GuestbookRow {
 }
 
 const GUESTBOOK_PAGE_SIZE = 100;
-const GUESTBOOK_RATE_LIMIT_SECONDS = 60;
+const GUESTBOOK_RATE_LIMIT_SECONDS = 30;
+const GUESTBOOK_RATE_LIMIT_MAX_SECONDS = 15 * 60;
+const BURST_WINDOW_MINUTES = 10;
+const BURST_STEP = 5;
 
 function toEntry(row: GuestbookRow): GuestbookEntry {
   return {
@@ -125,23 +128,43 @@ export async function listGuestbookEntries(): Promise<GuestbookEntry[]> {
   return entries;
 }
 
-export async function isGuestbookRateLimited(githubId: number): Promise<boolean> {
-  const [row] = await sql<{ count: string }[]>`
-    SELECT count(*)::text AS count
+/**
+ * Seconds the author still has to wait, 0 if they can post. The cooldown starts at
+ * GUESTBOOK_RATE_LIMIT_SECONDS and doubles for every BURST_STEP posts made in the
+ * burst window, so normal conversation is unaffected but flooding gets expensive.
+ */
+export async function guestbookCooldownRemaining(githubId: number): Promise<number> {
+  const [row] = await sql<{ since_last: number | null; recent: number }[]>`
+    SELECT
+      EXTRACT(EPOCH FROM (now() - max(created_at)))::int AS since_last,
+      count(*) FILTER (
+        WHERE created_at > now() - ${BURST_WINDOW_MINUTES} * interval '1 minute'
+      )::int AS recent
     FROM guestbook_entries
     WHERE github_id = ${githubId}
-      AND created_at > now() - ${GUESTBOOK_RATE_LIMIT_SECONDS} * interval '1 second'
   `;
-  return Number(row?.count ?? 0) > 0;
+
+  if (!row || row.since_last === null) return 0;
+
+  const steps = Math.floor(row.recent / BURST_STEP);
+  const required = Math.min(
+    GUESTBOOK_RATE_LIMIT_SECONDS * 2 ** steps,
+    GUESTBOOK_RATE_LIMIT_MAX_SECONDS
+  );
+
+  return Math.max(0, required - row.since_last);
 }
 
-export async function guestbookEntryExists(id: number): Promise<boolean> {
-  const [row] = await sql<{ exists: boolean }[]>`
-    SELECT EXISTS (
-      SELECT 1 FROM guestbook_entries WHERE id = ${id} AND parent_id IS NULL
-    ) AS exists
+/**
+ * Resolves the thread a reply belongs to: replying to a reply attaches to the same
+ * root entry, keeping threads one level deep. Null when the target does not exist.
+ */
+export async function resolveThreadRoot(id: number): Promise<number | null> {
+  const [row] = await sql<{ id: number; parent_id: number | null }[]>`
+    SELECT id, parent_id FROM guestbook_entries WHERE id = ${id}
   `;
-  return row?.exists ?? false;
+  if (!row) return null;
+  return row.parent_id ?? row.id;
 }
 
 /** deletes an entry and, thanks to the parent_id cascade, its replies */
