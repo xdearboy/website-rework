@@ -2,8 +2,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: multi-domain-ingress
-  namespace: default
   annotations:
+    # cloudflare stores ttl 1 ("auto"); without this external-dns
+    # generates ttl 0, always sees a diff and rewrites in a loop
+    external-dns.alpha.kubernetes.io/ttl: "1"
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: haproxy

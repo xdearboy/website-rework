@@ -1,0 +1,4 @@
+# postgres image stays pinned here rather than being built by werf —
+# it is an upstream image, not something this repo produces
+postgres:
+  image: postgres:16-alpine

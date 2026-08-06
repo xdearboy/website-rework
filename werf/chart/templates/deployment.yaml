@@ -30,7 +30,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: portfolio
-          image: ghcr.io/xdearboy/website-rework:latest
+          image: {{ $.Values.werf.image.portfolio }}
           imagePullPolicy: Always
           ports:
             - containerPort: 80

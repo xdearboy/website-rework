@@ -1,15 +1,11 @@
 name: Build and Deploy
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
-  # runs alongside build-and-push, so it costs no extra wall-clock time
   test:
     runs-on: portfolio-runners
     steps:
@@ -21,24 +17,20 @@ jobs:
           docker run --rm -v "$PWD":/app -w /app oven/bun:1.3.5-alpine sh -c \
             "bun install --frozen-lockfile && bun run build"
 
-      # runs under real node, not bun: that is the production runtime, and it is where
-      # the elysia node adapter behaves differently
       - name: Lint, typecheck and test
         run: |
-          docker run --rm -v "$PWD":/app -w /app node:20-alpine sh -c \
-            "npx biome ci src plugins && npx tsc --noEmit && npx vitest run"
+          docker run --rm -v "$PWD":/app -w /app oven/bun:1.3.5-alpine sh -c \
+            "bun install --frozen-lockfile && bun run lint && bun run typecheck && bun test"
 
-  build-and-push:
+  converge:
+    needs: test
     runs-on: portfolio-runners
-    permissions:
-      contents: read
-      packages: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # full history so the changelog can be built from feat: commits
+          # full history: the changelog is built from feat: commits, and werf
+          # derives image tags from git content
           fetch-depth: 0
 
       - name: Generate changelog
@@ -52,77 +44,36 @@ jobs:
             exit 1
           fi
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Install werf
+        uses: werf/actions/install@v2
 
       - name: Log in to ghcr.io
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            latest
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          build-args: |
-            VITE_GALLERY_BASE_URL=${{ vars.VITE_GALLERY_BASE_URL }}
-            GIT_COMMIT_HASH=${{ github.sha }}
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
-
-  deploy:
-    needs: [build-and-push, test]
-    runs-on: portfolio-runners
-    if: success()
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install kubectl
+      - name: Configure kubectl
         run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
+          curl -sLO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl && sudo mv kubectl /usr/local/bin/
           mkdir -p $HOME/.kube
-          kubectl config set-cluster in-cluster --server=https://kubernetes.default.svc --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          kubectl config set-credentials runner --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-          kubectl config set-context default --cluster=in-cluster --user=runner --namespace=default
+          kubectl config set-cluster in-cluster \
+            --server=https://kubernetes.default.svc \
+            --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          kubectl config set-credentials runner \
+            --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+          kubectl config set-context default \
+            --cluster=in-cluster --user=runner --namespace=default
           kubectl config use-context default
 
-      - name: Check cluster health
-        run: |
-          kubectl cluster-info
-          kubectl get nodes
-          kubectl get componentstatuses || echo "Component status not available"
-
+      # Both secrets stay outside the chart: their values come from GitHub
+      # secrets, and templating them would write the values into release state.
       - name: Ensure Postgres credentials secret
         env:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
-          if [ -z "$POSTGRES_PASSWORD" ]; then
-            echo "::error::POSTGRES_PASSWORD secret is not set"
-            exit 1
-          fi
           kubectl create secret generic postgres-credentials \
             --from-literal=username=portfolio \
             --from-literal=password="$POSTGRES_PASSWORD" \
@@ -135,70 +86,17 @@ jobs:
           GH_OAUTH_CLIENT_ID: ${{ secrets.GH_OAUTH_CLIENT_ID }}
           GH_OAUTH_CLIENT_SECRET: ${{ secrets.GH_OAUTH_CLIENT_SECRET }}
         run: |
-          if [ -z "$GH_OAUTH_CLIENT_ID" ] || [ -z "$GH_OAUTH_CLIENT_SECRET" ]; then
-            echo "::error::GH_OAUTH_CLIENT_ID / GH_OAUTH_CLIENT_SECRET secrets are not set"
-            exit 1
-          fi
           kubectl create secret generic github-oauth \
             --from-literal=client_id="$GH_OAUTH_CLIENT_ID" \
             --from-literal=client_secret="$GH_OAUTH_CLIENT_SECRET" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Apply k8s manifests
+      - name: Converge
         run: |
-          echo "Applying deployment manifests..."
-          for i in {1..3}; do
-            echo "Attempt $i..."
-            kubectl apply -f k8s/postgres.yaml -f k8s/deployment.yaml -f k8s/service.yaml -f k8s/ingress.yaml -f k8s/hpa.yaml --validate=false && break
-            if [ $i -lt 3 ]; then sleep 5; fi
-          done
-
-      - name: Wait for Postgres rollout
-        id: postgres_rollout
-        run: kubectl rollout status deployment/postgres --timeout=180s
-
-      - name: Diagnose Postgres
-        if: failure() && steps.postgres_rollout.outcome == 'failure'
-        run: |
-          kubectl get pods -l app=postgres -o wide
-          kubectl describe pod -l app=postgres | tail -40
-          kubectl get pvc postgres-data
-          kubectl describe pvc postgres-data | tail -20
-          kubectl logs -l app=postgres --tail=50 --all-containers || true
-          kubectl get events --sort-by=.lastTimestamp | tail -25
-          kubectl get nodes -o wide
-          echo "--- longhorn nodes ---"
-          kubectl get nodes.longhorn.io -A -o wide || true
-          echo "--- longhorn volume ---"
-          kubectl -n longhorn-system get volumes.longhorn.io -o wide || true
-          kubectl -n longhorn-system get replicas.longhorn.io -o wide || true
-
-      - name: Update image
-        run: |
-          echo "Setting new image..."
-          kubectl set image deployment/portfolio \
-            portfolio=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --record
-
-      - name: Wait for rollout
-        run: |
-          echo "Waiting for deployment rollout..."
-          kubectl rollout status deployment/portfolio --timeout=600s
-
-      - name: Verify pods
-        run: |
-          echo "Pod status:"
-          kubectl get pods -l app=portfolio -o wide
-          kubectl describe deployment portfolio
-
-      - name: Notify deployment
-        if: success()
-        run: echo "✅ Deployment successful - ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-
-      - name: Rollback on failure
-        if: failure()
-        run: |
-          echo "❌ Deployment failed, attempting rollback..."
-          kubectl rollout undo deployment/portfolio --timeout=60s || true
-          sleep 10
-          kubectl get pods -l app=portfolio
+          . $(werf ci-env github --as-file)
+          werf converge \
+            --repo ghcr.io/${{ github.repository }} \
+            --release portfolio \
+            --namespace default
+        env:
+          WERF_ENV: production
