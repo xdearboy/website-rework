@@ -11,7 +11,7 @@ env:
 jobs:
   # runs alongside build-and-push, so it costs no extra wall-clock time
   test:
-    runs-on: self-hosted
+    runs-on: portfolio-runners
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
             "npx biome ci src plugins && npx tsc --noEmit && npx vitest run"
 
   build-and-push:
-    runs-on: self-hosted
+    runs-on: portfolio-runners
     permissions:
       contents: read
       packages: write
@@ -91,7 +91,7 @@ jobs:
 
   deploy:
     needs: [build-and-push, test]
-    runs-on: self-hosted
+    runs-on: portfolio-runners
     if: success()
 
     steps:
@@ -194,13 +194,6 @@ jobs:
       - name: Notify deployment
         if: success()
         run: echo "✅ Deployment successful - ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-
-      # last, and never fatal: this manages the runners that this job is running on,
-      # so the site is already deployed before anything here can disturb them
-      - name: Sync runner scale
-        if: success()
-        continue-on-error: true
-        run: kubectl apply -f k8s/github-runner.yaml
 
       - name: Rollback on failure
         if: failure()
