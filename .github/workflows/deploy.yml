@@ -27,6 +27,10 @@ jobs:
   converge:
     needs: test
     runs-on: portfolio-runners
+    permissions:
+      contents: read
+      # werf pushes both the built image and its own client-id marker to ghcr.io
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
