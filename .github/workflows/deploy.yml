@@ -99,6 +99,7 @@ jobs:
           werf converge \
             --repo ghcr.io/${{ github.repository }} \
             --release portfolio \
-            --namespace default
+            --namespace default \
+            --synchronization kubernetes://default
         env:
           WERF_ENV: production
