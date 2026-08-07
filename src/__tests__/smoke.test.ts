@@ -37,15 +37,15 @@ describe('Smoke tests — build artifacts', () => {
     expect(dockerfile).toContain('COPY --from=builder')
   })
 
-  it('k8s manifests exist', () => {
-    expect(fs.existsSync(path.resolve('k8s/deployment.yaml'))).toBe(true)
-    expect(fs.existsSync(path.resolve('k8s/service.yaml'))).toBe(true)
-    expect(fs.existsSync(path.resolve('k8s/ingress.yaml'))).toBe(true)
-    expect(fs.existsSync(path.resolve('k8s/hpa.yaml'))).toBe(true)
+  it('chart templates exist', () => {
+    expect(fs.existsSync(path.resolve('werf/chart/templates/deployment.yaml'))).toBe(true)
+    expect(fs.existsSync(path.resolve('werf/chart/templates/service.yaml'))).toBe(true)
+    expect(fs.existsSync(path.resolve('werf/chart/templates/ingress.yaml'))).toBe(true)
+    expect(fs.existsSync(path.resolve('werf/chart/templates/hpa.yaml'))).toBe(true)
   })
 
   it('ingress.yaml uses haproxy ingressClassName', () => {
-    const ingress = fs.readFileSync(path.resolve('k8s/ingress.yaml'), 'utf8')
+    const ingress = fs.readFileSync(path.resolve('werf/chart/templates/ingress.yaml'), 'utf8')
     expect(ingress).toContain('ingressClassName: haproxy')
     expect(ingress).toContain('tls:')
   })
