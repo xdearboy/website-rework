@@ -4,14 +4,10 @@
   "intro": "This section is dedicated to my experience living with and treating Wolff-Parkinson-White (WPW) syndrome — a congenital heart anomaly featuring an extra electrical pathway that can cause sudden tachycardia episodes.",
   "status": {
     "title": "current status",
-    "waiting": "awaiting follow-up RFA (scheduled for August 11)",
-    "pulse": "resting heart rate: ~90–100 bpm"
-  },
-  "countdown": {
-    "days_one": "{{count}} day remaining until surgery",
-    "days_other": "{{count}} days remaining until surgery",
-    "today": "the surgery is scheduled for today",
-    "passed": "the surgery has taken place"
+    "outcome": "follow-up RFA completed successfully",
+    "outcomeDesc": "August 12, using the CARTO-3 system. The main extra pathway was located and ablated.",
+    "remaining": "awaiting discharge and final test results",
+    "remainingDesc": "a second, weak pathway was left untouched — it runs right next to the normal AV node, so removing it was too risky. final conclusions will come after follow-up tests and discharge."
   },
   "timeline": {
     "title": "history & treatment",
@@ -31,9 +27,14 @@
       "desc": "symptoms began to return, resting heart rate often staying at 90–100 bpm. 24-hour Holter monitoring confirmed recurrence concerns."
     },
     "step4": {
-      "date": "August 11",
+      "date": "August 12",
       "title": "follow-up surgery",
-      "desc": "a second RFA procedure is scheduled to permanently resolve the extra pathway."
+      "desc": "a second RFA was performed using the CARTO-3 system. both sides of the groin were explored, and one extra pathway was found and ablated."
+    },
+    "step5": {
+      "date": "after surgery",
+      "title": "outcome",
+      "desc": "the second pathway was left alone: it sits right next to the normal conduction node, and removing it was too risky. per the surgeon, it's weak, only partially conducting, and rarely causes trouble. doctors also noted my baseline heart rate simply runs high — 150 bpm lying down isn't considered tachycardia for me. currently awaiting discharge and final test results."
     }
   },
   "faq": {
@@ -60,27 +61,31 @@
     }
   },
   "procedure": {
-    "title": "how the procedure works: personal RFA experience",
-    "intro": "Radiofrequency catheter ablation (RFA) and electrophysiological study (EPS) are high-tech, catheter-based vascular interventions rather than open-heart surgery. Here is how my procedure went:",
+    "title": "how the procedure works: personal follow-up RFA experience",
+    "intro": "Radiofrequency catheter ablation (RFA) and electrophysiological study (EPS) are high-tech, catheter-based vascular interventions rather than open-heart surgery. My second procedure was done on August 12 using the CARTO-3 system. Here is how it went:",
     "step1": {
-      "title": "1. Femoral access",
-      "desc": "First, a local anesthetic is injected into the groin area. Then, an introducer sheath — a flat plastic port about the size of a flat finger — is inserted into the femoral artery. The doctors guide thin, flexible electrode catheters through it directly to the heart."
+      "title": "1. Access on both sides",
+      "desc": "First, a local anesthetic is injected into the groin area. Then, an introducer sheath — a flat plastic port about the size of a flat finger — is inserted into the femoral artery. This time both the left and right groin were used, with thin, flexible electrode catheters guided through each one directly to the heart."
     },
     "step2": {
-      "title": "2. EPS & 3D heart mapping",
-      "desc": "A magnetic system under the operating table acts like a GPS, tracking the catheter tips to construct a detailed 3D model of the heart chambers on a monitor. To map the abnormal conduction path, the heart is stimulated with electrical impulses. During my EPS, they accelerated my heart rate to 380 bpm."
+      "title": "2. EPS & 3D mapping with CARTO-3",
+      "desc": "The CARTO-3 system under the operating table acts like a GPS, tracking the catheter tips to build a detailed 3D map of the heart chambers on a monitor. It lets the doctors pinpoint exactly where the extra conduction pathways run."
     },
     "step3": {
-      "title": "3. Locating the pathway & switching legs",
-      "desc": "The doctors began mapping from the right femoral artery, but found the pathway was not located where they expected. They had to urgently establish access through the left femoral artery without delay."
+      "title": "3. One pathway found and ablated",
+      "desc": "Mapping the heart from both sides, the doctors found an extra pathway that could be safely removed and ablated ('sealed') it with high-frequency electrical current."
     },
     "step4": {
-      "title": "4. General sedation & ablation",
-      "desc": "Once the catheters were successfully repositioned from the left side, I was put under deep sedation (deep sedation / strong anesthesia, no mechanical ventilation). The electrophysiologists located the exact root of the extra pathway and ablated ('sealed') it using high-frequency electrical current. I woke up after the procedure was finished."
+      "title": "4. The second pathway was left alone",
+      "desc": "They found another pathway — per the surgeon, weak and only partially conducting, rarely causing problems. It runs right next to the heart's normal conduction (AV) node, so removing it was too risky — it could have damaged the node itself. They decided to leave it as is."
     },
     "step5": {
-      "title": "5. Recovery and aftermath",
-      "desc": "Waking up was the hardest part. The access wounds in both legs were extremely painful — it felt as if they had been stabbed through with a knife. After the sheaths are removed, pressure bandages are applied, and you must lie completely flat and motionless on your back for the first 24 hours to prevent arterial bleeding."
+      "title": "5. Drug-induced stimulation & the ablation itself",
+      "desc": "During the procedure I was given drugs to raise my blood pressure (likely isoproterenol) — they made me feel hot, which helps the doctors see the conduction pathway more clearly. The most painful part of the whole procedure is the ablation itself: an intense pain around the heart and neck. I was given an oxygen mask during it, and the staff noted I was handling it well."
+    },
+    "step6": {
+      "title": "6. Afterward",
+      "desc": "Huge respect to the whole medical team, especially the surgeon and the anesthesiologist. Afterward, while waiting to be taken out of the operating room, I just talked with the anesthesiologist about life. Now it's recovery — awaiting discharge and final test results."
     }
   }
 }

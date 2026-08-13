@@ -4,7 +4,7 @@ import { getMotionMediaQueries } from '@/shared/lib/motion';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Activity, Heart, Info, ShieldAlert, Stethoscope } from 'lucide-react';
+import { Activity, CheckCircle2, Heart, Info, ShieldAlert, Stethoscope } from 'lucide-react';
 import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -15,24 +15,6 @@ export default function WpwPage() {
   const { t } = useTranslation('wpw');
   const containerRef = useRef<HTMLDivElement>(null);
   const transition = usePageTransition();
-
-  const surgeryDate = new Date('2026-08-11T00:00:00');
-
-  const getDaysRemainingText = () => {
-    const today = new Date();
-    const d1 = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-    const d2 = Date.UTC(surgeryDate.getFullYear(), surgeryDate.getMonth(), surgeryDate.getDate());
-    const diffTime = d2 - d1;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays > 0) {
-      return t('countdown.days', { count: diffDays });
-    }
-    if (diffDays === 0) {
-      return t('countdown.today');
-    }
-    return t('countdown.passed');
-  };
 
   useGSAP(
     () => {
@@ -152,6 +134,24 @@ export default function WpwPage() {
           </h3>
 
           <div className="grid gap-3 sm:grid-cols-2">
+            <div className="relative flex flex-col justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/[0.02] p-4 transition-all duration-300 hover:border-emerald-500/40 hover:bg-emerald-500/[0.04]">
+              <div className="absolute top-0 right-0 -mr-6 -mt-6 w-12 h-12 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
+
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center justify-center p-1 rounded-md bg-emerald-500/10 text-emerald-500 shrink-0">
+                    <CheckCircle2 className="size-3.5" />
+                  </div>
+                  <h4 className="text-[11px] font-bold text-foreground leading-snug uppercase tracking-wide">
+                    {t('status.outcome')}
+                  </h4>
+                </div>
+                <p className="text-[10px] text-muted-foreground leading-relaxed pl-[30px]">
+                  {t('status.outcomeDesc')}
+                </p>
+              </div>
+            </div>
+
             <div className="relative flex flex-col justify-between rounded-xl border border-amber-500/20 bg-amber-500/[0.02] p-4 transition-all duration-300 hover:border-amber-500/40 hover:bg-amber-500/[0.04]">
               <div className="absolute top-0 right-0 -mr-6 -mt-6 w-12 h-12 bg-amber-500/5 rounded-full blur-xl pointer-events-none" />
 
@@ -161,11 +161,11 @@ export default function WpwPage() {
                     <ShieldAlert className="size-3.5 animate-pulse" />
                   </div>
                   <h4 className="text-[11px] font-bold text-foreground leading-snug uppercase tracking-wide">
-                    {t('status.waiting')}
+                    {t('status.remaining')}
                   </h4>
                 </div>
                 <p className="text-[10px] text-muted-foreground leading-relaxed mb-3 pl-[30px]">
-                  Вторая операция аритмолога / Second Electrophysiology Ablation
+                  {t('status.remainingDesc')}
                 </p>
               </div>
 
@@ -175,51 +175,7 @@ export default function WpwPage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500" />
                   </span>
-                  {getDaysRemainingText()}
-                </div>
-              </div>
-            </div>
-
-            <div className="relative flex flex-col justify-between rounded-xl border border-destructive/20 bg-destructive/[0.02] p-4 transition-all duration-300 hover:border-destructive/40 hover:bg-destructive/[0.04] overflow-hidden">
-              <div className="absolute top-0 right-0 -mr-6 -mt-6 w-12 h-12 bg-destructive/5 rounded-full blur-xl pointer-events-none" />
-
-              <div className="absolute bottom-0 right-0 w-24 h-8 opacity-25 pointer-events-none">
-                <svg
-                  className="w-full h-full text-destructive"
-                  viewBox="0 0 100 30"
-                  preserveAspectRatio="none"
-                >
-                  <title>ECG Line</title>
-                  <path
-                    d="M0,15 L25,15 L30,5 L35,25 L40,12 L45,18 L50,15 L100,15"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
-                </svg>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="flex items-center justify-center p-1 rounded-md bg-destructive/10 text-destructive shrink-0">
-                    <Heart className="size-3.5 animate-pulse" />
-                  </div>
-                  <h4 className="text-[11px] font-bold text-foreground leading-snug uppercase tracking-wide">
-                    {t('status.pulse')}
-                  </h4>
-                </div>
-                <p className="text-[10px] text-muted-foreground leading-relaxed mb-3 pl-[30px]">
-                  Остается высокий пульс в покое / High resting heart rate due to recurrence
-                </p>
-              </div>
-
-              <div className="pl-[30px]">
-                <div className="inline-flex items-center gap-1.5 text-[9px] font-bold text-destructive bg-destructive/10 border border-destructive/30 px-2.5 py-1 rounded-md uppercase tracking-wider">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive/40 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-destructive/80" />
-                  </span>
-                  ~90–100 bpm в покое
+                  {t('status.remaining')}
                 </div>
               </div>
             </div>
@@ -282,6 +238,19 @@ export default function WpwPage() {
                 {t('timeline.step4.desc')}
               </p>
             </div>
+
+            <div className="relative">
+              <div className="absolute -left-[31px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20 border-2 border-emerald-500" />
+              <span className="text-xs font-bold text-emerald-500 uppercase tracking-wide">
+                {t('timeline.step5.date')}
+              </span>
+              <h4 className="text-sm font-bold text-foreground mt-1">
+                {t('timeline.step5.title')}
+              </h4>
+              <p className="text-xs text-foreground/80 mt-1 sm:text-sm">
+                {t('timeline.step5.desc')}
+              </p>
+            </div>
           </div>
         </section>
 
@@ -333,6 +302,14 @@ export default function WpwPage() {
               </h4>
               <p className="text-xs text-muted-foreground mt-2 leading-relaxed sm:text-sm">
                 {t('procedure.step5.desc')}
+              </p>
+            </div>
+            <div className="rounded-xl border border-border/40 bg-card/10 p-4">
+              <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <span className="text-primary">✦</span> {t('procedure.step6.title')}
+              </h4>
+              <p className="text-xs text-muted-foreground mt-2 leading-relaxed sm:text-sm">
+                {t('procedure.step6.desc')}
               </p>
             </div>
           </div>
