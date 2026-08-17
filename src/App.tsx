@@ -3,6 +3,7 @@ import { isLowEndDevice } from '@/shared/lib/deviceCapability';
 import { trackPageView } from '@/shared/lib/metrika';
 import { getMotionMediaQueries } from '@/shared/lib/motion';
 import { scrollToTop } from '@/shared/lib/smoothScroll';
+import LanguageSwitcher from '@/shared/ui/LanguageSwitcher';
 import PageSkeleton from '@/shared/ui/PageSkeleton';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -80,6 +81,7 @@ export default function App() {
   return (
     <>
       <SiteBackground />
+      <LanguageSwitcher />
       <div id="smooth-wrapper" ref={wrapperRef}>
         <div id="smooth-content">
           <Suspense fallback={<PageSkeleton />}>
