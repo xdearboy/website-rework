@@ -24,10 +24,9 @@ export default function LanguageSwitcher() {
   const activeIndex = LANGUAGES.findIndex((lang) => lang.code === current);
 
   return (
-    <div
-      role="group"
+    <fieldset
       aria-label="Language / Язык"
-      className="fixed top-4 right-4 z-50 flex items-center rounded-full border border-border bg-card/70 p-1 font-mono text-[11px] shadow-sm backdrop-blur-sm"
+      className="fixed top-4 right-4 z-50 m-0 flex items-center rounded-full border border-border bg-card/70 p-1 font-mono text-[11px] shadow-sm backdrop-blur-sm"
     >
       <span
         aria-hidden="true"
@@ -53,6 +52,6 @@ export default function LanguageSwitcher() {
           </button>
         );
       })}
-    </div>
+    </fieldset>
   );
 }
