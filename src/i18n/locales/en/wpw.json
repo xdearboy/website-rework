@@ -6,8 +6,8 @@
     "title": "current status",
     "outcome": "follow-up RFA completed successfully",
     "outcomeDesc": "August 12, using the CARTO-3 system. The main extra pathway was located and ablated.",
-    "remaining": "awaiting discharge and final test results",
-    "remainingDesc": "a second, weak pathway was left untouched — it runs right next to the normal AV node, so removing it was too risky. final conclusions will come after follow-up tests and discharge."
+    "remaining": "discharged, Holter results normal",
+    "remainingDesc": "the follow-up 24-hour Holter monitor (August 15) came back with good results. August 17 — discharged from the hospital. a second, weak pathway was left untouched — it runs right next to the normal AV node, so removing it was too risky."
   },
   "timeline": {
     "title": "history & treatment",
@@ -34,7 +34,12 @@
     "step5": {
       "date": "after surgery",
       "title": "outcome",
-      "desc": "the second pathway was left alone: it sits right next to the normal conduction node, and removing it was too risky. per the surgeon, it's weak, only partially conducting, and rarely causes trouble. doctors also noted my baseline heart rate simply runs high — 150 bpm lying down isn't considered tachycardia for me. currently awaiting discharge and final test results."
+      "desc": "the second pathway was left alone: it sits right next to the normal conduction node, and removing it was too risky. per the surgeon, it's weak, only partially conducting, and rarely causes trouble. doctors also noted my baseline heart rate simply runs high — 150 bpm lying down isn't considered tachycardia for me."
+    },
+    "step6": {
+      "date": "August 17",
+      "title": "Holter check & discharge",
+      "desc": "on Saturday, August 15, a follow-up 24-hour Holter monitor was done — good results, the heart is working normally. today, August 17, I'm discharged from the hospital."
     }
   },
   "faq": {
@@ -85,7 +90,7 @@
     },
     "step6": {
       "title": "6. Afterward",
-      "desc": "Huge respect to the whole medical team, especially the surgeon and the anesthesiologist. Afterward, while waiting to be taken out of the operating room, I just talked with the anesthesiologist about life. Now it's recovery — awaiting discharge and final test results."
+      "desc": "Huge respect to the whole medical team, especially the surgeon and the anesthesiologist. Afterward, while waiting to be taken out of the operating room, I just talked with the anesthesiologist about life. The follow-up Holter monitor on Saturday came back with good results, and I was discharged from the hospital on August 17."
     }
   }
 }
