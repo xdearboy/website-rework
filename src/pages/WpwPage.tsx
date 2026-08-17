@@ -152,31 +152,21 @@ export default function WpwPage() {
               </div>
             </div>
 
-            <div className="relative flex flex-col justify-between rounded-xl border border-amber-500/20 bg-amber-500/[0.02] p-4 transition-all duration-300 hover:border-amber-500/40 hover:bg-amber-500/[0.04]">
-              <div className="absolute top-0 right-0 -mr-6 -mt-6 w-12 h-12 bg-amber-500/5 rounded-full blur-xl pointer-events-none" />
+            <div className="relative flex flex-col justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/[0.02] p-4 transition-all duration-300 hover:border-emerald-500/40 hover:bg-emerald-500/[0.04]">
+              <div className="absolute top-0 right-0 -mr-6 -mt-6 w-12 h-12 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
 
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="flex items-center justify-center p-1 rounded-md bg-amber-500/10 text-amber-500 shrink-0">
-                    <ShieldAlert className="size-3.5 animate-pulse" />
+                  <div className="flex items-center justify-center p-1 rounded-md bg-emerald-500/10 text-emerald-500 shrink-0">
+                    <ShieldAlert className="size-3.5" />
                   </div>
                   <h4 className="text-[11px] font-bold text-foreground leading-snug uppercase tracking-wide">
                     {t('status.remaining')}
                   </h4>
                 </div>
-                <p className="text-[10px] text-muted-foreground leading-relaxed mb-3 pl-[30px]">
+                <p className="text-[10px] text-muted-foreground leading-relaxed pl-[30px]">
                   {t('status.remainingDesc')}
                 </p>
-              </div>
-
-              <div className="pl-[30px]">
-                <div className="inline-flex items-center gap-1.5 text-[9px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-md uppercase tracking-wider">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500" />
-                  </span>
-                  {t('status.remaining')}
-                </div>
               </div>
             </div>
           </div>
@@ -227,7 +217,7 @@ export default function WpwPage() {
             </div>
 
             <div className="relative">
-              <div className="absolute -left-[31px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500/20 border-2 border-amber-500 animate-pulse" />
+              <div className="absolute -left-[31px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500/20 border-2 border-amber-500" />
               <span className="text-xs font-bold text-amber-500 uppercase tracking-wide">
                 {t('timeline.step4.date')}
               </span>
@@ -249,6 +239,19 @@ export default function WpwPage() {
               </h4>
               <p className="text-xs text-foreground/80 mt-1 sm:text-sm">
                 {t('timeline.step5.desc')}
+              </p>
+            </div>
+
+            <div className="relative">
+              <div className="absolute -left-[31px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20 border-2 border-emerald-500 animate-pulse" />
+              <span className="text-xs font-bold text-emerald-500 uppercase tracking-wide">
+                {t('timeline.step6.date')}
+              </span>
+              <h4 className="text-sm font-bold text-foreground mt-1">
+                {t('timeline.step6.title')}
+              </h4>
+              <p className="text-xs text-foreground/80 mt-1 sm:text-sm">
+                {t('timeline.step6.desc')}
               </p>
             </div>
           </div>
