@@ -29,6 +29,71 @@ export const blockedRoutes = new Elysia()
       createdAt: row.created_at.toISOString(),
     }));
   })
+  .get(
+    '/api/blocked/export',
+    async ({ query }) => {
+      const format = query.format?.toLowerCase() || 'json';
+
+      const rows = await sql<BlockedRow[]>`
+        SELECT id, ip, reason, port, country_code, country_name, created_at
+        FROM blocked_ips
+        ORDER BY created_at DESC
+        LIMIT 1000
+      `;
+
+      if (format === 'csv') {
+        const header = 'ip,reason,port,countryCode,countryName,createdAt\n';
+        const lines = rows.map((r) => {
+          const reason = `"${(r.reason || '').replace(/"/g, '""')}"`;
+          const cName = `"${(r.country_name || '').replace(/"/g, '""')}"`;
+          return `${r.ip},${reason},${r.port ?? ''},${r.country_code ?? ''},${cName},${r.created_at.toISOString()}`;
+        });
+        return new Response(header + lines.join('\n'), {
+          headers: {
+            'content-type': 'text/csv; charset=utf-8',
+            'content-disposition': 'attachment; filename="blocked_ips.csv"',
+          },
+        });
+      }
+
+      if (format === 'txt') {
+        const ips = Array.from(new Set(rows.map((r) => r.ip)));
+        return new Response(ips.join('\n'), {
+          headers: {
+            'content-type': 'text/plain; charset=utf-8',
+            'content-disposition': 'attachment; filename="blocked_ips.txt"',
+          },
+        });
+      }
+
+      return new Response(
+        JSON.stringify(
+          rows.map((row) => ({
+            id: row.id,
+            ip: row.ip,
+            reason: row.reason,
+            port: row.port,
+            countryCode: row.country_code,
+            countryName: row.country_name,
+            createdAt: row.created_at.toISOString(),
+          })),
+          null,
+          2
+        ),
+        {
+          headers: {
+            'content-type': 'application/json; charset=utf-8',
+            'content-disposition': 'attachment; filename="blocked_ips.json"',
+          },
+        }
+      );
+    },
+    {
+      query: t.Object({
+        format: t.Optional(t.String()),
+      }),
+    }
+  )
   .post(
     '/api/blocked',
     async ({ body, headers, set }) => {

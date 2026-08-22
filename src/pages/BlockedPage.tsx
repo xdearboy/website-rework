@@ -4,7 +4,7 @@ import { useGSAP } from '@gsap/react';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, ru } from 'date-fns/locale';
 import gsap from 'gsap';
-import { Info, Search, Shield } from 'lucide-react';
+import { Download, Info, Search, Shield } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -148,7 +148,7 @@ export default function BlockedPage() {
         </p>
 
         {/* Заголовок страницы */}
-        <section data-animate="intro" className="prose-landing mb-8">
+        <section data-animate="intro" className="prose-landing mb-6">
           <div className="flex items-center gap-2 mb-2">
             <Shield className="w-5 h-5 text-destructive animate-pulse" />
             <h3 className="m-0 text-foreground font-bold">d3vo_defense_logs</h3>
@@ -160,18 +160,61 @@ export default function BlockedPage() {
           </p>
         </section>
 
-        {/* Поиск */}
-        <div data-animate="intro" className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder={
-              isRu ? 'Поиск по IP, причине или стране...' : 'Search by IP, reason or country...'
-            }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-card/20 border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 transition-colors text-xs font-mono"
-          />
+        {/* Панель экспорта и поиска */}
+        <div data-animate="intro" className="space-y-3 mb-6">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
+              <Download className="w-3.5 h-3.5 text-primary" />
+              <span>{isRu ? 'Экспорт базы:' : 'Export database:'}</span>
+            </div>
+            <div className="flex items-center gap-2 font-mono text-[11px]">
+              <a
+                href="/api/blocked/export?format=json"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 rounded bg-card/20 border border-border text-foreground hover:border-primary/50 hover:text-primary transition-colors flex items-center gap-1"
+                title={isRu ? 'Скачать полный лог в JSON' : 'Download full log in JSON'}
+              >
+                <span>JSON</span>
+              </a>
+              <a
+                href="/api/blocked/export?format=csv"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 rounded bg-card/20 border border-border text-foreground hover:border-primary/50 hover:text-primary transition-colors flex items-center gap-1"
+                title={isRu ? 'Скачать для Excel/Sheets (CSV)' : 'Download for Excel/Sheets (CSV)'}
+              >
+                <span>CSV</span>
+              </a>
+              <a
+                href="/api/blocked/export?format=txt"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 rounded bg-card/20 border border-border text-foreground hover:border-primary/50 hover:text-primary transition-colors flex items-center gap-1"
+                title={
+                  isRu
+                    ? 'Список только IP для iptables / fail2ban / ipset'
+                    : 'Plain IP list for iptables / fail2ban / ipset'
+                }
+              >
+                <span>TXT (IP list)</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Поиск */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder={
+                isRu ? 'Поиск по IP, причине или стране...' : 'Search by IP, reason or country...'
+              }
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-card/20 border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 transition-colors text-xs font-mono"
+            />
+          </div>
         </div>
 
         {/* Контейнер таблицы в едином стиле сайта */}
