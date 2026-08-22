@@ -2,6 +2,7 @@ import { node } from '@elysiajs/node';
 import { Elysia } from 'elysia';
 import { deleteExpiredSessions, ensureSchema } from './db';
 import { authRoutes } from './routes/auth';
+import { blockedRoutes } from './routes/blocked';
 import { guestbookRoutes } from './routes/guestbook';
 import { postsRoutes } from './routes/posts';
 import { vitalsRoutes } from './routes/vitals';
@@ -27,6 +28,7 @@ const app = new Elysia({ adapter: node() })
   .use(authRoutes)
   .use(guestbookRoutes)
   .use(postsRoutes)
+  .use(blockedRoutes)
   .onError(({ code, set }) => {
     if (code === 'NOT_FOUND') {
       set.status = 404;

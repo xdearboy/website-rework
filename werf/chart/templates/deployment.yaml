@@ -41,6 +41,8 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: url
+            - name: BLOCKED_API_KEY
+              value: "dfa8492049e29a92bc31920198deac88"
             - name: SITE_URL
               value: https://d3vo.ru
             - name: OWNER_GITHUB_ID

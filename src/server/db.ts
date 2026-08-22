@@ -55,6 +55,20 @@ export async function ensureSchema(): Promise<void> {
     REFERENCES guestbook_entries(id) ON DELETE CASCADE
   `;
   await sql`ALTER TABLE guestbook_entries ALTER COLUMN ip DROP NOT NULL`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS blocked_ips (
+      id SERIAL PRIMARY KEY,
+      ip TEXT NOT NULL,
+      reason TEXT NOT NULL,
+      port INTEGER,
+      country_code TEXT,
+      country_name TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_blocked_ips_ip ON blocked_ips(ip)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_blocked_ips_created_at ON blocked_ips(created_at DESC)`;
 }
 
 export interface GuestbookAuthor {
