@@ -8,13 +8,59 @@ metadata:
     external-dns.alpha.kubernetes.io/ttl: "1"
     cert-manager.io/cluster-issuer: letsencrypt-prod
     ingress.kubernetes.io/waf: modsecurity
-    ingress.kubernetes.io/waf-mode: detect
+    ingress.kubernetes.io/waf-mode: enforce
+    ingress.kubernetes.io/limit-req-rate-limit: "20"
+    ingress.kubernetes.io/limit-req-period: "10s"
+    ingress.kubernetes.io/limit-req-status-code: "429"
+    ingress.kubernetes.io/limit-req-whitelist: "138.124.9.158"
 spec:
   ingressClassName: haproxy
   rules:
     - host: devo.as214422.lol
       http:
         paths:
+          - path: /.env
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /wp-login.php
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /wp-admin
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /phpmyadmin
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /.git
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /xmlrpc.php
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
@@ -25,6 +71,48 @@ spec:
     - host: d3vo.ru
       http:
         paths:
+          - path: /.env
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /wp-login.php
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /wp-admin
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /phpmyadmin
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /.git
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
+          - path: /xmlrpc.php
+            pathType: Prefix
+            backend:
+              service:
+                name: honeypot
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
@@ -39,3 +127,4 @@ spec:
     - hosts:
         - d3vo.ru
       secretName: d3vo-ru-tls
+
