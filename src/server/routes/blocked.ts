@@ -1,53 +1,60 @@
 import { Elysia, t } from 'elysia';
-import { sql } from '../db';
+import { type BlockedIpRow, sql, upsertBlockedIp } from '../db';
 
-interface BlockedRow {
-  id: number;
-  ip: string;
-  reason: string;
-  port: number | null;
-  country_code: string | null;
-  country_name: string | null;
-  created_at: Date;
+function serialize(row: BlockedIpRow) {
+  return {
+    id: row.id,
+    ip: row.ip,
+    reason: row.reason,
+    port: row.port,
+    category: row.category,
+    source: row.source,
+    asn: row.asn,
+    node: row.node,
+    hits: row.hits,
+    peakRps: row.peak_rps,
+    countryCode: row.country_code,
+    countryName: row.country_name,
+    createdAt: row.created_at.toISOString(),
+    lastSeen: row.last_seen.toISOString(),
+  };
 }
+
+const SELECT_COLUMNS = sql`
+  id, ip, reason, port, category, source, asn, node, hits, peak_rps,
+  country_code, country_name, created_at, last_seen
+`;
 
 export const blockedRoutes = new Elysia()
   .get('/api/blocked', async () => {
-    const rows = await sql<BlockedRow[]>`
-      SELECT id, ip, reason, port, country_code, country_name, created_at
+    const rows = await sql<BlockedIpRow[]>`
+      SELECT ${SELECT_COLUMNS}
       FROM blocked_ips
-      ORDER BY created_at DESC
-      LIMIT 100
+      ORDER BY last_seen DESC
+      LIMIT 200
     `;
-    return rows.map((row) => ({
-      id: row.id,
-      ip: row.ip,
-      reason: row.reason,
-      port: row.port,
-      countryCode: row.country_code,
-      countryName: row.country_name,
-      createdAt: row.created_at.toISOString(),
-    }));
+    return rows.map(serialize);
   })
   .get(
     '/api/blocked/export',
     async ({ query }) => {
       const format = query.format?.toLowerCase() || 'json';
 
-      const rows = await sql<BlockedRow[]>`
-        SELECT id, ip, reason, port, country_code, country_name, created_at
+      const rows = await sql<BlockedIpRow[]>`
+        SELECT ${SELECT_COLUMNS}
         FROM blocked_ips
-        ORDER BY created_at DESC
-        LIMIT 1000
+        ORDER BY last_seen DESC
+        LIMIT 5000
       `;
 
       if (format === 'csv') {
-        const header = 'ip,reason,port,countryCode,countryName,createdAt\n';
-        const lines = rows.map((r) => {
-          const reason = `"${(r.reason || '').replace(/"/g, '""')}"`;
-          const cName = `"${(r.country_name || '').replace(/"/g, '""')}"`;
-          return `${r.ip},${reason},${r.port ?? ''},${r.country_code ?? ''},${cName},${r.created_at.toISOString()}`;
-        });
+        const header =
+          'ip,reason,category,source,port,hits,peakRps,countryCode,countryName,lastSeen\n';
+        const esc = (v: string | null) => `"${(v || '').replace(/"/g, '""')}"`;
+        const lines = rows.map(
+          (r) =>
+            `${r.ip},${esc(r.reason)},${r.category ?? ''},${r.source ?? ''},${r.port ?? ''},${r.hits},${r.peak_rps ?? ''},${r.country_code ?? ''},${esc(r.country_name)},${r.last_seen.toISOString()}`
+        );
         return new Response(header + lines.join('\n'), {
           headers: {
             'content-type': 'text/csv; charset=utf-8',
@@ -66,27 +73,12 @@ export const blockedRoutes = new Elysia()
         });
       }
 
-      return new Response(
-        JSON.stringify(
-          rows.map((row) => ({
-            id: row.id,
-            ip: row.ip,
-            reason: row.reason,
-            port: row.port,
-            countryCode: row.country_code,
-            countryName: row.country_name,
-            createdAt: row.created_at.toISOString(),
-          })),
-          null,
-          2
-        ),
-        {
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
-            'content-disposition': 'attachment; filename="blocked_ips.json"',
-          },
-        }
-      );
+      return new Response(JSON.stringify(rows.map(serialize), null, 2), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+          'content-disposition': 'attachment; filename="blocked_ips.json"',
+        },
+      });
     },
     {
       query: t.Object({
@@ -111,14 +103,23 @@ export const blockedRoutes = new Elysia()
 
       let countryCode = body.countryCode ?? null;
       let countryName = body.countryName ?? null;
+      let asn = body.asn ?? null;
       if (!countryCode) {
         try {
-          const res = await fetch(`http://ip-api.com/json/${body.ip}`);
+          const res = await fetch(
+            `http://ip-api.com/json/${body.ip}?fields=status,country,countryCode,as`
+          );
           if (res.ok) {
-            const data = (await res.json()) as any;
+            const data = (await res.json()) as {
+              status?: string;
+              country?: string;
+              countryCode?: string;
+              as?: string;
+            };
             if (data && data.status === 'success') {
               countryCode = data.countryCode ?? null;
               countryName = data.country ?? null;
+              asn = asn ?? data.as ?? null;
             }
           }
         } catch (e) {
@@ -126,27 +127,33 @@ export const blockedRoutes = new Elysia()
         }
       }
 
-      const [row] = await sql<BlockedRow[]>`
-        INSERT INTO blocked_ips (ip, reason, port, country_code, country_name)
-        VALUES (${body.ip}, ${body.reason}, ${body.port ?? null}, ${countryCode}, ${countryName})
-        RETURNING id, ip, reason, port, country_code, country_name, created_at
-      `;
+      const row = await upsertBlockedIp({
+        ip: body.ip,
+        reason: body.reason,
+        port: body.port ?? null,
+        category: body.category ?? null,
+        source: body.source ?? null,
+        asn,
+        node: body.node ?? null,
+        peakRps: body.peakRps ?? null,
+        attackId: body.attackId ?? null,
+        countryCode,
+        countryName,
+      });
 
-      return {
-        id: row.id,
-        ip: row.ip,
-        reason: row.reason,
-        port: row.port,
-        countryCode: row.country_code,
-        countryName: row.country_name,
-        createdAt: row.created_at.toISOString(),
-      };
+      return serialize(row);
     },
     {
       body: t.Object({
         ip: t.String(),
         reason: t.String(),
         port: t.Optional(t.Number()),
+        category: t.Optional(t.String()),
+        source: t.Optional(t.String()),
+        asn: t.Optional(t.String()),
+        node: t.Optional(t.String()),
+        peakRps: t.Optional(t.Number()),
+        attackId: t.Optional(t.Number()),
         countryCode: t.Optional(t.String()),
         countryName: t.Optional(t.String()),
       }),
