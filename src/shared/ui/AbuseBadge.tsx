@@ -17,13 +17,13 @@ export default function AbuseBadge() {
         target="_blank"
         rel="noopener noreferrer"
         title="AbuseIPDB contributor profile"
-        className="opacity-80 transition-opacity hover:opacity-100"
+        className="opacity-90 transition-opacity hover:opacity-100"
       >
         <img
           src="https://www.abuseipdb.com/contributor/341284.svg"
           alt="AbuseIPDB Contributor Badge"
           loading="lazy"
-          className="h-[60px] w-auto rounded"
+          className="h-[60px] w-auto rounded bg-white/95 px-2 py-1 shadow-sm"
         />
       </a>
     </div>

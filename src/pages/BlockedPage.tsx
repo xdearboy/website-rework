@@ -86,7 +86,7 @@ export default function BlockedPage() {
 
   return (
     <PageShell>
-      <div ref={containerRef} className="w-full max-w-2xl sm:max-w-5xl mx-auto">
+      <div ref={containerRef} className="w-full max-w-2xl sm:max-w-5xl lg:max-w-7xl mx-auto">
         <p data-animate="intro" className="prose-landing mb-8">
           <Link to="/" className="hover:text-primary transition-colors">
             {isRu ? '← Назад' : '← Back'}
