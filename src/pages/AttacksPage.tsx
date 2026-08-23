@@ -1,6 +1,7 @@
 import PageShell from '@/shared/layout/PageShell';
 import { formatCompact, formatCount, formatDuration, severityColor } from '@/shared/lib/defense';
 import { getMotionMediaQueries } from '@/shared/lib/motion';
+import AbuseBadge from '@/shared/ui/AbuseBadge';
 import { useGSAP } from '@gsap/react';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, ru } from 'date-fns/locale';
@@ -178,6 +179,8 @@ export default function AttacksPage() {
             ))}
           </div>
         )}
+
+        <AbuseBadge />
       </div>
     </PageShell>
   );

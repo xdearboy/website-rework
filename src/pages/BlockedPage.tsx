@@ -1,6 +1,7 @@
 import PageShell from '@/shared/layout/PageShell';
 import { categoryTags, flagEmoji, formatCompact } from '@/shared/lib/defense';
 import { getMotionMediaQueries } from '@/shared/lib/motion';
+import AbuseBadge from '@/shared/ui/AbuseBadge';
 import { useGSAP } from '@gsap/react';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, ru } from 'date-fns/locale';
@@ -267,6 +268,8 @@ export default function BlockedPage() {
             </table>
           )}
         </div>
+
+        <AbuseBadge />
       </div>
     </PageShell>
   );
