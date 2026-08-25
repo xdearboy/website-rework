@@ -1,3 +1,11 @@
+# NOTE (2026-08-25): the `honeypot` Service referenced below lives in the
+# `shield-defense` namespace, not `default` — it moved there along with
+# node-firewall. Ingress backends can only reference same-namespace
+# Services, so there's a small ExternalName stub Service named `honeypot`
+# in `default` (cluster-side, not part of this chart) that CNAMEs to
+# honeypot.shield-defense.svc.cluster.local. If that stub ever needs
+# recreating: kubectl apply an ExternalName Service `honeypot` in `default`
+# pointing at that FQDN.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -68,63 +76,13 @@ spec:
                 name: portfolio
                 port:
                   number: 80
-    - host: d3vo.ru
-      http:
-        paths:
-          - path: /.env
-            pathType: Prefix
-            backend:
-              service:
-                name: honeypot
-                port:
-                  number: 80
-          - path: /wp-login.php
-            pathType: Prefix
-            backend:
-              service:
-                name: honeypot
-                port:
-                  number: 80
-          - path: /wp-admin
-            pathType: Prefix
-            backend:
-              service:
-                name: honeypot
-                port:
-                  number: 80
-          - path: /phpmyadmin
-            pathType: Prefix
-            backend:
-              service:
-                name: honeypot
-                port:
-                  number: 80
-          - path: /.git
-            pathType: Prefix
-            backend:
-              service:
-                name: honeypot
-                port:
-                  number: 80
-          - path: /xmlrpc.php
-            pathType: Prefix
-            backend:
-              service:
-                name: honeypot
-                port:
-                  number: 80
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: portfolio
-                port:
-                  number: 80
+  # d3vo.ru intentionally NOT listed here (2026-08-25): it moved to a
+  # dedicated ssl-passthrough Ingress (shield-tenants/d3vo-root-passthrough)
+  # so it can be TLS-terminated by fingerproxy for JA4/JA3 fingerprinting.
+  # Re-adding an HTTP-mode host rule for d3vo.ru on THIS Ingress would
+  # conflict with that passthrough setup — don't.
   tls:
     - hosts:
         - devo.as214422.lol
       secretName: dev0-tls
-    - hosts:
-        - d3vo.ru
-      secretName: d3vo-ru-tls
 
