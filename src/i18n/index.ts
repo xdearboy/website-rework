@@ -43,6 +43,14 @@ void i18n
     },
   });
 
+function syncDocumentLang(lng: string): void {
+  if (typeof document === 'undefined') return;
+  document.documentElement.lang = lng.startsWith('en') ? 'en' : 'ru';
+}
+
+syncDocumentLang(i18n.resolvedLanguage ?? i18n.language ?? 'ru');
+i18n.on('languageChanged', syncDocumentLang);
+
 export function getCurrentLang(): SupportedLanguage {
   const lng = i18n.resolvedLanguage ?? i18n.language ?? 'ru';
   return lng.startsWith('en') ? 'en' : 'ru';
