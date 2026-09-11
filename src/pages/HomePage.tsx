@@ -301,6 +301,11 @@ export default function HomePage() {
           <img
             src="/avatar.jpg"
             alt={t('header.avatarAlt')}
+            width={80}
+            height={80}
+            fetchPriority="high"
+            decoding="async"
+            loading="eager"
             className="size-16 shrink-0 rounded-2xl border border-border object-cover sm:size-20"
           />
           <div className="min-w-0">
