@@ -5,6 +5,7 @@ import path from 'path'
 import { execSync } from 'child_process'
 import { blogLoaderPlugin } from './plugins/vite-plugin-blog-loader'
 import { changelogPlugin } from './plugins/vite-plugin-changelog'
+import { pageMetaPlugin } from './plugins/vite-plugin-page-meta'
 
 function getCommitHash(): string {
   if (process.env.GIT_COMMIT_HASH) return process.env.GIT_COMMIT_HASH;
@@ -19,6 +20,7 @@ export default defineConfig({
   plugins: [
     blogLoaderPlugin(),
     changelogPlugin(),
+    pageMetaPlugin(),
     react(),
     visualizer({ filename: 'dist/stats.html', open: false }),
   ],
