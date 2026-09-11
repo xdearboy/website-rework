@@ -121,6 +121,17 @@ export default function WpwPage() {
           <p className="text-foreground/90 text-sm sm:text-base leading-relaxed">{t('intro')}</p>
         </section>
 
+        <section
+          data-animate="intro"
+          className="mb-8 flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] p-4"
+        >
+          <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+          <p className="text-sm leading-relaxed text-foreground/90">
+            <strong className="font-semibold text-emerald-500">{t('update.label')}</strong>{' '}
+            {t('update.text')}
+          </p>
+        </section>
+
         <hr data-animate="intro" data-hr-draw className="prose-landing-hr mt-0 mb-6" />
 
         <section

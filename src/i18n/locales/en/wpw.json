@@ -2,6 +2,10 @@
   "title": "WPW syndrome",
   "subtitle": "Wolff-Parkinson-White syndrome",
   "intro": "This section is dedicated to my experience living with and treating Wolff-Parkinson-White (WPW) syndrome — a congenital heart anomaly featuring an extra electrical pathway that can cause sudden tachycardia episodes.",
+  "update": {
+    "label": "update:",
+    "text": "WPW has been ablated and the syndrome is cleared. current diagnosis — sympathicotonia. below is the treatment history, left as it was written."
+  },
   "status": {
     "title": "current status",
     "outcome": "follow-up RFA completed successfully",
