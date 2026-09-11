@@ -332,8 +332,8 @@ export default function HomePage() {
           </p>
           <p>
             {t('about.paragraph2')} <FlagIcon code="RU" /> {t('about.languages.ru')},{' '}
-            <FlagIcon code="GB" /> {t('about.languages.en')}, <FlagIcon code="CN" />{' '}
-            {t('about.languages.cn')}.
+            <FlagIcon code="GB" /> {t('about.languages.en')}, <FlagIcon code="UA" />{' '}
+            {t('about.languages.ua')}, <FlagIcon code="CN" /> {t('about.languages.cn')}.
           </p>
           <p className="text-center">
             {contacts.map((contact, index) => (

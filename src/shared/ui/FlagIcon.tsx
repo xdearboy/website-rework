@@ -2,17 +2,20 @@ import { cn } from '@/shared/lib/utils';
 import flagCN from 'emoji-datasource-apple/img/apple/64/1f1e8-1f1f3.png';
 import flagGB from 'emoji-datasource-apple/img/apple/64/1f1ec-1f1e7.png';
 import flagRU from 'emoji-datasource-apple/img/apple/64/1f1f7-1f1fa.png';
+import flagUA from 'emoji-datasource-apple/img/apple/64/1f1fa-1f1e6.png';
 
 const flagsByCode = {
   RU: flagRU,
   GB: flagGB,
   CN: flagCN,
+  UA: flagUA,
 } as const;
 
 const countryNames: Record<string, string> = {
   RU: 'Россия',
   GB: 'Великобритания',
   CN: 'Китай',
+  UA: 'Украина',
 };
 
 export type FlagCode = keyof typeof flagsByCode;
