@@ -24,13 +24,7 @@ setInterval(() => {
 }, SESSION_CLEANUP_INTERVAL).unref();
 
 const app = new Elysia({ adapter: node() })
-  .use(wakatimeRoutes)
-  .use(vitalsRoutes)
-  .use(authRoutes)
-  .use(guestbookRoutes)
-  .use(postsRoutes)
-  .use(blockedRoutes)
-  .use(attacksRoutes)
+  // elysia applies lifecycle hooks only to routes registered after them
   .onError(({ code, set }) => {
     if (code === 'NOT_FOUND') {
       set.status = 404;
@@ -39,6 +33,13 @@ const app = new Elysia({ adapter: node() })
     set.status = 500;
     return { error: 'Internal error' };
   })
+  .use(wakatimeRoutes)
+  .use(vitalsRoutes)
+  .use(authRoutes)
+  .use(guestbookRoutes)
+  .use(postsRoutes)
+  .use(blockedRoutes)
+  .use(attacksRoutes)
   .listen(PORT);
 
 console.log(`API running on http://localhost:${PORT}`);
