@@ -38,8 +38,7 @@
       "wpw": "синдром WPW",
       "uses": "uses",
       "guestbook": "гостевая книга",
-      "changelog": "changelog",
-      "blocked": "лог атак"
+      "changelog": "changelog"
     }
   },
   "projects": {

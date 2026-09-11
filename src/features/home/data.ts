@@ -67,7 +67,6 @@ export const explorePages: ExplorePage[] = [
   { labelKey: 'sections.explore.uses', to: '/uses' },
   { labelKey: 'sections.explore.guestbook', to: '/guestbook' },
   { labelKey: 'sections.explore.changelog', to: '/changelog' },
-  { labelKey: 'sections.explore.blocked', to: '/blocked' },
 ];
 
 export const badges: Badge[] = [

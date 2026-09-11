@@ -26,9 +26,6 @@ const WpwPage = lazy(() => import('./pages/WpwPage'));
 const UsesPage = lazy(() => import('./pages/UsesPage'));
 const ChangelogPage = lazy(() => import('./pages/ChangelogPage'));
 const GuestbookPage = lazy(() => import('./pages/GuestbookPage'));
-const BlockedPage = lazy(() => import('./pages/BlockedPage'));
-const AttacksPage = lazy(() => import('./pages/AttacksPage'));
-const AttackDetailPage = lazy(() => import('./pages/AttackDetailPage'));
 
 export default function App() {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -100,9 +97,6 @@ export default function App() {
               <Route path="/uses" element={<UsesPage />} />
               <Route path="/changelog" element={<ChangelogPage />} />
               <Route path="/guestbook" element={<GuestbookPage />} />
-              <Route path="/blocked" element={<BlockedPage />} />
-              <Route path="/attacks" element={<AttacksPage />} />
-              <Route path="/attacks/:id" element={<AttackDetailPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
