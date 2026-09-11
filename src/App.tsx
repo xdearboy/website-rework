@@ -24,6 +24,7 @@ const DegensChat = lazy(() => import('./pages/DegensChat'));
 const GalleryPage = lazy(() => import('./pages/GalleryPage'));
 const WpwPage = lazy(() => import('./pages/WpwPage'));
 const UsesPage = lazy(() => import('./pages/UsesPage'));
+const FactsPage = lazy(() => import('./pages/FactsPage'));
 const ChangelogPage = lazy(() => import('./pages/ChangelogPage'));
 const GuestbookPage = lazy(() => import('./pages/GuestbookPage'));
 
@@ -95,6 +96,7 @@ export default function App() {
               <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/wpw" element={<WpwPage />} />
               <Route path="/uses" element={<UsesPage />} />
+              <Route path="/facts" element={<FactsPage />} />
               <Route path="/changelog" element={<ChangelogPage />} />
               <Route path="/guestbook" element={<GuestbookPage />} />
               <Route path="*" element={<NotFoundPage />} />
