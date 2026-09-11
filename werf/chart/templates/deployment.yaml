@@ -45,6 +45,8 @@ spec:
               value: "dfa8492049e29a92bc31920198deac88"
             - name: SITE_URL
               value: https://d3vo.ru
+            - name: PROMETHEUS_URL
+              value: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
             - name: OWNER_GITHUB_ID
               value: "105206420"
             - name: GITHUB_CLIENT_ID

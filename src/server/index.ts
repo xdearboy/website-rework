@@ -6,6 +6,7 @@ import { authRoutes } from './routes/auth';
 import { blockedRoutes } from './routes/blocked';
 import { guestbookRoutes } from './routes/guestbook';
 import { postsRoutes } from './routes/posts';
+import { statusRoutes } from './routes/status';
 import { vitalsRoutes } from './routes/vitals';
 import { wakatimeRoutes } from './routes/wakatime';
 
@@ -38,6 +39,7 @@ const app = new Elysia({ adapter: node() })
   .use(authRoutes)
   .use(guestbookRoutes)
   .use(postsRoutes)
+  .use(statusRoutes)
   .use(blockedRoutes)
   .use(attacksRoutes)
   .listen(PORT);
