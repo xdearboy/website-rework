@@ -1,5 +1,8 @@
 giterminismConfigVersion: 1
 config:
+  goTemplateRendering:
+    allowEnvVariables:
+      - GITHUB_SHA
   dockerfile:
     allowContextAddFiles:
       - public/changelog.json

@@ -12,3 +12,7 @@ context: .
 # into the build context explicitly.
 contextAddFiles:
   - public/changelog.json
+# .git is excluded from the build context, so vite cannot resolve the hash on
+# its own and would fall back to "dev"
+args:
+  GIT_COMMIT_HASH: {{ env "GITHUB_SHA" "dev" }}
