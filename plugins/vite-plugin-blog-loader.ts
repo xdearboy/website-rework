@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import type { Plugin } from 'vite';
+import { applyMeta } from './lib/html-meta';
 
 export interface BlogLoaderOptions {
   contentDir?: string;
@@ -231,49 +232,13 @@ export function blogLoaderPlugin(options: BlogLoaderOptions = {}): Plugin {
       fs.mkdirSync(blogDir, { recursive: true });
 
       for (const post of generatedPosts) {
-        const title = escapeHtml(post.title);
-        const excerpt = escapeHtml(post.excerpt);
-        const url = `https://d3vo.ru/blog/${post.slug}`;
-
-        let html = indexHtml;
-
-        html = html.replace(/<title>.*?<\/title>/, `<title>${title} — xdearboy</title>`);
-        html = html.replace(
-          /<link rel="canonical" href="[^"]*" \/>/,
-          `<link rel="canonical" href="${url}" />`
-        );
-        html = html.replace(
-          /<meta property="og:type" content="[^"]*" \/>/,
-          '<meta property="og:type" content="article" />'
-        );
-        html = html.replace(
-          /<meta property="og:title" content="[^"]*" \/>/,
-          `<meta property="og:title" content="${title}" />`
-        );
-        html = html.replace(
-          /<meta\s+property="og:description"\s+content="[^"]*"\s*\/>/,
-          `<meta property="og:description" content="${excerpt}" />`
-        );
-        html = html.replace(
-          /<meta property="og:url" content="[^"]*" \/>/,
-          `<meta property="og:url" content="${url}" />`
-        );
-        html = html.replace(
-          /<meta name="twitter:title" content="[^"]*" \/>/,
-          `<meta name="twitter:title" content="${title}" />`
-        );
-        html = html.replace(
-          /<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/>/,
-          `<meta name="twitter:description" content="${excerpt}" />`
-        );
-
-        if (post.dateISO) {
-          html = html.replace(
-            /<meta property="og:url" content="[^"]*" \/>/,
-            (match) =>
-              `${match}\n    <meta property="article:published_time" content="${escapeHtml(post.dateISO)}" />`
-          );
-        }
+        const html = applyMeta(indexHtml, {
+          title: `${post.title} — xdearboy`,
+          description: post.excerpt,
+          url: `${SITE_URL}/blog/${post.slug}`,
+          type: 'article',
+          publishedTime: post.dateISO || undefined,
+        });
 
         fs.writeFileSync(path.join(blogDir, `${post.slug}.html`), html);
       }
