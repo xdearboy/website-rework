@@ -335,6 +335,12 @@ export default function HomePage() {
             <FlagIcon code="GB" /> {t('about.languages.en')}, <FlagIcon code="UA" />{' '}
             {t('about.languages.ua')}, <FlagIcon code="CN" /> {t('about.languages.cn')}.
           </p>
+          <p>{t('about.networking')}</p>
+          <p>
+            <Link data-hover-pop to="/facts" className="inline-block">
+              {t('about.moreLink')}
+            </Link>
+          </p>
           <p className="text-center">
             {contacts.map((contact, index) => (
               <span key={contact.href}>
