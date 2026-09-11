@@ -1,0 +1,46 @@
+{
+  "title": "status",
+  "subtitle": "live checks of my sites and cluster nodes. probed every minute; uptime covers however much history prometheus actually kept.",
+  "loading": "collecting metrics...",
+  "unavailable": "metrics are unavailable right now, try again later.",
+  "allGood": "everything is up",
+  "someDown_one": "{{count}} service is down",
+  "someDown_other": "{{count}} services are down",
+  "groups": {
+    "sites": "sites",
+    "nodes": "cluster nodes"
+  },
+  "state": {
+    "up": "up",
+    "down": "down",
+    "stale": "no fresh data"
+  },
+  "phases": {
+    "resolve": "dns",
+    "connect": "connect",
+    "tls": "tls",
+    "processing": "response"
+  },
+  "uptime": "uptime {{window}}",
+  "httpCode": "http",
+  "cert_one": "certificate {{count}} day",
+  "cert_other": "certificate {{count}} days",
+  "certExpired": "certificate expired",
+  "ms": "ms",
+  "noData": "no data",
+  "source": "measured by a blackbox exporter inside the cluster and stored in prometheus. this is server-side latency, not from your browser.",
+  "locations": {
+    "frankfurt": "Frankfurt",
+    "warsaw": "Warsaw",
+    "tallinn": "Tallinn",
+    "germany": "Germany",
+    "poland": "Poland"
+  },
+  "nodesNote": "nodes are shown by city and hoster, without machine names. node ping is measured from inside the cluster, so the one closest to the prober reads near zero.",
+  "window": {
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "hours_one": "{{count}} hour",
+    "hours_other": "{{count}} hours"
+  }
+}
