@@ -60,6 +60,7 @@ export const contacts: ContactLink[] = [
 
 export const explorePages: ExplorePage[] = [
   { labelKey: 'sections.explore.facts', to: '/facts' },
+  { labelKey: 'sections.explore.status', to: '/status' },
   { labelKey: 'sections.explore.blog', to: '/blog' },
   { labelKey: 'sections.explore.gallery', to: '/gallery' },
   { labelKey: 'sections.explore.degens', to: '/degens' },
