@@ -9,9 +9,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "lint": "biome lint src plugins",
-    "format": "biome format --write src plugins",
-    "check": "biome check --write src plugins",
+    "lint": "biome lint src plugins scripts",
+    "format": "biome format --write src plugins scripts",
+    "check": "biome check --write src plugins scripts",
     "gallery:upload": "bun run scripts/upload-gallery.ts",
     "prepare": "git config core.hooksPath .githooks || true"
   },

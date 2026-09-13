@@ -1,6 +1,6 @@
 #!/bin/sh
 # biome only: fast enough to run on every commit, tsc and tests run on push
-npx biome check src plugins || {
+npx biome check src plugins scripts || {
   echo "pre-commit: biome failed, run 'bun run check' to fix"
   exit 1
 }
