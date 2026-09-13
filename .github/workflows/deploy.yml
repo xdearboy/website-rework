@@ -22,7 +22,7 @@ jobs:
       - name: Lint, typecheck and test
         run: |
           docker run --rm -v "$PWD":/app -w /app node:20-alpine sh -c \
-            "npx biome ci src plugins && npx tsc --noEmit && npx vitest run"
+            "npx biome ci src plugins scripts && npx tsc --noEmit && npx vitest run"
 
   converge:
     needs: test
