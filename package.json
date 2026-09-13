@@ -12,7 +12,8 @@
     "lint": "biome lint src plugins",
     "format": "biome format --write src plugins",
     "check": "biome check --write src plugins",
-    "gallery:upload": "bun run scripts/upload-gallery.ts"
+    "gallery:upload": "bun run scripts/upload-gallery.ts",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.2.8",

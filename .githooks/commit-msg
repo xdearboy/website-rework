@@ -1,0 +1,21 @@
+#!/bin/sh
+# the changelog on the site is built from feat: commits, so a typo in the
+# prefix silently drops the entry instead of failing
+msg=$(head -1 "$1")
+
+case "$msg" in
+  "Merge "*|"Revert "*|"fixup! "*|"squash! "*) exit 0 ;;
+esac
+
+if ! printf '%s' "$msg" | grep -qE '^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert)(\([a-z0-9/-]+\))?!?: .+'; then
+  echo "commit-msg: not a conventional commit"
+  echo "  got:      $msg"
+  echo "  expected: feat(scope): summary"
+  echo "  types:    feat fix chore docs style refactor perf test build ci revert"
+  exit 1
+fi
+
+if [ ${#msg} -gt 72 ]; then
+  echo "commit-msg: subject is ${#msg} chars, keep it under 72"
+  exit 1
+fi
