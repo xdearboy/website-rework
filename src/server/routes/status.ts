@@ -22,7 +22,6 @@ const HIDDEN_HOSTS = /(^|\.)kube\.d3vo\.ru$/;
 // node hostnames name the machines themselves, so only city and hoster leave the
 // cluster; keys are the `node` label blackbox attaches to the icmp probes
 const NODE_PLACES: Record<string, { locationKey: string | null; hoster: string }> = {
-  'aeroflot-looking-glass.intezio.net': { locationKey: 'frankfurt', hoster: 'Intezio' },
   'apricot-starlite.worldwidehosting.ltd': {
     locationKey: 'frankfurt',
     hoster: 'Worldwide Hosting',
