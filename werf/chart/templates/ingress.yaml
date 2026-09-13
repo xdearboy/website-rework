@@ -19,7 +19,7 @@ metadata:
     # single ip, so one node going down takes the whole domain with it.
     # keep in sync when nodes join or leave: a decommissioned node left here
     # black-holes that share of requests until dns is fixed by hand.
-    external-dns.alpha.kubernetes.io/target: "191.44.118.12,191.44.118.2,95.85.254.73,217.60.25.136,77.239.114.171,138.124.100.47"
+    external-dns.alpha.kubernetes.io/target: "81.90.28.90,217.60.25.103,191.44.118.12,191.44.118.2,95.85.254.73,217.60.25.136,77.239.114.171,222.167.248.89,138.124.100.47,81.90.28.104"
     cert-manager.io/cluster-issuer: letsencrypt-prod
     ingress.kubernetes.io/waf: modsecurity
     ingress.kubernetes.io/waf-mode: enforce
