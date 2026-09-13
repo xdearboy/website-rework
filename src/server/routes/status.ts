@@ -32,10 +32,11 @@ const NODE_PLACES: Record<string, { locationKey: string | null; hoster: string }
   'metahub-huray.intezio.net': { locationKey: 'poland', hoster: 'Intezio' },
   'neogate-gamax.intezio.net': { locationKey: 'poland', hoster: 'Intezio' },
   'novabyte-byrix.intezio.net': { locationKey: 'warsaw', hoster: 'Intezio' },
-  // whois for these two reports a registration country that contradicts the
-  // measured latency, so the city is left out rather than guessed
-  ns3250362: { locationKey: null, hoster: 'Datagio' },
-  'plroot-sector.datagio.net': { locationKey: null, hoster: 'Datagio' },
+  // the ipv4 whois for these two is misleading (reassigned legacy blocks); the
+  // ipv6 allocation is the reliable one: 2001:41d0:730::/48 is DE, and
+  // 2a10:ab80:3fd::/48 is registered as Datagio-PL
+  ns3250362: { locationKey: 'germany', hoster: 'Datagio' },
+  'plroot-sector.datagio.net': { locationKey: 'poland', hoster: 'Datagio' },
   'primevault-vapro.intezio.net': { locationKey: 'tallinn', hoster: 'Intezio' },
   'vampire-emerald.intezio.net': { locationKey: 'frankfurt', hoster: 'Intezio' },
 };
