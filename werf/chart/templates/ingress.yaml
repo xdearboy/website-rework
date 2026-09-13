@@ -14,6 +14,12 @@ metadata:
     # cloudflare stores ttl 1 ("auto"); without this external-dns
     # generates ttl 0, always sees a diff and rewrites in a loop
     external-dns.alpha.kubernetes.io/ttl: "1"
+    # round-robin across the nodes that actually run the ingress controller.
+    # without it external-dns falls back to the ingress status, which carries a
+    # single ip, so one node going down takes the whole domain with it.
+    # keep in sync when nodes join or leave: a decommissioned node left here
+    # black-holes that share of requests until dns is fixed by hand.
+    external-dns.alpha.kubernetes.io/target: "191.44.118.12,191.44.118.2,95.85.254.73,217.60.25.136,77.239.114.171,138.124.100.47"
     cert-manager.io/cluster-issuer: letsencrypt-prod
     ingress.kubernetes.io/waf: modsecurity
     ingress.kubernetes.io/waf-mode: enforce
