@@ -32,9 +32,7 @@
   "locations": {
     "frankfurt": "Frankfurt",
     "warsaw": "Warsaw",
-    "tallinn": "Tallinn",
-    "germany": "Germany",
-    "poland": "Poland"
+    "tallinn": "Tallinn"
   },
   "nodesNote": "nodes are shown by city and hoster, without machine names. node ping is measured from inside the cluster, so the one closest to the prober reads near zero.",
   "window": {

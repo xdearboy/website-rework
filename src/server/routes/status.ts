@@ -26,17 +26,14 @@ const NODE_PLACES: Record<string, { locationKey: string | null; hoster: string }
     locationKey: 'frankfurt',
     hoster: 'Worldwide Hosting',
   },
-  'blazehost-honix.intezio.net': { locationKey: 'poland', hoster: 'Intezio' },
-  'depixel-quanta.datagio.net': { locationKey: 'germany', hoster: 'Datagio' },
-  'destorm-host.datagio.net': { locationKey: 'germany', hoster: 'Datagio' },
-  'metahub-huray.intezio.net': { locationKey: 'poland', hoster: 'Intezio' },
-  'neogate-gamax.intezio.net': { locationKey: 'poland', hoster: 'Intezio' },
+  'blazehost-honix.intezio.net': { locationKey: 'warsaw', hoster: 'Intezio' },
+  'depixel-quanta.datagio.net': { locationKey: 'frankfurt', hoster: 'Datagio' },
+  'destorm-host.datagio.net': { locationKey: 'frankfurt', hoster: 'Datagio' },
+  'metahub-huray.intezio.net': { locationKey: 'warsaw', hoster: 'Intezio' },
+  'neogate-gamax.intezio.net': { locationKey: 'warsaw', hoster: 'Intezio' },
   'novabyte-byrix.intezio.net': { locationKey: 'warsaw', hoster: 'Intezio' },
-  // the ipv4 whois for these two is misleading (reassigned legacy blocks); the
-  // ipv6 allocation is the reliable one: 2001:41d0:730::/48 is DE, and
-  // 2a10:ab80:3fd::/48 is registered as Datagio-PL
-  ns3250362: { locationKey: 'germany', hoster: 'Datagio' },
-  'plroot-sector.datagio.net': { locationKey: 'poland', hoster: 'Datagio' },
+  ns3250362: { locationKey: 'frankfurt', hoster: 'Datagio' },
+  'plroot-sector.datagio.net': { locationKey: 'warsaw', hoster: 'Datagio' },
   'primevault-vapro.intezio.net': { locationKey: 'tallinn', hoster: 'Intezio' },
   'vampire-emerald.intezio.net': { locationKey: 'frankfurt', hoster: 'Intezio' },
 };
