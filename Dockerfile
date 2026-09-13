@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.5-alpine AS builder
+FROM mirror.gcr.io/oven/bun:1.3.5-alpine AS builder
 WORKDIR /app
 
 COPY package.json bun.lock* ./
@@ -16,7 +16,7 @@ ENV GIT_COMMIT_HASH=${GIT_COMMIT_HASH}
 RUN bun run build
 RUN bun build src/server/index.ts --target=node --outfile=server.js
 
-FROM node:20-alpine
+FROM mirror.gcr.io/library/node:20-alpine
 
 WORKDIR /app
 
