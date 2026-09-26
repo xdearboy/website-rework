@@ -19,6 +19,8 @@ spec:
       labels:
         app: portfolio
     spec:
+      # defined in kube/manifests/platform/priority-and-disruption.yaml
+      priorityClassName: platform-critical
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

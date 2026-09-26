@@ -13,6 +13,8 @@ metadata:
   name: site-db
 spec:
   instances: 2
+  # kube/manifests/platform/priority-and-disruption.yaml
+  priorityClassName: platform-critical
   imageName: ghcr.io/cloudnative-pg/postgresql:16
   primaryUpdateStrategy: unsupervised
   # a replica on a dead node is not waited for: writes go on with one copy

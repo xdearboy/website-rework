@@ -1,0 +1,10 @@
+# two replicas; a node drain may take one, never both
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: portfolio
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: portfolio
