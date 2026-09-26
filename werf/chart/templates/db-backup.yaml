@@ -1,0 +1,59 @@
+# Hourly pg_dump of the site database onto novabyte-byrix's local disk, a node
+# that runs neither site-db instance. Keeps the last 48 dumps.
+# Restore: kubectl exec -i <site-db primary> -c postgres -- psql -U postgres -d portfolio < dump
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: site-db-backups
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: local-path
+  resources: { requests: { storage: 2Gi } }
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: site-db-backup
+spec:
+  schedule: "37 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      template:
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector: { kubernetes.io/hostname: novabyte-byrix.intezio.net }
+          containers:
+            - name: dump
+              image: mirror.gcr.io/library/postgres:16-alpine
+              env:
+                - name: PGUSER
+                  valueFrom: { secretKeyRef: { name: postgres-credentials, key: username } }
+                - name: PGPASSWORD
+                  valueFrom: { secretKeyRef: { name: postgres-credentials, key: password } }
+                - name: PGDATABASE
+                  valueFrom: { secretKeyRef: { name: postgres-credentials, key: database } }
+              command:
+                - sh
+                - -c
+                - |
+                  set -eu
+                  f=/backups/site-$(date -u +%Y%m%dT%H%M%SZ).sql.gz
+                  pg_dump -h postgres | gzip > "$f.tmp"
+                  # the real dump is ~50 KB gzipped; much less means it stopped half way
+                  [ "$(stat -c %s "$f.tmp")" -gt 10240 ] || { echo "dump too small"; rm -f "$f.tmp"; exit 1; }
+                  mv "$f.tmp" "$f"
+                  ls -1t /backups/site-*.sql.gz | tail -n +49 | xargs -r rm -f
+                  echo "ok $f $(stat -c %s "$f") bytes, $(ls /backups/site-*.sql.gz | wc -l) kept"
+              volumeMounts:
+                - { name: backups, mountPath: /backups }
+              resources:
+                requests: { cpu: 20m, memory: 64Mi }
+                limits: { memory: 256Mi }
+          volumes:
+            - name: backups
+              persistentVolumeClaim: { claimName: site-db-backups }
