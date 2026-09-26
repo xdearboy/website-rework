@@ -1,4 +1,4 @@
-# Hourly pg_dump of the site database onto novabyte-byrix's local disk, a node
+# Hourly pg_dump of the site database onto plroot-sector's local disk, a node
 # that runs neither site-db instance. Keeps the last 48 dumps.
 # Restore: kubectl exec -i <site-db primary> -c postgres -- psql -U postgres -d portfolio < dump
 apiVersion: v1
@@ -26,7 +26,7 @@ spec:
       template:
         spec:
           restartPolicy: OnFailure
-          nodeSelector: { kubernetes.io/hostname: novabyte-byrix.intezio.net }
+          nodeSelector: { kubernetes.io/hostname: plroot-sector.datagio.net }
           containers:
             - name: dump
               image: mirror.gcr.io/library/postgres:16-alpine
