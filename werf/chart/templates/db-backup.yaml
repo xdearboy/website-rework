@@ -5,6 +5,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: site-db-backups
+  annotations:
+    # local-path binds on the first backup run; converge must not wait for it
+    werf.io/track-termination-mode: NonBlocking
 spec:
   accessModes: [ReadWriteOnce]
   storageClassName: local-path
