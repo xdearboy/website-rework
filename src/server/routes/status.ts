@@ -30,7 +30,6 @@ const NODE_PLACES: Record<string, { locationKey: string | null; hoster: string }
   'depixel-quanta.datagio.net': { locationKey: 'frankfurt', hoster: 'Datagio' },
   'destorm-host.datagio.net': { locationKey: 'frankfurt', hoster: 'Datagio' },
   'metahub-huray.intezio.net': { locationKey: 'warsaw', hoster: 'Intezio' },
-  'neogate-gamax.intezio.net': { locationKey: 'warsaw', hoster: 'Intezio' },
   'novabyte-byrix.intezio.net': { locationKey: 'warsaw', hoster: 'Intezio' },
   ns3250362: { locationKey: 'frankfurt', hoster: 'Datagio' },
   'plroot-sector.datagio.net': { locationKey: 'warsaw', hoster: 'Datagio' },
